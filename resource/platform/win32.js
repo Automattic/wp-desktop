@@ -23,5 +23,5 @@ function cleanBuild( appPath, buildOpts ) {
 
 module.exports = {
 	cleaner: cleanBuild,
-	beforeBuild: spellchecker.bind( null, 'http://automattic.github.io/wordpress-desktop/deps/spellchecker-win32-v1.0.2-electron-v0.35.4.zip' )
+	beforeBuild: spellchecker.bind( null, 'http://automattic.github.io/wp-desktop/deps/spellchecker-win32-v3.0.2-electron-v0.36.0.zip' )
 }
