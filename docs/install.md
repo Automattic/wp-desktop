@@ -21,8 +21,8 @@ To be able to clone the repo and run the application you need:
 Clone this git repo to your machine via the terminal using the `git clone` command and then run `make run` from the root app directory:
 
 ```bash
-$ git clone git@github.com:Automattic/wordpress-desktop.git
-$ cd wordpress-desktop
+$ git clone git@github.com:Automattic/wp-desktop.git
+$ cd wp-desktop
 $ make run
 ```
 
