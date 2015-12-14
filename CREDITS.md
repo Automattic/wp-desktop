@@ -170,7 +170,7 @@ Many thanks to all of the original authors!
 | lazy-cache@^0.2.4                               | MIT |
 | align-text@^0.1.1                               | MIT |
 | source-map-url@~0.3.0                           | MIT |
-| atob@~1.1.0                                     | TBD |
+| atob@~1.1.0                                     | MIT |
 | urix@~0.1.0                                     | MIT |
 | resolve-url@~0.2.1                              | MIT |
 | kind-of@^2.0.0                                  | MIT |
