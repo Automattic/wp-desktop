@@ -14,7 +14,7 @@ Here is a [handy link for submitting a new bug](https://github.com/Automattic/wp
 
 ## License
 
-Calypso is licensed under [GNU General Public License v2 (or later)](./LICENSE.md).
+WordPress.com for Desktop is licensed under [GNU General Public License v2 (or later)](./LICENSE.md).
 
 All materials contributed should be compatible with the GPLv2. This means that if you own the material, you agree to license it under the GPLv2 license. If you are contributing code that is not your own, such as adding a component from another Open Source project, or adding an `npm` package, you need to make sure you follow these steps:
 
