@@ -6,6 +6,7 @@
 var path = require( 'path' );
 var fs = require( 'fs' );
 var cp = require( 'child_process' );
+var minimist = require('minimist');
 
 /**
  * Internal dependencies
@@ -13,13 +14,13 @@ var cp = require( 'child_process' );
 var win32package = require( '../build-config/win32-package.json' );
 var config = require( '../lib/config' );
 
-/**
- * Module variables
- */
+// hard coded path and setup file to sign
 var topDir = path.dirname( path.dirname( __dirname ) );
 var setupFile = path.join( topDir, 'release/' + config.name + '-' + config.version + '-Setup.exe' );
-var spcFile = path.join( __dirname, '..', 'secrets', '/automattic-code.spc' );
-var pvkFile = path.join( __dirname, '..', 'secrets', '/automattic-code.pvk' );
+
+var argv = minimist(process.argv.slice(2));
+var spcFile = argv.spc; // passed in via Makefile
+var pvkFile = argv.pvk; // passed in via Makefile
 
 console.log( 'Signing installer...' );
 

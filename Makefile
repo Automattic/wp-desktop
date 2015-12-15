@@ -15,6 +15,8 @@ BUILD_CONFIG := $(THIS_DIR)/resource/build-scripts/build-config-file.js
 PACKAGE_MAS := $(THIS_DIR)/resource/build-scripts/package-mas.js
 PACKAGE_DMG := $(THIS_DIR)/resource/build-scripts/package-dmg.js
 PACKAGE_WIN32 := @$(NPM_BIN)/electron-builder
+CERT_SPC := $(THIS_DIR)/resource/secrets/automattic-code.spc
+CERT_PVK := $(THIS_DIR)/resource/secrets/automattic-code.pvk
 CALYPSO_DIR := $(THIS_DIR)/calypso
 CALYPSO_JS_STD := $(CALYPSO_DIR)/public/build-desktop.js
 CALYPSO_JS_MAS := $(CALYPSO_DIR)/public/build-desktop.js
@@ -78,7 +80,7 @@ updater: config-updater
 package-win32: win32
 	@$(PACKAGE_WIN32) ./release/WordPress.com-win32-ia32 --platform=win --out=./release --config=./resource/build-config/win32-package.json
 	@node $(THIS_DIR)/resource/build-scripts/rename-with-version-win.js
-	@node $(THIS_DIR)/resource/build-scripts/code-sign-win.js
+	@node $(THIS_DIR)/resource/build-scripts/code-sign-win.js --spc=$(CERT_SPC) --pvk=$(CERT_PVK)
 
 package-osx: osx
 	@node $(PACKAGE_DMG)
