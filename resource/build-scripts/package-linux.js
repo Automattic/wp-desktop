@@ -24,6 +24,7 @@ var cmd = [
 	'--name wordpress.com',
 	'-s tar',
 	'-t deb',
+	'--prefix /usr/local',
 	'--force', // forces overwrite of existing package
 	'--package ./release/wordpress-com-' + config.version + '.deb',
 	'./release/WordPress.com-linux-x64.' + config.version + '.tar.gz'
