@@ -1,14 +1,21 @@
 var $ = require( 'nodobjc' );
 
 $.framework( 'Foundation' );
+$.framework( 'StoreKit' );
 
 function helloWorld() {
-	var pool = $.NSAutoreleasePool( 'alloc' )( 'init' );
-	var string = $.NSString( 'stringWithUTF8String', 'Hello Objective-C World!' );
+	$.NSAutoreleasePool( 'alloc' )( 'init' );
 
-	console.log( string );
+	var ProductsRequestDelegate = $.NSObject.extend( 'ProductsRequestDelegate' );
+	ProductsRequestDelegate.register();
 
-	pool( 'drain' );
+	var productsRequestDelegate = ProductsRequestDelegate( 'alloc' )( 'init' );
+
+	console.log( productsRequestDelegate.methods() );
+
+	var productRequest = $.SKProductsRequest( 'alloc' )( 'init' );
+
+	console.log( productRequest.methods() );
 }
 
 module.exports = helloWorld;
