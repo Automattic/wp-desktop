@@ -90,6 +90,9 @@ package-osx: osx
 package-mas: mas
 	@node $(PACKAGE_MAS)
 
+package-linux: linux
+	@node $(THIS_DIR)/resource/build-scripts/package-linux.js
+
 # Copy config files
 config-dev: install
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-dev.json > $(CONFIG)
