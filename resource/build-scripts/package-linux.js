@@ -35,7 +35,9 @@ var cmd = [
 	'fpm',
 	'--version '  + config.version,
 	'--license "GPLv2"',
-	'--name wordpress.com',
+	'--name "wordpress.com"',
+	'--vendor "Automattic, Inc."',
+	'--maintainer "support@wordpress.com"',
 	'-s dir',
 	'-t deb',
 	'--force', 			// forces overwrite of existing package
