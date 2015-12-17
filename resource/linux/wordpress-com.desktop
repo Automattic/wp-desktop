@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=WordPress.com
+Comment=WordPress.com Desktop Client
+Exec=/usr/local/WordPress.com/WordPress.com
+Icon=/usr/local/WordPress.com/WordPress.png
+Type=Application
+StartupNotify=true
+Categories=GNOME;GTK;Utility;
