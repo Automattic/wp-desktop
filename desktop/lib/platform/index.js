@@ -21,6 +21,8 @@ Platform.prototype.setMainWindow = function( mainWindow ) {
 		PlatformHandler = require( './mac' );
 	} else if ( this.isWindows() ) {
 		PlatformHandler = require( './windows' );
+	} else if ( this.isLinux() ) {
+		PlatformHandler = require( './linux' );
 	}
 
 	if ( PlatformHandler ) {
