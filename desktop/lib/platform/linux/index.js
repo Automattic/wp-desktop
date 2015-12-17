@@ -5,21 +5,17 @@
  */
 const electron = require( 'electron' );
 const app = electron.app;
-const Menu = electron.Menu;
-const debug = require( 'debug' )( 'platform:mac' );
+const debug = require( 'debug' )( 'platform:linux' );
 
 /**
  * Internal dependencies
  */
-const appQuit = require( 'lib/app-quit' );
-const menuSetter = require( 'lib/menu-setter' );
 
 function LinuxPlatform( mainWindow ) {
 	this.window = mainWindow;
 
 	app.on( 'activate', function() {
 		debug( 'Window activated' );
-
 		mainWindow.show();
 		mainWindow.focus();
 	} );
@@ -41,6 +37,5 @@ LinuxPlatform.prototype.restore = function() {
 
 	this.window.show();
 }
-
 
 module.exports = LinuxPlatform;
