@@ -36,8 +36,9 @@ var cmd = [
 	'--version '  + config.version,
 	'--license "GPLv2"',
 	'--name "wordpress.com"',
+	'--description "WordPress.com Desktop client"',
 	'--vendor "Automattic, Inc."',
-	'--maintainer "support@wordpress.com"',
+	'--maintainer "WordPress.com Support <support@wordpress.com>"',
 	'-s dir',
 	'-t deb',
 	'--force', 			// forces overwrite of existing package
