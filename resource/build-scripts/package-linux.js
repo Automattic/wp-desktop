@@ -39,6 +39,7 @@ var cmd = [
 	'--description "WordPress.com Desktop client"',
 	'--vendor "Automattic, Inc."',
 	'--maintainer "WordPress.com Support <support@wordpress.com>"',
+	'--url "https://desktop.wordpress.com/"',
 	'-s dir',
 	'-t deb',
 	'--force', 			// forces overwrite of existing package
