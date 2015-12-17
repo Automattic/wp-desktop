@@ -22,8 +22,7 @@ Platform.prototype.setMainWindow = function( mainWindow ) {
 	} else if ( this.isWindows() ) {
 		PlatformHandler = require( './windows' );
 	} else if ( this.isLinux() ) {
-		console.log("Linux Platform Handler!");
-		PlatformHanlder = require( './linux' );
+		PlatformHandler = require( './linux' );
 	}
 
 	if ( PlatformHandler ) {
@@ -72,7 +71,6 @@ Platform.prototype.isWindows10 = function() {
 };
 
 Platform.prototype.isLinux = function() {
-	console.log("Process Platform: " + process.platform);
 	return process.platform === 'linux';
 };
 
