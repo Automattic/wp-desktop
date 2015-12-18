@@ -24,6 +24,10 @@ CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -nam
 CALYPSO_CHANGES_MAS := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_MAS)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 
+# check for secret
+secret:
+	test -s $(THIS_DIR)/calypso/config/secrets.json || { echo "calypso/config/secrets.json not found. Required file, see docs/secrets.md"; exit 1; }
+
 # Just runs Electron with whatever version of Calypso exists
 run: config-dev build-if-changed
 	$(START_APP)
@@ -97,13 +101,13 @@ package-linux: linux
 config-dev: install
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-dev.json > $(CONFIG)
 
-config-release: install
+config-release: install secret
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-release.json > $(CONFIG)
 
-config-mas: install
+config-mas: install secret
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-mac-app-store.json > $(CONFIG)
 
-config-updater: install
+config-updater: install secret
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-updater.json > $(CONFIG)
 
 # NPM
