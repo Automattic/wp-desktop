@@ -25,11 +25,13 @@ var onErrorBail = function( error ) {
 };
 
 // copy build into place for packaging
-cp.execSync( "rm -rf release/tmp ", onErrorBail ); // clean start
-cp.execSync( "mkdir -p release/tmp/usr/local ", onErrorBail );
-cp.execSync( "mkdir -p release/tmp/usr/share/applications ", onErrorBail );
-cp.execSync( "cp -r release/WordPress.com-linux-x64 release/tmp/usr/local/WordPress.com", onErrorBail );
-cp.execSync( "cp resource/linux/wordpress-com.desktop release/tmp/usr/share/applications/", onErrorBail );
+cp.execSync( "rm -rf release/tmp", onErrorBail ); // clean start
+cp.execSync( "mkdir -p release/tmp/usr/share/applications", onErrorBail );
+cp.execSync( "mkdir -p release/tmp/usr/share/pixmaps", onErrorBail );
+cp.execSync( "cp -r release/WordPress.com-linux-x64 release/tmp/usr/share/wpcom", onErrorBail );
+cp.execSync( "mv release/tmp/usr/share/wpcom/WordPress.com release/tmp/usr/share/wpcom/wpcom", onErrorBail );	// rename binary to wpcom
+cp.execSync( "cp resource/linux/wpcom.desktop release/tmp/usr/share/applications/", onErrorBail );
+cp.execSync( "cp resource/app-icon/icon_256x256.png release/tmp/usr/share/pixmaps/wpcom.png", onErrorBail );
 
 var cmd = [
 	'fpm',

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=WordPress.com
+Comment=WordPress.com Desktop Client
+Generic Name=Blog Admin Client
+Exec=/usr/share/wpcom/wpcom
+Icon=wpcom
+Type=Application
+StartupNotify=true
+Categories=Development
