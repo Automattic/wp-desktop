@@ -18,6 +18,7 @@ const cookieAuth = require( 'lib/cookie-auth' );
 const appInstance = require( 'lib/app-instance' );
 const platform = require( 'lib/platform' );
 const System = require( 'lib/system' );
+const storeKit = require( 'lib/store-kit' );
 
 /**
  * Module variables
@@ -49,6 +50,8 @@ function showAppWindow() {
 	} );
 
 	platform.setMainWindow( mainWindow );
+
+	storeKit.requestProducts();
 
 	return mainWindow;
 }
