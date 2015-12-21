@@ -8,7 +8,7 @@ function log() {
 }
 
 function requestProducts() {
-	$.NSAutoreleasePool( 'alloc' )( 'init' );
+	var pool = $.NSAutoreleasePool( 'alloc' )( 'init' );
 
 	var ProductsRequestDelegate = $.NSObject.extend( 'ProductsRequestDelegate' );
 
@@ -43,6 +43,8 @@ function requestProducts() {
 	productsRequest( 'start' );
 
 	log( 'Products request started!' );
+
+	pool( 'release' );
 }
 
 module.exports = {
