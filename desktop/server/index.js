@@ -51,7 +51,9 @@ function showAppWindow() {
 
 	platform.setMainWindow( mainWindow );
 
-	storeKit.requestProducts();
+	storeKit.requestProducts( function( firstProductTitle, productsCount, invalidProductCount ) {
+		mainWindow.webContents.send( 'store-kit-initialised', firstProductTitle, productsCount, invalidProductCount );
+	} );
 
 	return mainWindow;
 }
