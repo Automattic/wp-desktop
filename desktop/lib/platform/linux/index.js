@@ -38,4 +38,12 @@ LinuxPlatform.prototype.restore = function() {
 	this.window.show();
 }
 
+LinuxPlatform.prototype.clearNotificationsBadge = function() {
+	// no op
+};
+
+LinuxPlatform.prototype.setDockMenu = function( enabled ) {
+	// no op
+};
+
 module.exports = LinuxPlatform;
