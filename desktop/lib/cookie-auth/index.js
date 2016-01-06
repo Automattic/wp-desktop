@@ -117,11 +117,15 @@ function auth( window, onAuthorized ) {
 		} else {
 			// retrieve all cookies
 			window.webContents.session.cookies.get( {}, function( e, cookies ) {
-				if ( e ) return;
+				if ( e ) {
+					return;
+				}
+
 				cookies.forEach( function( cookie ) {
 					var domain = cookie.domain;
 					var cookieUrl = 'https://' + ( domain.indexOf( '.' ) === 0 ? domain.slice( 1 ) : domain ) + cookie.path;
-					window.webContents.session.cookies.remove( { url: cookieUrl, name: cookie.name }, noop );
+
+					window.webContents.session.cookies.remove( cookieUrl, cookie.name, noop );
 				} );
 			} );
 		}
