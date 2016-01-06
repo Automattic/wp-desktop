@@ -29,6 +29,10 @@ html.is-desktop {
 	overflow-y: auto;
 }
 
+html.is-desktop.detail-page-open {
+	overflow-y: hidden;
+}
+
 
 /**
  * Desktop-only screens (failed-to-start.html etc.)
