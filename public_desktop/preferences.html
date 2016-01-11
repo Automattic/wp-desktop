@@ -154,7 +154,7 @@
 			document.querySelector( 'input[name=' + item + ']' ).value = settings.getSetting( item );
 		} );
 
-		if ( navigator.platform === 'Win32' ) {
+		if ( ( navigator.platform === 'Win32' ) || ( navigator.platform === 'Linux' ) ) {
 			document.querySelector( '.option-bounce' ).style.display = 'none';
 		}
 		else if ( navigator.platform === 'Linux x86_64' ) {
