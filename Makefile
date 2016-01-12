@@ -26,7 +26,7 @@ CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* 
 
 # check for secret
 secret:
-	test -s $(THIS_DIR)/calypso/config/secrets.json || { echo "calypso/config/secrets.json not found. Required file, see docs/secrets.md"; exit 1; }
+	@test -s $(THIS_DIR)/calypso/config/secrets.json || { echo "calypso/config/secrets.json not found. Required file, see docs/secrets.md"; exit 1; }
 
 # Just runs Electron with whatever version of Calypso exists
 run: config-dev build-if-changed
