@@ -9,7 +9,7 @@ const debug = require( 'debug' )( 'desktop:server' );
 /**
  * Internal dependencies
  */
-const Config = require( './config' );
+const Config = require( '../config' );
 
 function showFailure( app ) {
 	const dialog = require( 'dialog' );
