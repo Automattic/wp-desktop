@@ -2,7 +2,7 @@ THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
 
 NPM ?= $(NODE) $(shell which npm)
-NPM_BIN = @$(shell npm bin)
+NPM_BIN = $(shell npm bin)
 
 RED=`tput setaf 1`
 RESET=`tput sgr0`
@@ -107,6 +107,9 @@ config-release: install secret
 config-mas: install secret
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-mac-app-store.json > $(CONFIG)
 
+config-test: install secret
+	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-test.json > $(CONFIG)
+
 config-updater: install secret
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-updater.json > $(CONFIG)
 
@@ -126,4 +129,8 @@ lint: node_modules/eslint node_modules/eslint-plugin-react node_modules/babel-es
 
 eslint: lint
 
-.PHONY: run
+# Testing
+test: config-test
+	@ELECTRON_PATH=$(NPM_BIN)/electron $(NPM_BIN)/electron-mocha --inline-diffs --timeout 5000 desktop/test
+
+.PHONY: run test
