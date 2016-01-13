@@ -30,6 +30,8 @@ function startServer() {
 	var http = require( 'http' );
 	var server = http.createServer( boot() );
 
+	debug( 'Server created, binding to ' + Config.server_port );
+
 	server.listen( Config.server_port, Config.server_host );
 }
 
@@ -44,8 +46,10 @@ module.exports = {
 				return;
 			}
 
-			debug( 'Server started' );
+			debug( 'Starting server' );
 			startServer();
+
+			debug( 'Server started, passing back to app' );
 			running_cb();
 		} );
 	}

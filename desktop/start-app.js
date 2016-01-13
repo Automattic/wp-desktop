@@ -52,9 +52,15 @@ function runApp() {
 }
 
 module.exports = function( started_cb ) {
+	debug( 'Checking for other instances' );
+
 	if ( appInstance.isSingleInstance() ) {
+		debug( 'No other instances, waiting for app ready' );
+
 		// Start the app window
 		app.on( 'ready', function() {
+			debug( 'App is ready, starting server' );
+
 			server.start( app, function() {
 				started_cb( runApp() );
 			} );
