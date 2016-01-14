@@ -31,6 +31,7 @@ var opts = {
 	icon: builder.getIconFile( process.argv ),
 	'app-bundle-id': config.bundleId,
 	'helper-bundle-id': config.bundleId,
+	'app-category-type': 'public.app-category.social-networking',
 	'app-version': config.version,
 	'build-version': config.version,
 	ignore: require( './resource/build-config/calypso-ignore' ),
@@ -75,9 +76,12 @@ opts.ignore = opts.ignore.concat( whitelistInDirectory( './calypso/client', [ 's
 opts.ignore = opts.ignore.concat( whitelistInDirectory( './', [ 'calypso', 'desktop', 'public_desktop', 'node_modules', 'package.json' ] ) );
 
 builder.beforeBuild( __dirname, opts, function( error ) {
-	if ( error ) throw error;
-	packager( opts, function( error ) {
-		if ( error ) {
+	if ( error ) {
+		throw error;
+	}
+
+	packager( opts, function( err ) {
+		if ( err ) {
 			console.log( error );
 		} else {
 			builder.cleanUp( path.join( __dirname, 'release' ), opts );

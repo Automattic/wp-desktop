@@ -11,7 +11,7 @@ START_APP := $(NPM_BIN)/electron .
 ELECTRON_TEST := ELECTRON_PATH=$(NPM_BIN)/electron $(NPM_BIN)/electron-mocha
 CONFIG := $(THIS_DIR)/desktop/config.json
 DESKTOP_CONFIG := $(THIS_DIR)/desktop-config
-BUILDER := $(THIS_DIR)/build.js
+BUILDER := $(THIS_DIR)/builder.js
 BUILD_CONFIG := $(THIS_DIR)/resource/build-scripts/build-config-file.js
 PACKAGE_MAS := $(THIS_DIR)/resource/build-scripts/package-mas.js
 PACKAGE_DMG := $(THIS_DIR)/resource/build-scripts/package-dmg.js
