@@ -8,6 +8,7 @@ RED=`tput setaf 1`
 RESET=`tput sgr0`
 
 START_APP := $(NPM_BIN)/electron .
+ELECTRON_TEST := ELECTRON_PATH=$(NPM_BIN)/electron $(NPM_BIN)/electron-mocha
 CONFIG := $(THIS_DIR)/desktop/config.json
 DESKTOP_CONFIG := $(THIS_DIR)/desktop-config
 BUILDER := $(THIS_DIR)/build.js
@@ -131,6 +132,13 @@ eslint: lint
 
 # Testing
 test: config-test
-	@ELECTRON_PATH=$(NPM_BIN)/electron $(NPM_BIN)/electron-mocha --inline-diffs --timeout 5000 desktop/test
+	@$(ELECTRON_TEST) --inline-diffs --timeout 5000 desktop/test
+
+test-osx: osx
+	@rm -rf ./release/WordPress.com-darwin-x64-unpacked
+	@$(NPM_BIN)/asar e ./release/WordPress.com-darwin-x64/WordPress.com.app/Contents/Resources/app.asar ./release/WordPress.com-darwin-x64-unpacked
+	@mkdir ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha
+	@cp -R ./node_modules/electron-mocha ./release/WordPress.com-darwin-x64-unpacked/node_modules/
+	@NODE_PATH=./release/WordPress.com-darwin-x64-unpackaged/node_modules ELECTRON_PATH=$(NPM_BIN)/electron ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha/bin/electron-mocha --inline-diffs --timeout 5000 ./resource/test/osx.js
 
 .PHONY: run test

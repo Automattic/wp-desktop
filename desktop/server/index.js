@@ -39,7 +39,7 @@ function showAppWindow() {
 	} );
 
 	mainWindow.loadURL( appUrl );
-	mainWindow.openDevTools();
+	//mainWindow.openDevTools();
 
 	mainWindow.on( 'closed', function() {
 		debug( 'Window closed' );
