@@ -32,6 +32,8 @@ The final stage takes a released version and [packages it in a platform specific
 If this sparks your interest don't hesitate to send a pull request, send a suggestion, file a bug, or just ask a question. Don't forget
 to check out our [CONTRIBUTING](CONTRIBUTING.md) doc.
 
+Do be aware that this repository is just for the WordPress.com desktop wrapper. If you have something to contribute for Calypso (the app that runs inside of the desktop wrapper and on WordPress.com) then please add it in the [Calypso](https://github.com/Automattic/wp-calypso) repository.
+
 # Troubleshooting
 
 If you have any problems running the app please see the [most common issues](docs/troubleshooting.md).
