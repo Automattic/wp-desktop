@@ -150,6 +150,10 @@ try {
 	gGebug = electron.remote.require( 'debug' );
 	desktop = electron.remote.getGlobal( 'desktop' );
 	webFrame = electron.webFrame;
+
+	ipc.on( 'is-calypso', function() {
+		ipc.send( 'is-calypso-response', document.getElementById( 'wpcom' ) !== null );
+	} );
 } catch ( e ) {
 	debug( 'Failed to initialize calypso', e );
 }

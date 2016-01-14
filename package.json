@@ -22,8 +22,11 @@
     "appdmg": "^0.3.4"
   },
   "devDependencies": {
+    "asar": "^0.9.0",
     "babel-eslint": "^4.1.6",
+    "chai": "^3.4.1",
     "electron-builder": "^2.4.0",
+    "electron-mocha": "^0.7.0",
     "electron-packager": "git://github.com/mawie81/electron-packager#mas-support",
     "electron-prebuilt": "^0.36.3",
     "eslint": "^1.7.2",

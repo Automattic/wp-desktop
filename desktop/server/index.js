@@ -23,7 +23,7 @@ const platform = require( 'lib/platform' );
  */
 var mainWindow = null;
 
-function runApp() {
+function showAppWindow() {
 	const appUrl = Config.server_url + ':' + Config.server_port;
 
 	debug( 'Starting app on ' + appUrl );
@@ -51,13 +51,29 @@ function runApp() {
 	return mainWindow;
 }
 
+function startApp( started_cb ) {
+	debug( 'App is ready, starting server' );
+
+	server.start( app, function() {
+		started_cb( showAppWindow() );
+	} );
+}
+
 module.exports = function( started_cb ) {
+	debug( 'Checking for other instances' );
+
 	if ( appInstance.isSingleInstance() ) {
+		const boot = function() {
+			startApp( started_cb );
+		};
+
+		debug( 'No other instances, waiting for app ready' );
+
 		// Start the app window
-		app.on( 'ready', function() {
-			server.start( app, function() {
-				started_cb( runApp() );
-			} );
-		} );
+		if ( app.isReady() ) {
+			boot();
+		} else {
+			app.on( 'ready', boot );
+		}
 	}
 };

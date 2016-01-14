@@ -2,15 +2,16 @@ THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
 
 NPM ?= $(NODE) $(shell which npm)
-NPM_BIN = @$(shell npm bin)
+NPM_BIN = $(shell npm bin)
 
 RED=`tput setaf 1`
 RESET=`tput sgr0`
 
 START_APP := $(NPM_BIN)/electron .
+ELECTRON_TEST := ELECTRON_PATH=$(NPM_BIN)/electron $(NPM_BIN)/electron-mocha
 CONFIG := $(THIS_DIR)/desktop/config.json
 DESKTOP_CONFIG := $(THIS_DIR)/desktop-config
-BUILDER := $(THIS_DIR)/build.js
+BUILDER := $(THIS_DIR)/builder.js
 BUILD_CONFIG := $(THIS_DIR)/resource/build-scripts/build-config-file.js
 PACKAGE_MAS := $(THIS_DIR)/resource/build-scripts/package-mas.js
 PACKAGE_DMG := $(THIS_DIR)/resource/build-scripts/package-dmg.js
@@ -107,6 +108,9 @@ config-release: install secret
 config-mas: install secret
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-mac-app-store.json > $(CONFIG)
 
+config-test: install secret
+	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-test.json > $(CONFIG)
+
 config-updater: install secret
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-updater.json > $(CONFIG)
 
@@ -126,4 +130,15 @@ lint: node_modules/eslint node_modules/eslint-plugin-react node_modules/babel-es
 
 eslint: lint
 
-.PHONY: run
+# Testing
+test: config-test
+	@$(ELECTRON_TEST) --inline-diffs --timeout 5000 desktop/test
+
+test-osx: osx
+	@rm -rf ./release/WordPress.com-darwin-x64-unpacked
+	@$(NPM_BIN)/asar e ./release/WordPress.com-darwin-x64/WordPress.com.app/Contents/Resources/app.asar ./release/WordPress.com-darwin-x64-unpacked
+	@mkdir ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha
+	@cp -R ./node_modules/electron-mocha ./release/WordPress.com-darwin-x64-unpacked/node_modules/
+	@NODE_PATH=./release/WordPress.com-darwin-x64-unpackaged/node_modules ELECTRON_PATH=$(NPM_BIN)/electron ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha/bin/electron-mocha --inline-diffs --timeout 5000 ./resource/test/osx.js
+
+.PHONY: run test
