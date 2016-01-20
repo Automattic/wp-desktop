@@ -45,7 +45,7 @@ function startServer( app, startedCallback ) {
 	debug( 'Loading server from file: ' + appFile );
 
 	calypso = fork( appFile, [], {
-		silent: true,
+		silent: true, // For access to std(out|err)
 		cwd: path.resolve( process.cwd(), 'calypso' ), // Force working directory to calypso root
 		env: env
 	} );
