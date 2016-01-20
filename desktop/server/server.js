@@ -56,15 +56,16 @@ function startServer( app, startedCallback ) {
 			return;
 		}
 
+		debug( 'Did not get boot signal from Calypso; exiting.' );
 		showFailure( app );
-		calypso.kill();
+		killServer();
 	}, BOOT_TIMEOUT );
 
 	calypso.on( 'message', function( message ) {
 		// We need to wait until the server has booted.
 		// Wait until we get the signal.
 		if ( message.boot && message.boot === 'ready' ) {
-			debug( 'Server booted...' );
+			debug( 'Yay! Server booted!' );
 			didBoot = true;
 			startedCallback();
 		}
@@ -82,6 +83,19 @@ function startServer( app, startedCallback ) {
 	calypso.on( 'close', function( code, signal ) {
 		debug( 'app.close with code: ' + ( code ? code : 0 ) + ' (' + signal + ')' );
 	} );
+
+	calypso.on( 'exit', function( code, signal ) {
+		debug( 'app.exit with code: ' + ( code ? code : 0 ) + ' (' + signal + ')' );
+	} );
+}
+
+function killServer() {
+	if ( calypso ) {
+		debug( 'Killing server' );
+		calypso.kill();
+		calypso = null;
+		didBoot = false;
+	}
 }
 
 module.exports = {
@@ -97,5 +111,6 @@ module.exports = {
 
 			startServer( app, startedCallback );
 		} );
-	}
+	},
+	kill: killServer
 };
