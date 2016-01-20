@@ -59,8 +59,8 @@ function startServer( startedCallback ) {
 		debug( 'app.stderr: ' + data );
 	} );
 
-	app.on( 'close', function( code ) {
-		debug( 'app.close with code: ' + code );
+	app.on( 'close', function( code, signal ) {
+		debug( 'app.close with code: ' + ( code ? code : 0 ) + ' (' + signal + ')' );
 	} );
 }
 
