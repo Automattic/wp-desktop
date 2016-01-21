@@ -11,6 +11,7 @@ var path = require( 'path' );
 var builder = require( './resource/lib/tools' );
 var config = require( './resource/lib/config' );
 var pkg = require( './package.json' );
+var pkgCalypso = require( './calypso/package.json' );
 
 /**
  * Module variables
@@ -63,16 +64,23 @@ function whitelistInDirectory( directory, whitelist ) {
 	return ignore;
 }
 
-// Ignore all dev dependencies
-for ( key in pkg.devDependencies ) {
-	opts.ignore.push( 'node_modules/' + key );
+function ignoreDeps( package, prefix ) {
+
+	// Ignore all dev dependencies
+	for ( key in package.devDependencies ) {
+		opts.ignore.push( prefix + 'node_modules/' + key );
+	}
+
+	for ( key in package.optionalDependencies ) {
+		opts.ignore.push( prefix + 'node_modules/' + key );
+	}
 }
 
-for ( key in pkg.optionalDependencies ) {
-	opts.ignore.push( 'node_modules/' + key );
-}
+ignoreDeps( pkg, '' );
+ignoreDeps( pkgCalypso, 'calypso/' );
 
 opts.ignore = opts.ignore.concat( whitelistInDirectory( './calypso/client', [ 'sections.js', 'config' ] ) );
+opts.ignore = opts.ignore.concat( whitelistInDirectory( './calypso/build', [ 'bundle-desktop.js' ] ) );
 opts.ignore = opts.ignore.concat( whitelistInDirectory( './', [ 'calypso', 'desktop', 'public_desktop', 'node_modules', 'package.json' ] ) );
 
 builder.beforeBuild( __dirname, opts, function( error ) {
