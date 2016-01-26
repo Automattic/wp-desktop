@@ -7,7 +7,7 @@ NPM_BIN = $(shell npm bin)
 RED=`tput setaf 1`
 RESET=`tput sgr0`
 
-START_APP := $(NPM_BIN)/electron .
+START_APP := @$(NPM_BIN)/electron .
 ELECTRON_TEST := ELECTRON_PATH=$(NPM_BIN)/electron $(NPM_BIN)/electron-mocha
 CONFIG := $(THIS_DIR)/desktop/config.json
 DESKTOP_CONFIG := $(THIS_DIR)/desktop-config
