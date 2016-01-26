@@ -20,7 +20,7 @@ CERT_SPC := $(THIS_DIR)/resource/secrets/automattic-code.spc
 CERT_PVK := $(THIS_DIR)/resource/secrets/automattic-code.pvk
 CALYPSO_DIR := $(THIS_DIR)/calypso
 CALYPSO_JS_STD := $(CALYPSO_DIR)/public/build-desktop.js
-CALYPSO_JS_MAS := $(CALYPSO_DIR)/public/build-desktop.js
+CALYPSO_JS_MAS := $(CALYPSO_DIR)/public/build-desktop-mac-app-store.js
 CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_CHANGES_MAS := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_MAS)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
@@ -36,7 +36,7 @@ run: config-dev build-if-changed
 run-release: config-release build-if-changed
 	$(START_APP)
 
-run-mas: config-mas build-if-changed
+run-mas: config-mas build-mas-if-changed
 	$(START_APP)
 
 # Builds Calypso (desktop)
