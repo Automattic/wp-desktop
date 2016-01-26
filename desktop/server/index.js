@@ -26,7 +26,7 @@ var mainWindow = null;
 function showAppWindow() {
 	const appUrl = Config.server_url + ':' + Config.server_port;
 
-	debug( 'Starting app on ' + appUrl );
+	debug( 'Loading app (' + appUrl + ') in mainWindow' );
 
 	mainWindow = new BrowserWindow( Settings.getSettingGroup( Config.mainWindow, 'window', [ 'x', 'y', 'width', 'height' ] ) );
 
@@ -44,6 +44,7 @@ function showAppWindow() {
 	mainWindow.on( 'closed', function() {
 		debug( 'Window closed' );
 		mainWindow = null;
+		server.kill();
 	} );
 
 	platform.setMainWindow( mainWindow );
