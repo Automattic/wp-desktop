@@ -35,7 +35,8 @@ function showFailure( app ) {
 }
 
 function startServer( app, startedCallback ) {
-	let appFile = path.resolve( process.cwd(), 'calypso', 'build', 'bundle-desktop.js' ),
+	let appDir = path.join( __dirname, '..', '..', 'calypso' ),
+		appFile = path.join( appDir, 'build', 'bundle-desktop.js' ),
 		env = Object.create( process.env );
 
 	env.PORT = Config.server_port;
@@ -46,7 +47,7 @@ function startServer( app, startedCallback ) {
 
 	calypso = fork( appFile, [], {
 		silent: true, // For access to std(out|err)
-		cwd: path.resolve( process.cwd(), 'calypso' ), // Force working directory to calypso root
+		cwd: appDir, // Force working directory to calypso root
 		env: env
 	} );
 
@@ -73,7 +74,7 @@ function startServer( app, startedCallback ) {
 
 	// Debug
 	calypso.stdout.on( 'data', function( data ) {
-		debug( 'app.stout: ' + data );
+		debug( 'app.stdout: ' + data );
 	} );
 
 	calypso.stderr.on( 'data', function( data ) {
