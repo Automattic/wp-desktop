@@ -90,6 +90,15 @@ function startDesktopApp() {
 		}
 	}
 
+	function preventScrollBounceOSX( e ) {
+		if (
+			( e.deltaY < 0 && document.body.scrollTop === 0 ) ||
+			( e.deltaY > 0 && document.body.scrollTop === document.body.scrollHeight - window.innerHeight )
+		) {
+			e.preventDefault()
+		}
+	}
+
 	debug = gGebug( 'desktop:browser' );
 
 	// Everything is ready, start Calypso
@@ -102,6 +111,10 @@ function startDesktopApp() {
 
 		document.addEventListener( 'keydown', keyboardHandler );
 		document.addEventListener( 'click', preventNewWindow );
+
+		if ( window.navigator.userAgent.indexOf( 'Macintosh' ) !== -1 ) {
+			document.body.addEventListener( 'mousewheel', preventScrollBounceOSX );
+		}
 	}
 
 	// This is called by Calypso
