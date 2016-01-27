@@ -18,7 +18,6 @@ const cookieAuth = require( 'lib/cookie-auth' );
 const appInstance = require( 'lib/app-instance' );
 const platform = require( 'lib/platform' );
 const System = require( 'lib/system' );
-const storeKit = require( 'lib/store-kit' );
 
 /**
  * Module variables
@@ -38,6 +37,14 @@ function showAppWindow() {
 
 	mainWindow.webContents.on( 'did-finish-load', function() {
 		mainWindow.webContents.send( 'app-config', Config, Settings.isDebug(), System.getDetails() );
+
+		if ( Config.isMacAppStore() ) {
+			const storeKit = require( 'lib/store-kit' );
+
+			storeKit.requestProducts( function ( firstProductTitle, productsCount, invalidProductCount ) {
+				mainWindow.webContents.send( 'in-app-purchase-products', firstProductTitle, productsCount, invalidProductCount );
+			} );
+		}
 	} );
 
 	mainWindow.loadURL( appUrl );
@@ -50,10 +57,6 @@ function showAppWindow() {
 	} );
 
 	platform.setMainWindow( mainWindow );
-
-	storeKit.requestProducts( function( firstProductTitle, productsCount, invalidProductCount ) {
-		mainWindow.webContents.send( 'store-kit-initialised', firstProductTitle, productsCount, invalidProductCount );
-	} );
 
 	return mainWindow;
 }

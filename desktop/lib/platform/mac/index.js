@@ -53,7 +53,7 @@ MacPlatform.prototype.restore = function() {
 	}
 
 	this.window.show();
-}
+};
 
 MacPlatform.prototype.showNotificationsBadge = function( count, bounceEnabled ) {
 	app.dock.setBadge( ' ' );
