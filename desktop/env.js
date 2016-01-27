@@ -22,8 +22,7 @@ const serverPath = path.resolve( path.join( __dirname, '..', 'calypso', 'server'
 const sharedPath = path.resolve( path.join( __dirname, '..', 'calypso', 'shared' ) );
 const desktopPath = path.resolve( path.join( __dirname ) );
 
-// todo should be config.calypso_config - but need Calypso server/desktop.jade to load the correct .js file
-process.env.CALYPSO_ENV = 'desktop';
+process.env.CALYPSO_ENV = config.calypso_config;
 
 // If debug is enabled then setup the debug target
 if ( Settings.isDebug() ) {
