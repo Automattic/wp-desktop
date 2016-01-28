@@ -17,17 +17,26 @@ const Config = require( '../config' );
  * Module variables
  */
 const BOOT_TIMEOUT = 10000;
+const ERROR_TIMEOUT = 1;
+const ERROR_EXITEARLY = 2;
+
 let didBoot = false;
 let calypso = null;
 
-function showFailure( app ) {
+function showFailure( app, error, code ) {
 	const dialog = require( 'dialog' );
+	let detail = 'Sorry but we failed to start the app. Are you running another copy of it?';
+
+	detail += '\n\nError code = 000' + error;
+	if ( error === ERROR_EXITEARLY ) {
+		detail += ' (' + code + ')';
+	}
 
 	dialog.showMessageBox( {
 		type: 'warning',
 		title: 'WordPress',
 		message: 'Failed to start the app',
-		detail: 'Sorry but we failed to start the app. Are you running another copy of it?',
+		detail: detail,
 		buttons: [ 'Quit' ]
 	}, function() {
 		app.quit();
@@ -37,6 +46,7 @@ function showFailure( app ) {
 function startServer( app, startedCallback ) {
 	let appDir = path.join( __dirname, '..', '..', 'calypso' ),
 		appFile = path.join( appDir, 'build', 'bundle-desktop.js' ),
+		timer,
 		env = Object.create( process.env );
 
 	env.PORT = Config.server_port;
@@ -52,13 +62,14 @@ function startServer( app, startedCallback ) {
 	} );
 
 	// If Calypso fails to start for some reason, show an error.
-	setTimeout( function() {
+	timer = setTimeout( function() {
 		if ( didBoot ) {
+			debug( 'App started' );
 			return;
 		}
 
 		debug( 'Did not get boot signal from Calypso; exiting.' );
-		showFailure( app );
+		showFailure( app, ERROR_TIMEOUT );
 		killServer();
 	}, BOOT_TIMEOUT );
 
@@ -81,12 +92,22 @@ function startServer( app, startedCallback ) {
 		debug( 'app.stderr: ' + data );
 	} );
 
+	calypso.on( 'error', function( err ) {
+		debug( 'app.error with ', err );
+	} );
+
 	calypso.on( 'close', function( code, signal ) {
 		debug( 'app.close with code: ' + ( code ? code : 0 ) + ' (' + signal + ')' );
 	} );
 
 	calypso.on( 'exit', function( code, signal ) {
 		debug( 'app.exit with code: ' + ( code ? code : 0 ) + ' (' + signal + ')' );
+
+		if ( !didBoot ) {
+			clearTimeout( timer );
+			showFailure( app, ERROR_EXITEARLY, code );
+			killServer();
+		}
 	} );
 }
 
