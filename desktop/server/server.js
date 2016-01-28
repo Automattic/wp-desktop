@@ -24,7 +24,7 @@ let didBoot = false;
 let calypso = null;
 
 function showFailure( app, error, code ) {
-	const dialog = require( 'dialog' );
+	const dialog = require( 'electron' ).dialog;
 	let detail = 'Sorry but we failed to start the app. Are you running another copy of it?';
 
 	detail += '\n\nError code = 000' + error;
@@ -103,7 +103,7 @@ function startServer( app, startedCallback ) {
 	calypso.on( 'exit', function( code, signal ) {
 		debug( 'app.exit with code: ' + ( code ? code : 0 ) + ' (' + signal + ')' );
 
-		if ( !didBoot ) {
+		if ( !didBoot && code ) {
 			clearTimeout( timer );
 			showFailure( app, ERROR_EXITEARLY, code );
 			killServer();
