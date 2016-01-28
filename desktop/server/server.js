@@ -35,7 +35,7 @@ function showFailure( app ) {
 }
 
 function startServer( app, startedCallback ) {
-	let appFile = path.resolve( process.cwd(), 'calypso', 'build', 'bundle-desktop.js' ),
+	let appFile = path.resolve( process.cwd(), 'calypso', 'build', `bundle-${ Config.calypso_config }.js` ),
 		env = Object.create( process.env );
 
 	env.PORT = Config.server_port;
