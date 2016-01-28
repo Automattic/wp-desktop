@@ -11,6 +11,8 @@ const debug = require( 'debug' )( 'desktop:system' );
 /**
  * Internal dependencies
  */
+
+const SettingsFile = require( 'lib/settings/settings-file' );
 const APPS_DIRECTORY = '/Applications';
 
 function isPinned() {
@@ -36,12 +38,17 @@ function isInstalled() {
 	return false;
 }
 
+function isFirstRun() {
+	return SettingsFile.isFirstRun();
+}
+
 module.exports = {
 	getDetails: function() {
 		let details = {
 			pinned: isPinned(),
 			platform: Platform.getPlatformString(),
-			installed: isInstalled()
+			installed: isInstalled(),
+			firstRun: isFirstRun()
 		}
 
 		debug( 'System details: ', details );

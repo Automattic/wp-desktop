@@ -12,6 +12,8 @@ const fs = require( 'fs' );
  */
 const Config = require( '../config' );
 
+let firstRun = false;
+
 function getSettingsFile() {
 	return path.join( app.getPath( 'userData' ), Config.settings_filename );
 }
@@ -24,6 +26,7 @@ module.exports = {
 			return JSON.parse( fs.readFileSync( settingsFile ) );
 		}
 
+		firstRun = true;
 		return {};
 	},
 
@@ -54,5 +57,9 @@ module.exports = {
 		}
 
 		return data;
+	},
+
+	isFirstRun: function() {
+		return firstRun;
 	}
 }
