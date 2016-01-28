@@ -50,7 +50,7 @@ function startServer( app, startedCallback ) {
 		env = Object.create( process.env );
 
 	env.PORT = Config.server_port;
-	env.NODE_PATH = 'server:client:.'; // Necessary for commonjs require paths
+	env.NODE_PATH = [ 'server', 'client', '.' ].join( path.delimiter );   // Calypso require paths
 	env.CALYPSO_IS_FORK = 1;
 
 	debug( 'Loading server from file: ' + appFile );
