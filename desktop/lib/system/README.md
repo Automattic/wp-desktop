@@ -13,3 +13,5 @@ Where:
 - `installed` - true if app is installed, false otherwise (OS X only, other platforms return true)
 
 - `platform` - returns `windows`, `darwin`, or `linux`
+
+- `firstRun` - returns true if this is the first time the app has run, false otherwise
