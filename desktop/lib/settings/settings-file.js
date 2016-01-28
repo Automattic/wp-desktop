@@ -18,6 +18,11 @@ function getSettingsFile() {
 	return path.join( app.getPath( 'userData' ), Config.settings_filename );
 }
 
+function createSettingsFile( settingsFile ) {
+	// Create the file
+	fs.writeFileSync( settingsFile, JSON.stringify( Config.default_settings ) );
+}
+
 module.exports = {
 	load: function() {
 		const settingsFile = getSettingsFile();
@@ -27,6 +32,7 @@ module.exports = {
 		}
 
 		firstRun = true;
+		createSettingsFile( getSettingsFile() );
 		return {};
 	},
 
@@ -37,9 +43,7 @@ module.exports = {
 
 		try {
 			if ( !fs.existsSync( settingsFile ) ) {
-				// Create the file
-				debug( 'Creating settings file: ' + settingsFile );
-				fs.writeFileSync( settingsFile, JSON.stringify( Config.default_settings ) );
+				createSettingsFile( settingsFile );
 			}
 
 			// Read the existing settings
