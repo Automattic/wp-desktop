@@ -27,7 +27,7 @@ So what happens when you `make run`? It's a fairly complicated process so buckle
 - *(renderer)* Calypso provides the 'index' page from `calypso/server/pages/desktop.jade`, which is a standard Calypso start page plus:
   - `public_desktop/wordpress-desktop.css` - any CSS specific to the desktop app
   - `public_desktop/desktop-app.js` - desktop app specific JS and also the Calypso boot code
-  - `calypso/public/build-desktop.js` - a prebuilt Calypso
+  - `calypso/public/build.js` - a prebuilt Calypso
 - *(renderer)* The `desktop-app.js` code runs which sets up various app specific handlers that need to be inside the renderer. It also starts Calypso with `AppBoot()`
 - *(renderer)* The code in `calypso/client/lib/desktop` runs to send and receive IPC messages between the main process and Calypso.
 

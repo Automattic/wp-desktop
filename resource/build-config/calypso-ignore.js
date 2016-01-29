@@ -43,6 +43,7 @@ module.exports = [
 	'node_modules/.bin',
 	'calypso/public/style-debug.css',
 	'calypso/public/style-debug.map',
+	'calypso/public/build-desktop.js',
 	'calypso/public/build-desktop.min.js',
 	'calypso/public/build-logged-out-desktop.js',
 	'calypso/public/build-logged-out-desktop.min.js',

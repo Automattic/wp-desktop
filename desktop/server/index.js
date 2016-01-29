@@ -17,6 +17,7 @@ const Settings = require( 'lib/settings' );
 const cookieAuth = require( 'lib/cookie-auth' );
 const appInstance = require( 'lib/app-instance' );
 const platform = require( 'lib/platform' );
+const System = require( 'lib/system' );
 
 /**
  * Module variables
@@ -35,7 +36,7 @@ function showAppWindow() {
 	} );
 
 	mainWindow.webContents.on( 'did-finish-load', function() {
-		mainWindow.webContents.send( 'app-config', Config, Settings.isDebug() );
+		mainWindow.webContents.send( 'app-config', Config, Settings.isDebug(), System.getDetails() );
 	} );
 
 	mainWindow.loadURL( appUrl );

@@ -19,8 +19,9 @@ PACKAGE_WIN32 := @$(NPM_BIN)/electron-builder
 CERT_SPC := $(THIS_DIR)/resource/secrets/automattic-code.spc
 CERT_PVK := $(THIS_DIR)/resource/secrets/automattic-code.pvk
 CALYPSO_DIR := $(THIS_DIR)/calypso
+CALYPSO_JS := $(CALYPSO_DIR)/public/build.js
 CALYPSO_JS_STD := $(CALYPSO_DIR)/public/build-desktop.js
-CALYPSO_JS_MAS := $(CALYPSO_DIR)/public/build-desktop.js
+CALYPSO_JS_MAS := $(CALYPSO_DIR)/public/build-desktop-mac-app-store.js
 CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_CHANGES_MAS := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_MAS)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
@@ -33,12 +34,15 @@ secret:
 
 # Just runs Electron with whatever version of Calypso exists
 run: config-dev build-if-changed
+	@cp $(CALYPSO_JS_STD) $(CALYPSO_JS)
 	$(START_APP)
 
 run-release: config-release build-if-changed
+	@cp $(CALYPSO_JS_STD) $(CALYPSO_JS)
 	$(START_APP)
 
-run-mas: config-mas build-if-changed
+run-mas: config-mas build-mas-if-changed
+	@cp $(CALYPSO_JS_MAS) $(CALYPSO_JS)
 	$(START_APP)
 
 # Builds Calypso (desktop)
@@ -58,10 +62,9 @@ build-mas: install
 	@echo "Building Calypso (Mac App Store on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
 	@CALYPSO_ENV=desktop-mac-app-store make build -C $(THIS_DIR)/calypso/
 	@rm $(THIS_DIR)/calypso/public/devmodules.*
-	@cp $(CALYPSO_JS_MAS) $(CALYPSO_JS_STD)
 
 build-mas-if-not-exists:
-	@if [ -f $(CALYPSO_JS_MAS) ]; then true; else make build; fi
+	@if [ -f $(CALYPSO_JS_MAS) ]; then true; else make build-mas; fi
 
 build-mas-if-changed: build-mas-if-not-exists
 	@if [ $(CALYPSO_CHANGES_MAS) -eq 0 ]; then true; else make build-mas; fi;
