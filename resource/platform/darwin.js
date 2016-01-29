@@ -4,7 +4,7 @@
  */
 var path = require( 'path' );
 var exec = require( 'child_process' ).execSync;
-var fs = require( 'fs' );
+var fs = require( 'fs-extra' );
 var spellchecker = require( '../lib/spellchecker' )
 
 /**
@@ -46,6 +46,11 @@ function cleanBuild( appPath, buildOpts ) {
 
 	console.log( ' - Removing default app' );
 	builder.rmdir( app.getResourcesPath( 'default_app' ) );
+
+	console.log( ' - Copying pruned node_modules' );
+
+	fs.removeSync( app.getResourcesPath( 'app/calypso/node_modules' ) );
+	fs.copySync( path.join( appPath, '..', 'node_modules' ), app.getResourcesPath( 'app/calypso/node_modules' ) );
 
 	if ( buildOpts.platform !== 'mas' ) {
 		console.log( ' - Signing app' );
