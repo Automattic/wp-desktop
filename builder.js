@@ -38,6 +38,7 @@ var opts = {
 	ignore: require( './resource/build-config/calypso-ignore' ),
 	overwrite: true,
 	asar: false,
+	prune: true,
 	sign: false,
 	'version-string': {
 		CompanyName: config.author,
@@ -65,7 +66,6 @@ function whitelistInDirectory( directory, whitelist ) {
 }
 
 function ignoreDeps( package, prefix ) {
-
 	// Ignore all dev dependencies
 	for ( key in package.devDependencies ) {
 		opts.ignore.push( prefix + 'node_modules/' + key );
@@ -81,6 +81,7 @@ ignoreDeps( pkgCalypso, 'calypso/' );
 
 opts.ignore = opts.ignore.concat( whitelistInDirectory( './calypso/client', [ 'sections.js', 'config' ] ) );
 opts.ignore = opts.ignore.concat( whitelistInDirectory( './calypso/build', [ 'bundle-desktop.js' ] ) );
+opts.ignore = opts.ignore.concat( whitelistInDirectory( './calypso/public', [ 'fonts', 'images', 'tinymce', 'build.js', 'editor.css', 'style-rtl.css', 'style.css' ] ) );
 opts.ignore = opts.ignore.concat( whitelistInDirectory( './', [ 'calypso', 'desktop', 'public_desktop', 'node_modules', 'package.json' ] ) );
 
 builder.beforeBuild( __dirname, opts, function( error ) {
