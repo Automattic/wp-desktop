@@ -52,6 +52,7 @@ function startServer( app, startedCallback ) {
 	env.PORT = Config.server_port;
 	env.NODE_PATH = [ 'server', 'client', '.' ].join( path.delimiter );   // Calypso require paths
 	env.CALYPSO_IS_FORK = 1;
+	env.ELECTRON_NO_ATTACH_CONSOLE = 1;
 
 	debug( 'Loading server from file: ' + appFile );
 
