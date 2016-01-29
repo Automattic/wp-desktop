@@ -131,7 +131,7 @@ node_modules: package.json
 	@$(NPM) install
 	@touch node_modules
 
-package_modules: release/package.json
+package_modules: package.json
 	@cp resource/build-config/calypso.json release/package.json
 	@cd release; npm install
 	@touch release/node_modules
