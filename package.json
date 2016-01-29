@@ -40,10 +40,7 @@
     "unzip": "^0.1.11"
   },
   "dependencies": {
-    "cookie": "^0.2.2",
-    "cookie-parser": "^1.4.0",
     "debug": "^2.2.0",
-    "lodash": "^3.10.1",
     "lodash.debounce": "^3.1.1",
     "portscanner": "^1.0.0",
     "spellchecker": "^3.1.3",
