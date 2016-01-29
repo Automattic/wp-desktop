@@ -17,17 +17,26 @@ const Config = require( '../config' );
  * Module variables
  */
 const BOOT_TIMEOUT = 10000;
+const ERROR_TIMEOUT = 1;
+const ERROR_EXITEARLY = 2;
+
 let didBoot = false;
 let calypso = null;
 
-function showFailure( app ) {
-	const dialog = require( 'dialog' );
+function showFailure( app, error, code ) {
+	const dialog = require( 'electron' ).dialog;
+	let detail = 'Sorry but we failed to start the app. Are you running another copy of it?';
+
+	detail += '\n\nError code = 000' + error;
+	if ( error === ERROR_EXITEARLY ) {
+		detail += ' (' + code + ')';
+	}
 
 	dialog.showMessageBox( {
 		type: 'warning',
 		title: 'WordPress',
 		message: 'Failed to start the app',
-		detail: 'Sorry but we failed to start the app. Are you running another copy of it?',
+		detail: detail,
 		buttons: [ 'Quit' ]
 	}, function() {
 		app.quit();
@@ -35,29 +44,33 @@ function showFailure( app ) {
 }
 
 function startServer( app, startedCallback ) {
-	let appFile = path.resolve( process.cwd(), 'calypso', 'build', `bundle-${ Config.calypso_config }.js` ),
+	let appDir = path.join( __dirname, '..', '..', 'calypso' ),
+		appFile = path.join( appDir, 'build', 'bundle-desktop.js' ),
+		timer,
 		env = Object.create( process.env );
 
 	env.PORT = Config.server_port;
-	env.NODE_PATH = 'server:client:.'; // Necessary for commonjs require paths
+	env.NODE_PATH = [ 'server', 'client', '.' ].join( path.delimiter );   // Calypso require paths
 	env.CALYPSO_IS_FORK = 1;
+	env.ELECTRON_NO_ATTACH_CONSOLE = 1;
 
 	debug( 'Loading server from file: ' + appFile );
 
 	calypso = fork( appFile, [], {
 		silent: true, // For access to std(out|err)
-		cwd: path.resolve( process.cwd(), 'calypso' ), // Force working directory to calypso root
+		cwd: appDir, // Force working directory to calypso root
 		env: env
 	} );
 
 	// If Calypso fails to start for some reason, show an error.
-	setTimeout( function() {
+	timer = setTimeout( function() {
 		if ( didBoot ) {
+			debug( 'App started' );
 			return;
 		}
 
 		debug( 'Did not get boot signal from Calypso; exiting.' );
-		showFailure( app );
+		showFailure( app, ERROR_TIMEOUT );
 		killServer();
 	}, BOOT_TIMEOUT );
 
@@ -73,11 +86,15 @@ function startServer( app, startedCallback ) {
 
 	// Debug
 	calypso.stdout.on( 'data', function( data ) {
-		debug( 'app.stout: ' + data );
+		debug( 'app.stdout: ' + data );
 	} );
 
 	calypso.stderr.on( 'data', function( data ) {
 		debug( 'app.stderr: ' + data );
+	} );
+
+	calypso.on( 'error', function( err ) {
+		debug( 'app.error with ', err );
 	} );
 
 	calypso.on( 'close', function( code, signal ) {
@@ -86,6 +103,12 @@ function startServer( app, startedCallback ) {
 
 	calypso.on( 'exit', function( code, signal ) {
 		debug( 'app.exit with code: ' + ( code ? code : 0 ) + ' (' + signal + ')' );
+
+		if ( !didBoot && code ) {
+			clearTimeout( timer );
+			showFailure( app, ERROR_EXITEARLY, code );
+			killServer();
+		}
 	} );
 }
 

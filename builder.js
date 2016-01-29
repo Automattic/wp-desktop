@@ -37,7 +37,7 @@ var opts = {
 	'build-version': config.version,
 	ignore: require( './resource/build-config/calypso-ignore' ),
 	overwrite: true,
-	asar: true,
+	asar: false,
 	sign: false,
 	'version-string': {
 		CompanyName: config.author,
