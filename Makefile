@@ -70,19 +70,19 @@ build-mas-if-changed: build-mas-if-not-exists
 	@if [ $(CALYPSO_CHANGES_MAS) -eq 0 ]; then true; else make build-mas; fi;
 
 # Build packages
-osx: config-release build-if-changed
+osx: package_modules config-release build-if-changed
 	@node $(BUILDER) darwin
 
-linux: config-release build-if-changed
+linux: package_modules config-release build-if-changed
 	@node $(BUILDER) linux
 
-win32: config-release build-if-changed
+win32: package_modules config-release build-if-changed
 	@node $(BUILDER) win32
 
-mas: config-mas build-mas-if-changed
+mas: package_modules config-mas build-mas-if-changed
 	@node $(BUILDER) mas
 
-updater: config-updater
+updater: package_modules config-updater
 	@node $(BUILDER) darwin
 
 # Packagers
@@ -130,6 +130,14 @@ node_modules: package.json
 	@$(NPM) prune
 	@$(NPM) install
 	@touch node_modules
+
+package_modules/%:
+	@$(NPM) --prefix=./release install $(notdir $@)
+
+package_modules: release/package.json
+	@cp resource/build-config/calypso.json release/package.json
+	@cd release; npm install
+	@touch release/node_modules
 
 lint: node_modules/eslint node_modules/eslint-plugin-react node_modules/babel-eslint
 	@$(NPM_BIN)/eslint ./desktop/
