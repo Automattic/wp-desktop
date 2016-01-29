@@ -27,6 +27,7 @@
 	  "chalk": "1.0.0",
 	  "marked": "0.3.5",
 	  "lunr": "0.5.7",
+      "source-map-support": "0.3.2",
 	  "body-parser": "^1.13.3"
   }
  }
