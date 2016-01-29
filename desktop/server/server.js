@@ -50,6 +50,7 @@ function startServer( app, startedCallback ) {
 		env = Object.create( process.env );
 
 	env.PORT = Config.server_port;
+	env.HOST = Config.server_host;
 	env.NODE_PATH = [ 'server', 'client', '.' ].join( path.delimiter );   // Calypso require paths
 	env.CALYPSO_IS_FORK = 1;
 	env.ELECTRON_NO_ATTACH_CONSOLE = 1;
