@@ -133,7 +133,7 @@ node_modules: package.json
 
 package_modules: package.json
 	@cp resource/build-config/calypso.json release/package.json
-	@cd release; npm install
+	@cd release; $(NPM) install; $(NPM) prune
 	@touch release/node_modules
 
 lint: node_modules/eslint node_modules/eslint-plugin-react node_modules/babel-eslint
