@@ -6,9 +6,7 @@
 const electron = require( 'electron' );
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
-const minimist = require( 'minimist' );
 const debug = require( 'debug' )( 'desktop:runapp' );
-const fs = require( 'fs' );
 
 /**
  * Internal dependencies
@@ -39,13 +37,7 @@ function showAppWindow() {
 
 	mainWindow.webContents.on( 'did-finish-load', function() {
 		mainWindow.webContents.send( 'app-config', Config, Settings.isDebug(), System.getDetails() );
-
-		let args = minimist( process.argv.slice( 2 ) );
-		if ( !args.content && args.file ) {
-			args.content = fs.readFileSync( args.file ).toString();
-		}
-
-		mainWindow.webContents.send( 'command-line-arguments', args );
+		appInstance.parseCommandLine( process.argv );
 	} );
 
 	mainWindow.loadURL( appUrl );
