@@ -37,6 +37,14 @@ function showAppWindow() {
 
 	mainWindow.webContents.on( 'did-finish-load', function() {
 		mainWindow.webContents.send( 'app-config', Config, Settings.isDebug(), System.getDetails() );
+
+		if ( Config.isMacAppStore() ) {
+			const storeKit = require( 'lib/store-kit' );
+
+			storeKit.requestProducts( function ( firstProductTitle, productsCount, invalidProductCount ) {
+				mainWindow.webContents.send( 'in-app-purchase-products', firstProductTitle, productsCount, invalidProductCount );
+			} );
+		}
 	} );
 
 	mainWindow.loadURL( appUrl );

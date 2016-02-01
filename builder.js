@@ -95,4 +95,4 @@ builder.beforeBuild( __dirname, opts, function( error ) {
 			builder.cleanUp( path.join( __dirname, 'release' ), opts );
 		}
 	} );
-} )
+} );

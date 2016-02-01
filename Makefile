@@ -58,7 +58,7 @@ build-if-changed: build-if-not-exists
 	@if [ $(CALYPSO_CHANGES_STD) -eq 0 ]; then true; else make build; fi;
 
 # Builds Calypso (Mac App Store)
-build-mas: install
+build-mas: install electron-rebuild
 	@echo "Building Calypso (Mac App Store on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
 	@CALYPSO_ENV=desktop-mac-app-store make build -C $(THIS_DIR)/calypso/
 	@rm $(THIS_DIR)/calypso/public/devmodules.*
@@ -130,6 +130,9 @@ node_modules: package.json
 	@$(NPM) prune
 	@$(NPM) install
 	@touch node_modules
+
+electron-rebuild:
+	@$(NPM_BIN)/electron-rebuild
 
 lint: node_modules/eslint node_modules/eslint-plugin-react node_modules/babel-eslint
 	@$(NPM_BIN)/eslint ./desktop/

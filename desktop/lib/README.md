@@ -15,4 +15,5 @@ The following libraries are available:
 - [Menu Setter](menu-setter/README.md)
 - [Platform](platform/README.md)
 - [Settings](settings/README.md)
+- [Store Kit](store-kit/README.md)
 - [Window Manager](window-manager/README.md)
