@@ -26,7 +26,7 @@ CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -nam
 CALYPSO_CHANGES_MAS := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_MAS)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 FLAT_MODULE_CHECK := $(THIS_DIR)/node_modules/glob
-FLAT_CALYPSO_CHECK := $(CALYPSO_DIR)/node_modules/glob
+FLAT_CALYPSO_CHECK := $(CALYPSO_DIR)/node_modules/atob
 
 # check for secrets.json
 secret:
