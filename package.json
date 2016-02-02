@@ -11,7 +11,8 @@
   "main": "desktop/index.js",
   "scripts": {
     "start": "make run",
-    "build": "make build"
+    "build": "make build",
+    "test" : "make test"
   },
   "keywords": [
     "desktop",
