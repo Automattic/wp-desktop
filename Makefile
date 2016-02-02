@@ -121,7 +121,7 @@ config-updater: install secret
 
 # NPM
 install: node_modules
-	@if [ -d $(FLAT_MODULE_CHECK) ] && [ -d $(FLAT_CALYPSO_CHECK) ]; then true; else echo "$(RED)You need to delete node_modules and calypso/node_modules and install again with NPM > 3$(RESET)"; exit 1; fi
+	#@if [ -d $(FLAT_MODULE_CHECK) ] && [ -d $(FLAT_CALYPSO_CHECK) ]; then true; else echo "$(RED)You need to delete node_modules and calypso/node_modules and install again with NPM > 3$(RESET)"; exit 1; fi
 
 node_modules/%:
 	@$(NPM) install $(notdir $@)
