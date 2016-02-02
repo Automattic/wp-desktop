@@ -28,7 +28,7 @@ CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* 
 FLAT_MODULE_CHECK := $(THIS_DIR)/node_modules/glob
 FLAT_CALYPSO_CHECK := $(CALYPSO_DIR)/node_modules/glob
 
-# check for secret
+# check for secrets.json
 secret:
 	@if [ ! -f $(THIS_DIR)/calypso/config/secrets1.json ]; then if [ -z "${CIRCLECI}" ]; then { echo "calypso/config/secrets.json not found. Required file, see docs/secrets.md"; exit 1; } fi; fi
 
