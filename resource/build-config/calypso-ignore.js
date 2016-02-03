@@ -10,6 +10,7 @@ module.exports = [
 	'.eslintignore',
 	'.jsfmtrc',
 	'.rtlcssrc',
+	'.npm-shrinkwrap.json',
 	'calypso/.env',
 	'calypso/.npmrc',
 	'calypso/assets',
