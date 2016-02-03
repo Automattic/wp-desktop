@@ -1,0 +1,15 @@
+machine:
+    mode:
+        version: 4.2.3
+
+# checkout
+checkout:
+    post:
+        - git submodule init
+        - git submodule update
+
+# pre-test
+dependencies:
+    pre:
+        - npm install
+        - make build
