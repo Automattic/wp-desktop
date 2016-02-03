@@ -27,7 +27,7 @@ CALYPSO_CHANGES_MAS := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_MAS)" \( -nam
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 
 # sets to 1 if NPM version is >= 3
-NPMGTE3 := $(shell expr `npm -v | cut -f1 -d.` \>= 4)
+NPMGTE3 := $(shell expr `npm -v | cut -f1 -d.` \>= 3)
 
 # check for secrets.json
 secret:
