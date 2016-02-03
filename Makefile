@@ -25,8 +25,9 @@ CALYPSO_JS_MAS := $(CALYPSO_DIR)/public/build-desktop-mac-app-store.js
 CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_CHANGES_MAS := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_MAS)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-FLAT_MODULE_CHECK := $(THIS_DIR)/node_modules/glob
-FLAT_CALYPSO_CHECK := $(CALYPSO_DIR)/node_modules/atob
+
+# sets to 1 if NPM version is >= 3
+NPMGTE3 := $(shell expr `npm -v | cut -f1 -d.` \>= 4)
 
 # check for secrets.json
 secret:
@@ -121,7 +122,8 @@ config-updater: install secret
 
 # NPM
 install: node_modules
-	@if [ -d $(FLAT_MODULE_CHECK) ] && [ -d $(FLAT_CALYPSO_CHECK) ]; then true; else echo "$(RED)You need to delete node_modules and calypso/node_modules and install again with NPM > 3$(RESET)"; exit 1; fi
+	if [ ! "$(NPMGTE3)" = "1" ]; then echo "$(RED)Requires npm >= 3, upgrade npm and delete both node_modules and retry$(RESET)"; exit 1; fi
+
 
 node_modules/%:
 	@$(NPM) install $(notdir $@)
