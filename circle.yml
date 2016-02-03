@@ -1,5 +1,5 @@
 machine:
-    mode:
+    node:
         version: 4.2.3
 
 # checkout
