@@ -37,6 +37,7 @@ function showAppWindow() {
 
 	mainWindow.webContents.on( 'did-finish-load', function() {
 		mainWindow.webContents.send( 'app-config', Config, Settings.isDebug(), System.getDetails() );
+		appInstance.parseCommandLine( process.argv );
 	} );
 
 	mainWindow.loadURL( appUrl );

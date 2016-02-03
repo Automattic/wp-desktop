@@ -35,7 +35,6 @@
     "electron-prebuilt": "^0.36.5",
     "eslint": "^1.7.2",
     "eslint-plugin-react": "^3.14.0",
-    "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "mv": "^2.1.1",
     "unzip": "^0.1.11"
@@ -50,6 +49,7 @@
     "lodash": "^3.10.1",
     "lodash.debounce": "^3.1.1",
     "morgan": "^1.6.1",
+    "minimist": "^1.2.0",
     "portscanner": "^1.0.0",
     "qs": "^5.2.0",
     "spellchecker": "^3.1.3",
