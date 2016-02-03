@@ -11,6 +11,7 @@
   "dependencies": {
 	  "express": "4.13.3",
 	  "superagent": "1.2.0",
-	  "webpack": "1.12.6"
+	  "webpack": "1.12.6",
+      "jade": "pugjs/jade#29784fd"
   }
  }
