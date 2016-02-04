@@ -87,7 +87,6 @@ updater: package_modules config-updater
 	@node $(BUILDER) darwin
 
 # Packagers
-
 package-win32: win32
 	@$(PACKAGE_WIN32) ./release/WordPress.com-win32-ia32 --platform=win --out=./release --config=./resource/build-config/win32-package.json
 	@node $(THIS_DIR)/resource/build-scripts/rename-with-version-win.js
@@ -103,6 +102,14 @@ package-mas: mas
 
 package-linux: linux
 	@node $(THIS_DIR)/resource/build-scripts/package-linux.js
+
+distclean: clean
+	@cd calypso; make distclean
+	@rm -rf ./node_modules
+
+clean:
+	@cd calypso; make clean
+	@rm -rf ./release
 
 # Copy config files
 config-dev: install
@@ -133,6 +140,7 @@ node_modules: package.json
 	@touch node_modules
 
 package_modules: package.json
+	@mkdir release
 	@cp resource/build-config/calypso.json release/package.json
 	@cd release; $(NPM) install; $(NPM) prune
 	@touch release/node_modules
