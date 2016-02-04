@@ -6,6 +6,7 @@
 const electron = require( 'electron' );
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const url = require( 'url' );
 const debug = require( 'debug' )( 'desktop:runapp' );
 
 /**
@@ -14,6 +15,7 @@ const debug = require( 'debug' )( 'desktop:runapp' );
 const Config = require( 'lib/config' );
 const server = require( './server' );
 const Settings = require( 'lib/settings' );
+const settingConstants = require( 'lib/settings/constants' );
 const cookieAuth = require( 'lib/cookie-auth' );
 const appInstance = require( 'lib/app-instance' );
 const platform = require( 'lib/platform' );
@@ -25,7 +27,11 @@ const System = require( 'lib/system' );
 var mainWindow = null;
 
 function showAppWindow() {
-	const appUrl = Config.server_url + ':' + Config.server_port;
+	let appUrl = Config.server_url + ':' + Config.server_port;
+	let lastLocation = Settings.getSetting( settingConstants.LAST_LOCATION );
+	if ( lastLocation ) {
+		appUrl += lastLocation;
+	}
 
 	debug( 'Loading app (' + appUrl + ') in mainWindow' );
 
@@ -41,6 +47,12 @@ function showAppWindow() {
 
 	mainWindow.loadURL( appUrl );
 	//mainWindow.openDevTools();
+
+	mainWindow.on( 'close', function() {
+		let currentURL = mainWindow.webContents.getURL();
+		let parsedURL = url.parse( currentURL );
+		Settings.saveSetting( settingConstants.LAST_LOCATION, parsedURL.pathname );
+	} );
 
 	mainWindow.on( 'closed', function() {
 		debug( 'Window closed' );
