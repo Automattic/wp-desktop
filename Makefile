@@ -122,8 +122,7 @@ config-updater: install secret
 
 # NPM
 install: node_modules
-	if [ ! "$(NPMGTE3)" = "1" ]; then echo "$(RED)Requires npm >= 3, upgrade npm and delete both node_modules and retry$(RESET)"; exit 1; fi
-
+	@if [ ! "$(NPMGTE3)" = "1" ]; then echo "$(RED)Requires npm >= 3, upgrade npm and delete both node_modules and retry$(RESET)"; exit 1; fi
 
 node_modules/%:
 	@$(NPM) install $(notdir $@)
