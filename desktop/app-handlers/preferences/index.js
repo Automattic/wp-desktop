@@ -3,8 +3,9 @@
 /**
  * External Dependencies
  */
-const ipc = require( 'electron' ).ipcMain;
-const dialog = require( 'dialog' );
+const electron = require( 'electron' );
+const ipc = electron.ipcMain;
+const dialog = electron.dialog;
 
 /**
  * Internal dependencies
