@@ -34,7 +34,6 @@ var opts = {
 	'app-category-type': 'public.app-category.social-networking',
 	'app-version': config.version,
 	'build-version': config.version,
-	//ignore: require( './resource/build-config/calypso-ignore' ),
 	overwrite: true,
 	asar: false,
 	prune: true,
@@ -50,31 +49,6 @@ var opts = {
 		ProductVersion: config.version
 	}
 };
-
-function whitelistInDirectory( directory, whitelist ) {
-	var client = fs.readdirSync( directory );
-	var ignore = [];
-
-	for ( key = 0; key < client.length; key++ ) {
-		if ( whitelist.indexOf( client[key] ) === -1 ) {
-			ignore.push( path.join( directory, client[key] ) );
-		}
-	}
-
-	return ignore;
-}
-
-// Ignore all dev dependencies
-// for ( key in pkg.devDependencies ) {
-// 	opts.ignore.push( 'node_modules/' + key );
-// }
-//
-// for ( key in pkg.optionalDependencies ) {
-// 	opts.ignore.push( 'node_modules/' + key );
-// }
-
-// opts.ignore = opts.ignore.concat( whitelistInDirectory( './calypso/client', [ 'sections.js', 'config' ] ) );
-// opts.ignore = opts.ignore.concat( whitelistInDirectory( './', [ 'calypso', 'desktop', 'public_desktop', 'node_modules', 'package.json' ] ) );
 
 builder.beforeBuild( __dirname, opts, function( error ) {
 	if ( error ) {

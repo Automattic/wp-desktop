@@ -60,6 +60,7 @@ build-mas: install
 	@echo "Building Calypso (Mac App Store on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
 	@CALYPSO_ENV=desktop-mac-app-store make build -C $(THIS_DIR)/calypso/
 	@rm $(THIS_DIR)/calypso/public/devmodules.*
+	@cp $(CALYPSO_JS_MAS) $(CALYPSO_JS_STD)
 
 build-mas-if-not-exists:
 	@if [ -f $(CALYPSO_JS_MAS) ]; then true; else make build-mas; fi
