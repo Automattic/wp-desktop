@@ -17,10 +17,13 @@ const Config = require( '../config' );
  * Module variables
  */
 const BOOT_TIMEOUT = 10000;
+const PING_TIMEOUT = 10000;
 const ERROR_TIMEOUT = 1;
 const ERROR_EXITEARLY = 2;
+const ERROR_SERVERPINGTIMEOUT = 3;
 
 let didBoot = false;
+let pingKillswitch = null;
 let calypso = null;
 
 function showFailure( app, error, code ) {
@@ -41,6 +44,24 @@ function showFailure( app, error, code ) {
 	}, function() {
 		app.quit();
 	} );
+}
+
+function pingServer( pingTimeout ) {
+	debug( 'Got ping from Calypso. Clearing killswitch.' );
+	clearTimeout( pingKillswitch );
+
+	setTimeout( function() {
+		debug( 'Sending ping to Calypso. Restarting killswitch.' );
+
+		calypso.send( { ping: pingTimeout } );
+		pingKillswitch = setTimeout( maybeKillswitch, ( pingTimeout * 3 ) );
+	}, pingTimeout );
+}
+
+function maybeKillswitch() {
+	debug( 'Failed to get ping from Calypso; exiting.' );
+	killServer();
+	// TODO: kill the app?
 }
 
 function startServer( app, startedCallback ) {
@@ -66,7 +87,7 @@ function startServer( app, startedCallback ) {
 	// If Calypso fails to start for some reason, show an error.
 	timer = setTimeout( function() {
 		if ( didBoot ) {
-			debug( 'App started' );
+			debug( 'App started; disabling timed killswitch. Thank for cutting the red wire.' );
 			return;
 		}
 
@@ -76,12 +97,19 @@ function startServer( app, startedCallback ) {
 	}, BOOT_TIMEOUT );
 
 	calypso.on( 'message', function( message ) {
+		debug( 'on.message from Calypso: ' + JSON.stringify( message ) );
+
 		// We need to wait until the server has booted.
 		// Wait until we get the signal.
 		if ( message.boot && message.boot === 'ready' ) {
 			debug( 'Yay! Server booted!' );
 			didBoot = true;
 			startedCallback();
+
+			clearTimeout( timer );
+			pingServer( PING_TIMEOUT );
+		} else if ( message.ping ) {
+			pingServer( message.ping );
 		}
 	} );
 
