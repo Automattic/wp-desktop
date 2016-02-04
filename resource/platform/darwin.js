@@ -47,11 +47,6 @@ function cleanBuild( appPath, buildOpts ) {
 	console.log( ' - Removing default app' );
 	builder.rmdir( app.getResourcesPath( 'default_app' ) );
 
-	console.log( ' - Copying pruned node_modules' );
-
-	fs.removeSync( app.getResourcesPath( 'app/calypso/node_modules' ) );
-	fs.copySync( path.join( appPath, '..', 'node_modules' ), app.getResourcesPath( 'app/calypso/node_modules' ) );
-
 	if ( buildOpts.platform !== 'mas' ) {
 		console.log( ' - Signing app' );
 		exec( 'codesign --force --sign "' + buildOpts.appSign + '" release/' + buildOpts.name + '-darwin-x64/' + buildOpts.name + '.app/ --deep --timestamp=none' );

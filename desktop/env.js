@@ -16,9 +16,7 @@ const Settings = require( './lib/settings' );
 /**
  * Module variables
  */
-
-// Paths
-const desktopPath = path.resolve( path.join( __dirname ) );
+process.chdir( app.getAppPath() );
 
 process.env.CALYPSO_ENV = config.calypso_config;
 
@@ -43,12 +41,10 @@ if ( Settings.isDebug() ) {
  * This has to come after the DEBUG_* variables
  */
 const debug = require( 'debug' )( 'desktop:boot' );
-const desktop = require( 'module' ).globalPaths.push( desktopPath );
-
 debug( '========================================================================================================' );
 debug( config.name + ' v' + config.version );
+debug( 'Path:', app.getAppPath() );
 debug( 'Server: ' + config.server_url + ':' + config.server_port );
-debug( 'Desktop path: ' + require( 'module' ).globalPaths[desktop - 1] );
 debug( 'Settings:', Settings._getAll() );
 
 if ( Settings.getSetting( 'proxy-type' ) === '' ) {

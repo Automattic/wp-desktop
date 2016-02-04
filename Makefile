@@ -34,16 +34,13 @@ secret:
 	@if [ ! -f $(THIS_DIR)/calypso/config/secrets.json ]; then if [ -z "${CIRCLECI}" ]; then { echo "calypso/config/secrets.json not found. Required file, see docs/secrets.md"; exit 1; } fi; fi
 
 # Just runs Electron with whatever version of Calypso exists
-run: config-dev build-if-changed
-	@cp $(CALYPSO_JS_STD) $(CALYPSO_JS)
+run: config-dev package
 	$(START_APP)
 
-run-release: config-release build-if-changed
-	@cp $(CALYPSO_JS_STD) $(CALYPSO_JS)
+run-release: config-release package
 	$(START_APP)
 
-run-mas: config-mas build-mas-if-changed
-	@cp $(CALYPSO_JS_MAS) $(CALYPSO_JS)
+run-mas: config-mas package
 	$(START_APP)
 
 # Builds Calypso (desktop)
@@ -71,22 +68,40 @@ build-mas-if-changed: build-mas-if-not-exists
 	@if [ $(CALYPSO_CHANGES_MAS) -eq 0 ]; then true; else make build-mas; fi;
 
 # Build packages
-osx: package_modules config-release build-if-changed
+osx: config-release package
 	@node $(BUILDER) darwin
 
-linux: package_modules config-release build-if-changed
+linux: config-release package
 	@node $(BUILDER) linux
 
-win32: package_modules config-release build-if-changed
+win32: config-release package
 	@node $(BUILDER) win32
 
-mas: package_modules config-mas build-mas-if-changed
+mas: config-mas build-mas-if-changed package
 	@node $(BUILDER) mas
 
-updater: package_modules config-updater
+updater: config-updater package
 	@node $(BUILDER) darwin
 
 # Packagers
+package: build-if-changed
+	@echo "Bundling app and server"
+	@rm -rf build/public_desktop build/calypso
+	@webpack --config --progress --colors ./webpack.config.js
+	@echo "Copying Calypso client and public files"
+	@sed -e 's/build\///' package.json >build/package.json
+	@mkdir build/calypso build/calypso/config build/calypso/server
+	@cp -R public_desktop build
+	@cp -R calypso/public build/calypso/public
+	@cp -R calypso/server/pages build/calypso/server/pages
+	@cp calypso/config/secrets.json build/calypso/config/
+	@cp calypso/config/desktop.json build/calypso/config/
+	@cp calypso/config/desktop-mac-app-store.json build/calypso/config/
+	@rm build/calypso/public/build-desktop.js build/calypso/public/style-debug.css*
+	@mv build/calypso/public/build-desktop.min.js build/calypso/public/build.js
+	@rm -rf build/calypso/server/pages/test build/calypso/server/pages/Makefile build/calypso/server/pages/README.md
+	@cd build; $(NPM) install --production --no-optional; $(NPM) prune
+
 package-win32: win32
 	@$(PACKAGE_WIN32) ./release/WordPress.com-win32-ia32 --platform=win --out=./release --config=./resource/build-config/win32-package.json
 	@node $(THIS_DIR)/resource/build-scripts/rename-with-version-win.js
