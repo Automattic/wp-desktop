@@ -18,8 +18,6 @@ const Settings = require( './lib/settings' );
  */
 
 // Paths
-const serverPath = path.resolve( path.join( __dirname, '..', 'calypso', 'server' ) );
-const sharedPath = path.resolve( path.join( __dirname, '..', 'calypso', 'shared' ) );
 const desktopPath = path.resolve( path.join( __dirname ) );
 
 process.env.CALYPSO_ENV = config.calypso_config;
@@ -45,15 +43,11 @@ if ( Settings.isDebug() ) {
  * This has to come after the DEBUG_* variables
  */
 const debug = require( 'debug' )( 'desktop:boot' );
-const added = require( 'module' ).globalPaths.push( serverPath );
-const shared = require( 'module' ).globalPaths.push( sharedPath );
 const desktop = require( 'module' ).globalPaths.push( desktopPath );
 
 debug( '========================================================================================================' );
 debug( config.name + ' v' + config.version );
 debug( 'Server: ' + config.server_url + ':' + config.server_port );
-debug( 'Server path: ' + require( 'module' ).globalPaths[added - 1] );
-debug( 'Shared path: ' + require( 'module' ).globalPaths[shared - 1] );
 debug( 'Desktop path: ' + require( 'module' ).globalPaths[desktop - 1] );
 debug( 'Settings:', Settings._getAll() );
 

@@ -1,6 +1,6 @@
 machine:
     node:
-        version: 4.2.3
+        version: 5.1.0
 
 # checkout
 checkout:
