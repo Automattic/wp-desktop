@@ -96,7 +96,7 @@ package: build-if-changed
 	@cp -R $(THIS_DIR)/public_desktop $(BUILD_DIR)
 	@cp -R $(CALYPSO_DIR)/public $(BUILD_DIR)/calypso/public
 	@cp -R $(CALYPSO_DIR)/server/pages $(BUILD_DIR)/calypso/server/pages
-	@cp $(CALYPSO_DIR)/config/secrets.json $(BUILD_DIR)/calypso/config/
+	@if [ -f $(CALYPSO_DIR)/config/secrets.json ]; then cp $(CALYPSO_DIR)/config/secrets.json $(BUILD_DIR)/calypso/config/secrets.json; else cp $(CALYPSO_DIR)/config/empty-secrets.json $(BUILD_DIR)/calypso/config/secrets.json; fi;
 	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
 	@cp $(CALYPSO_DIR)/config/desktop-mac-app-store.json $(BUILD_DIR)/calypso/config/
 	@rm $(BUILD_DIR)/calypso/public/build-desktop.js $(BUILD_DIR)/calypso/public/style-debug.css*
