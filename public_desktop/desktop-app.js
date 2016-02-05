@@ -157,8 +157,8 @@ try {
 
 	ipc.on( 'app-config', function( event, config, debug, details ) {
 
-		// if this is the first run, show Windows and Mac users a pin app reminder
-		if ( details.firstRun ) {
+		// if this is the first run, and on the login page, show Windows and Mac users a pin app reminder
+		if ( details.firstRun && document.querySelectorAll('.logged-out-auth').length > 0 ) {
 		
 			var container = document.querySelector( '#wpcom' );
 			var pinApp = container.querySelector( '.pin-app' );
