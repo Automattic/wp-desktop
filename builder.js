@@ -35,6 +35,7 @@ var opts = {
 	'app-version': config.version,
 	'build-version': config.version,
 	overwrite: true,
+	ignore: [ 'desktop-test.js' ],
 	asar: false,
 	prune: true,
 	sign: false,

@@ -88,7 +88,7 @@ updater: config-updater package
 package: build-if-changed
 	@echo "Bundling app and server"
 	@rm -rf build/public_desktop build/calypso
-	@webpack --config --progress --colors ./webpack.config.js
+	@webpack --progress --colors --config ./webpack.config.js
 	@echo "Copying Calypso client and public files"
 	@sed -e 's/build\///' package.json >build/package.json
 	@mkdir build/calypso build/calypso/config build/calypso/server
@@ -168,7 +168,8 @@ eslint: lint
 
 # Testing
 test: config-test
-	@$(ELECTRON_TEST) --inline-diffs --timeout 5000 desktop/test
+	@webpack --progress --colors --config ./webpack.config.test.js
+	@CALYPSO_PATH=`pwd`/build $(ELECTRON_TEST) --inline-diffs --timeout 15000 build/desktop-test.js
 
 test-osx: osx
 	@rm -rf ./release/WordPress.com-darwin-x64-unpacked

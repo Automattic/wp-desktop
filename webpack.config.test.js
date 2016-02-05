@@ -9,10 +9,10 @@ var path = require( 'path' );
 var shared = require( './webpack.shared' );
 
 var options = {
-	entry: './desktop/index.js',
+	entry: './desktop/test/boot.js',
 	output: {
 		path: path.join( __dirname, 'build' ),
-		filename: 'desktop.js',
+		filename: 'desktop-test.js',
 		libraryTarget: 'commonjs2'
 	}
 };
