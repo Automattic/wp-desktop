@@ -13,6 +13,7 @@ CONFIG := $(THIS_DIR)/desktop/config.json
 DESKTOP_CONFIG := $(THIS_DIR)/desktop-config
 BUILDER := $(THIS_DIR)/builder.js
 BUILD_CONFIG := $(THIS_DIR)/resource/build-scripts/build-config-file.js
+BUILD_DIR := $(THIS_DIR)/build
 PACKAGE_MAS := $(THIS_DIR)/resource/build-scripts/package-mas.js
 PACKAGE_DMG := $(THIS_DIR)/resource/build-scripts/package-dmg.js
 PACKAGE_WIN32 := @$(NPM_BIN)/electron-builder
@@ -87,21 +88,21 @@ updater: config-updater package
 # Packagers
 package: build-if-changed
 	@echo "Bundling app and server"
-	@rm -rf build/public_desktop build/calypso
-	@webpack --config ./webpack.config.js
+	@rm -rf $(BUILD_DIR)/public_desktop $(BUILD_DIR)/calypso
+	@webpack --config $(THIS_DIR)/webpack.config.js
 	@echo "Copying Calypso client and public files"
-	@sed -e 's/build\///' package.json >build/package.json
-	@mkdir build/calypso build/calypso/config build/calypso/server
-	@cp -R public_desktop build
-	@cp -R calypso/public build/calypso/public
-	@cp -R calypso/server/pages build/calypso/server/pages
-	@cp calypso/config/secrets.json build/calypso/config/
-	@cp calypso/config/desktop.json build/calypso/config/
-	@cp calypso/config/desktop-mac-app-store.json build/calypso/config/
-	@rm build/calypso/public/build-desktop.js build/calypso/public/style-debug.css*
-	@mv build/calypso/public/build-desktop.min.js build/calypso/public/build.js
-	@rm -rf build/calypso/server/pages/test build/calypso/server/pages/Makefile build/calypso/server/pages/README.md
-	@cd build; $(NPM) install --production --no-optional; $(NPM) prune
+	@sed -e 's/build\///' $(THIS_DIR)/package.json >$(BUILD_DIR)/package.json
+	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/config $(BUILD_DIR)/calypso/server
+	@cp -R $(THIS_DIR)/public_desktop $(BUILD_DIR)
+	@cp -R $(CALYPSO_DIR)/public $(BUILD_DIR)/calypso/public
+	@cp -R $(CALYPSO_DIR)/server/pages $(BUILD_DIR)/calypso/server/pages
+	@cp $(CALYPSO_DIR)/config/secrets.json $(BUILD_DIR)/calypso/config/
+	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
+	@cp $(CALYPSO_DIR)/config/desktop-mac-app-store.json $(BUILD_DIR)/calypso/config/
+	@rm $(BUILD_DIR)/calypso/public/build-desktop.js $(BUILD_DIR)/calypso/public/style-debug.css*
+	@mv $(BUILD_DIR)/calypso/public/build-desktop.min.js $(BUILD_DIR)/calypso/public/build.js
+	@rm -rf $(BUILD_DIR)/calypso/server/pages/test $(BUILD_DIR)/calypso/server/pages/Makefile $(BUILD_DIR)/calypso/server/pages/README.md
+	@cd $(BUILD_DIR); $(NPM) install --production --no-optional; $(NPM) prune
 
 package-win32: win32
 	@$(PACKAGE_WIN32) ./release/WordPress.com-win32-ia32 --platform=win --out=./release --config=./resource/build-config/win32-package.json
