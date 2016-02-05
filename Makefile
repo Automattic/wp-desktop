@@ -88,7 +88,7 @@ updater: config-updater package
 package: build-if-changed
 	@echo "Bundling app and server"
 	@rm -rf build/public_desktop build/calypso
-	@webpack --progress --colors --config ./webpack.config.js
+	@webpack --config ./webpack.config.js
 	@echo "Copying Calypso client and public files"
 	@sed -e 's/build\///' package.json >build/package.json
 	@mkdir build/calypso build/calypso/config build/calypso/server
@@ -126,6 +126,7 @@ distclean: clean
 clean:
 	@cd calypso; make clean
 	@rm -rf ./release
+	@rm -rf ./build
 
 # Copy config files
 config-dev: install
@@ -167,8 +168,8 @@ lint: node_modules/eslint node_modules/eslint-plugin-react node_modules/babel-es
 eslint: lint
 
 # Testing
-test: config-test
-	@webpack --progress --colors --config ./webpack.config.test.js
+test: config-test package
+	@webpack --config ./webpack.config.test.js
 	@CALYPSO_PATH=`pwd`/build $(ELECTRON_TEST) --inline-diffs --timeout 15000 build/desktop-test.js
 
 test-osx: osx
