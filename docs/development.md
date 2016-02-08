@@ -46,7 +46,7 @@ Note that currently we do not compile or transpile the app code.
 
 ## How do I change Calypso?
 
-All Calypso code is contained in the `calypso` directory as a submodule. If you need to change Calypso and want to to try it inside the desktop app then you can:
+All Calypso code is contained in the `calypso` directory as a submodule. If you need to change Calypso and want to try it inside the desktop app then you can:
 
 - `cd calypso`
 - Create a new branch or change to an existing branch in Calypso as you would normally
@@ -59,7 +59,7 @@ We used to boot the Calypso server+app directly within the main Electron process
 
 Thanks to [Babel](https://babeljs.io/)'s magic transpilation, we already have a node-friendly server bundle available to use. However, we can't just `require` the bundle and be done with it due to various issues such as path resolutions (the working directory inconveniently points to the desktop root, which breaks things).
 
-Instead, during the app's startup process, we fork a child process to load up Calypso using the transpiled bundle. This gives Calypso its own "sandbox" and can run without the app/Electron environment unintenationally interfering with it.
+Instead, during the app's startup process, we fork a child process to load up Calypso using the transpiled bundle. This gives Calypso its own "sandbox" and can run without the app/Electron environment unintentionally interfering with it.
 
 ## Debugging
 
