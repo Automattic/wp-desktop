@@ -191,3 +191,40 @@ a:not([href*="//"]) {
 html.build-mac-app-store .environment-badge {
 	display: none;
 }
+
+
+/**
+ * Pin app reminder
+ */
+
+.pin-app {
+	max-width: 290px;
+	color: #fff;
+	background: #005083;
+	border-radius: 8px;
+	padding: 10px 15px;
+	position: absolute;
+	bottom: 20px;
+	left: 20px;
+}
+
+.pin-app h2 {
+	font-weight: bold;
+	margin-bottom: 1em;
+}
+
+.pin-app img {
+	display: block;
+	margin: 0 auto;
+}
+
+.pin-app .pin-app-close {
+	display: block;
+	width: 24px;
+	height: 24px;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	text-decoration: none;
+	fill: #fff;
+}
