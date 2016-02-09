@@ -13,6 +13,7 @@ CONFIG := $(THIS_DIR)/desktop/config.json
 DESKTOP_CONFIG := $(THIS_DIR)/desktop-config
 BUILDER := $(THIS_DIR)/builder.js
 BUILD_CONFIG := $(THIS_DIR)/resource/build-scripts/build-config-file.js
+BUILD_DIR := $(THIS_DIR)/build
 PACKAGE_MAS := $(THIS_DIR)/resource/build-scripts/package-mas.js
 PACKAGE_DMG := $(THIS_DIR)/resource/build-scripts/package-dmg.js
 PACKAGE_WIN32 := @$(NPM_BIN)/electron-builder
@@ -34,16 +35,13 @@ secret:
 	@if [ ! -f $(THIS_DIR)/calypso/config/secrets.json ]; then if [ -z "${CIRCLECI}" ]; then { echo "calypso/config/secrets.json not found. Required file, see docs/secrets.md"; exit 1; } fi; fi
 
 # Just runs Electron with whatever version of Calypso exists
-run: config-dev build-if-changed
-	@cp $(CALYPSO_JS_STD) $(CALYPSO_JS)
+run: config-dev package
 	$(START_APP)
 
-run-release: config-release build-if-changed
-	@cp $(CALYPSO_JS_STD) $(CALYPSO_JS)
+run-release: config-release package
 	$(START_APP)
 
-run-mas: config-mas build-mas-if-changed
-	@cp $(CALYPSO_JS_MAS) $(CALYPSO_JS)
+run-mas: config-mas package
 	$(START_APP)
 
 # Builds Calypso (desktop)
@@ -63,6 +61,7 @@ build-mas: install
 	@echo "Building Calypso (Mac App Store on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
 	@CALYPSO_ENV=desktop-mac-app-store make build -C $(THIS_DIR)/calypso/
 	@rm $(THIS_DIR)/calypso/public/devmodules.*
+	@cp $(CALYPSO_JS_MAS) $(CALYPSO_JS_STD)
 
 build-mas-if-not-exists:
 	@if [ -f $(CALYPSO_JS_MAS) ]; then true; else make build-mas; fi
@@ -71,22 +70,40 @@ build-mas-if-changed: build-mas-if-not-exists
 	@if [ $(CALYPSO_CHANGES_MAS) -eq 0 ]; then true; else make build-mas; fi;
 
 # Build packages
-osx: package_modules config-release build-if-changed
+osx: config-release package
 	@node $(BUILDER) darwin
 
-linux: package_modules config-release build-if-changed
+linux: config-release package
 	@node $(BUILDER) linux
 
-win32: package_modules config-release build-if-changed
+win32: config-release package
 	@node $(BUILDER) win32
 
-mas: package_modules config-mas build-mas-if-changed
+mas: config-mas build-mas-if-changed package
 	@node $(BUILDER) mas
 
-updater: package_modules config-updater
+updater: config-updater package
 	@node $(BUILDER) darwin
 
 # Packagers
+package: build-if-changed
+	@echo "Bundling app and server"
+	@rm -rf $(BUILD_DIR)/public_desktop $(BUILD_DIR)/calypso
+	@webpack --config $(THIS_DIR)/webpack.config.js
+	@echo "Copying Calypso client and public files"
+	@sed -e 's/build\///' $(THIS_DIR)/package.json >$(BUILD_DIR)/package.json
+	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/config $(BUILD_DIR)/calypso/server
+	@cp -R $(THIS_DIR)/public_desktop $(BUILD_DIR)
+	@cp -R $(CALYPSO_DIR)/public $(BUILD_DIR)/calypso/public
+	@cp -R $(CALYPSO_DIR)/server/pages $(BUILD_DIR)/calypso/server/pages
+	@if [ -f $(CALYPSO_DIR)/config/secrets.json ]; then cp $(CALYPSO_DIR)/config/secrets.json $(BUILD_DIR)/calypso/config/secrets.json; else cp $(CALYPSO_DIR)/config/empty-secrets.json $(BUILD_DIR)/calypso/config/secrets.json; fi;
+	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
+	@cp $(CALYPSO_DIR)/config/desktop-mac-app-store.json $(BUILD_DIR)/calypso/config/
+	@rm $(BUILD_DIR)/calypso/public/build-desktop.js $(BUILD_DIR)/calypso/public/style-debug.css*
+	@mv $(BUILD_DIR)/calypso/public/build-desktop.min.js $(BUILD_DIR)/calypso/public/build.js
+	@rm -rf $(BUILD_DIR)/calypso/server/pages/test $(BUILD_DIR)/calypso/server/pages/Makefile $(BUILD_DIR)/calypso/server/pages/README.md
+	@cd $(BUILD_DIR); $(NPM) install --production --no-optional; $(NPM) prune
+
 package-win32: win32
 	@$(PACKAGE_WIN32) ./release/WordPress.com-win32-ia32 --platform=win --out=./release --config=./resource/build-config/win32-package.json
 	@node $(THIS_DIR)/resource/build-scripts/rename-with-version-win.js
@@ -110,6 +127,7 @@ distclean: clean
 clean:
 	@cd calypso; make clean
 	@rm -rf ./release
+	@rm -rf ./build
 
 # Copy config files
 config-dev: install
@@ -151,8 +169,9 @@ lint: node_modules/eslint node_modules/eslint-plugin-react node_modules/babel-es
 eslint: lint
 
 # Testing
-test: config-test
-	@$(ELECTRON_TEST) --inline-diffs --timeout 5000 desktop/test
+test: config-test package
+	@webpack --config ./webpack.config.test.js
+	@CALYPSO_PATH=`pwd`/build $(ELECTRON_TEST) --inline-diffs --timeout 15000 build/desktop-test.js
 
 test-osx: osx
 	@rm -rf ./release/WordPress.com-darwin-x64-unpacked

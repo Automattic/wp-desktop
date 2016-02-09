@@ -57,7 +57,6 @@ function showAppWindow() {
 	mainWindow.on( 'closed', function() {
 		debug( 'Window closed' );
 		mainWindow = null;
-		server.kill();
 	} );
 
 	platform.setMainWindow( mainWindow );

@@ -30,11 +30,6 @@ function cleanBuild( appPath, buildOpts ) {
 
 	console.log( ' - Removing default app' );
 	builder.rmdir( path.join( appPath, 'resources', 'default_app' ) );
-
-	console.log( ' - Copying pruned node_modules' );
-
-	fs.removeSync( calypsoModules );
-	fs.copySync( path.join( appPath, '..', 'node_modules' ), calypsoModules );
 }
 
 module.exports = {
