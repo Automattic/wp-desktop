@@ -5,14 +5,14 @@
 	"background": "../image/dmg-background/background.png",
 	"contents": [
 		{
-			"x": 480,
-			"y": 240,
+			"x": 486,
+			"y": 176,
 			"type": "link",
 			"path": "/Applications"
 		},
 		{
-			"x": 130,
-			"y": 240,
+			"x": 156,
+			"y": 196,
 			"type": "file",
 			"path": "../../release/WordPress.com-darwin-x64/WordPress.com.app"
 		}
