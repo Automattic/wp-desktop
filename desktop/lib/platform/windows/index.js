@@ -6,7 +6,6 @@
 const electron = require( 'electron' );
 const Tray = electron.Tray;
 const Menu = electron.Menu;
-const path = require( 'path' );
 const debug = require( 'debug' )( 'platform:windows' );
 
 /**
@@ -17,6 +16,7 @@ const Settings = require( 'lib/settings' );
 const appQuit = require( 'lib/app-quit' );
 const platform = require( 'lib/platform' );
 const menuSetter = require( 'lib/menu-setter' );
+const assets = require( 'lib/assets' );
 
 /**
 * Module variables
@@ -55,7 +55,7 @@ WindowsPlatform.prototype.showBackgroundBubble = function() {
 		Settings.saveSetting( TRAY_SETTING, true );
 
 		this.tray.displayBalloon( {
-			icon: path.resolve( path.join( __dirname, 'windows-tray-bubble.png' ) ),
+			icon: assets.getPath( 'windows-tray-bubble.png' ),
 			title: 'WordPress.com',
 			content: "We've minimized WordPress.com to your tray. Click on the icon to restore it."
 		} );
@@ -67,7 +67,7 @@ WindowsPlatform.prototype.restore = function() {
 };
 
 WindowsPlatform.prototype.getIcon = function( filename ) {
-	return path.resolve( path.join( __dirname, ( platform.isWindows10() ? 'win10' : 'win7' ) + filename ) );
+	return assets.getPath( ( platform.isWindows10() ? 'win10' : 'win7' ) + filename );
 };
 
 WindowsPlatform.prototype.showNotificationsBadge = function() {
