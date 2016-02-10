@@ -32,6 +32,8 @@ process.on( 'uncaughtException', function( error ) {
 		'\n\n' +
 		error.stack
 	);
+
+	process.exit();
 } );
 
 // If debug is enabled then setup the debug target
