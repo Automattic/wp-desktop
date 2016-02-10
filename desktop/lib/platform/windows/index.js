@@ -67,7 +67,7 @@ WindowsPlatform.prototype.restore = function() {
 };
 
 WindowsPlatform.prototype.getIcon = function( filename ) {
-	return path.resolve( path.join( __dirname, ( platform.isWindows10() ? 'win10' : 'win7' ) + filename ) );
+	return path.resolve( path.join( __dirname, '..', '..', '..', '..', 'public_desktop', ( platform.isWindows10() ? 'win10' : 'win7' ) + filename ) );
 };
 
 WindowsPlatform.prototype.showNotificationsBadge = function() {
