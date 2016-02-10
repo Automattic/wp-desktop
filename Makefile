@@ -77,6 +77,9 @@ osx: config-release package
 linux: config-release package
 	@node $(BUILDER) linux
 
+win32-dev: config-dev package
+	@node $(BUILDER) win32
+
 win32: config-release package
 	@node $(BUILDER) win32
 
