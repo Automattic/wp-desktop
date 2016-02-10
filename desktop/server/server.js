@@ -25,14 +25,20 @@ function showFailure( app ) {
 	} );
 }
 
-function startServer() {
+function startServer( running_cb ) {
 	var boot = require( 'boot' );
 	var http = require( 'http' );
 	var server = http.createServer( boot() );
 
 	debug( 'Server created, binding to ' + Config.server_port );
 
-	server.listen( Config.server_port, Config.server_host );
+	server.listen( {
+		port: Config.server_port,
+		host: Config.server_host
+	}, function() {
+		debug( 'Server started, passing back to app' );
+		running_cb();
+	} );
 }
 
 module.exports = {
@@ -47,10 +53,7 @@ module.exports = {
 			}
 
 			debug( 'Starting server' );
-			startServer();
-
-			debug( 'Server started, passing back to app' );
-			running_cb();
+			startServer( running_cb );
 		} );
 	}
 };
