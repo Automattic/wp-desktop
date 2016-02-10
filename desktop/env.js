@@ -6,6 +6,7 @@
 const path = require( 'path' );
 const app = require( 'electron' ).app;
 const fs = require( 'fs' );
+const dialog = require( 'electron' ).dialog;
 
 /**
  * Internal dependencies
@@ -19,6 +20,19 @@ const Settings = require( './lib/settings' );
 process.chdir( app.getAppPath() );
 
 process.env.CALYPSO_ENV = config.calypso_config;
+
+// Catch-all error handler
+process.on( 'uncaughtException', function( error ) {
+	console.log( 'uncaughtException', error, error.stack, typeof error );
+	dialog.showErrorBox(
+		'WordPress.com ran into an error',
+		'Please restart the app and try again.' +
+		'\n\n' +
+		'If you continue to have issues, please contact us at help@wordpress.com and mention the error details below:' +
+		'\n\n' +
+		error.stack
+	);
+} );
 
 // If debug is enabled then setup the debug target
 if ( Settings.isDebug() ) {
