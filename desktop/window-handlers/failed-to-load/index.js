@@ -3,7 +3,6 @@
 /**
  * External Dependencies
  */
-const path = require( 'path' );
 const debug = require( 'debug' )( 'desktop:failed-to-load' );
 const dialog = require( 'electron' ).dialog;
 const app = require( 'electron' ).app;
@@ -12,12 +11,13 @@ const app = require( 'electron' ).app;
  * Internal dependencies
  */
 const settings = require( 'lib/settings' );
+const assets = require( 'lib/assets' );
 
 /**
  * Module variables
  */
 const FAIL_TO_LOAD_FILE = 'failed-to-start.html';
-const FAILED_FILE = 'file://' + path.resolve( path.join( __dirname, '..', '..', 'public_desktop', FAIL_TO_LOAD_FILE ) );
+const FAILED_FILE = 'file://' + assets.getPath( FAIL_TO_LOAD_FILE );
 
 // Error codes we might get in the course of using the app and should not result in an error page
 // Full list of error codes here: https://code.google.com/p/chromium/codesearch#chromium/src/net/base/net_error_list.h
