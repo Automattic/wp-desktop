@@ -129,11 +129,7 @@ html.desktop-auth .button-emphasis {
 
 html.is-desktop,
 html.is-desktop body,
-#wpcom,
-.logged-out-auth,
-.logged-out-auth .wp-content,
-.logged-out-auth .wp-primary,
-.logged-out-auth .auth-login {
+#wpcom {
 	height: 100%;
 }
 
