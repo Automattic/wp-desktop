@@ -34,6 +34,10 @@ NPMGTE3 := $(shell expr `npm -v | cut -f1 -d.` \>= 3)
 secret:
 	@if [ ! -f $(THIS_DIR)/calypso/config/secrets.json ]; then if [ -z "${CIRCLECI}" ]; then { echo "calypso/config/secrets.json not found. Required file, see docs/secrets.md"; exit 1; } fi; fi
 
+# confirm proper clientid for production release
+secret-clientid: 
+	@grep -q 43452 $(THIS_DIR)/calypso/config/secrets.json 
+
 # Just runs Electron with whatever version of Calypso exists
 run: config-dev package
 	$(START_APP)
@@ -137,7 +141,7 @@ clean:
 config-dev: install
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-dev.json > $(CONFIG)
 
-config-release: install secret
+config-release: install secret secret-clientid
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-release.json > $(CONFIG)
 
 config-mas: install secret
