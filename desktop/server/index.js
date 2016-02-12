@@ -8,6 +8,7 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const url = require( 'url' );
 const debug = require( 'debug' )( 'desktop:runapp' );
+const startsWith = require( 'lodash/string/startsWith' );
 
 /**
  * Internal dependencies
@@ -51,7 +52,9 @@ function showAppWindow() {
 	mainWindow.on( 'close', function() {
 		let currentURL = mainWindow.webContents.getURL();
 		let parsedURL = url.parse( currentURL );
-		Settings.saveSetting( settingConstants.LAST_LOCATION, parsedURL.pathname );
+		if ( ! startsWith( parsedURL.pathname, '/start' ) ) { // Don't attempt to resume the signup flow
+			Settings.saveSetting( settingConstants.LAST_LOCATION, parsedURL.pathname );
+		}
 	} );
 
 	mainWindow.on( 'closed', function() {
