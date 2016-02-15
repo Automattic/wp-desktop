@@ -104,6 +104,10 @@ Section "Uninstall"
   rmDir  "$SMPROGRAMS\${APP_DIR}"
   delete "$DESKTOP\${APP_NAME}.lnk"
 
-
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
+
+  # Delete AppData, only works for current user
+  SetShellVarContext current
+  RMDir /r "$APPDATA\${APP_NAME}"
+
 SectionEnd
