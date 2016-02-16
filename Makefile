@@ -179,7 +179,7 @@ eslint: lint
 
 # Testing
 test: config-test package
-	@webpack --config ./webpack.config.test.js
+	@$(WEBPACK_BIN) --config ./webpack.config.test.js
 	@CALYPSO_PATH=`pwd`/build $(ELECTRON_TEST) --inline-diffs --timeout 15000 build/desktop-test.js
 
 test-osx: osx
