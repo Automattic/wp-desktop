@@ -38,6 +38,10 @@ LinuxPlatform.prototype.restore = function() {
 	this.window.show();
 }
 
+LinuxPlatform.prototype.showNotificationsBadge = function( count, bounceEnabled ) {
+	// no op
+};
+
 LinuxPlatform.prototype.clearNotificationsBadge = function() {
 	// no op
 };
