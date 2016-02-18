@@ -7,6 +7,12 @@ checkout:
     post:
         - git submodule init
         - git submodule update
+        - > 
+            cd calypso;
+            if [ -n "${CALYPSO_HASH}" ]; then
+                git fetch;
+                git checkout ${CALYPSO_HASH};
+            fi
 
 # pre-test
 dependencies:
