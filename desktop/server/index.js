@@ -52,7 +52,7 @@ function showAppWindow() {
 	mainWindow.on( 'close', function() {
 		let currentURL = mainWindow.webContents.getURL();
 		let parsedURL = url.parse( currentURL );
-		if ( ! startsWith( parsedURL.pathname, '/start' ) ) { // Don't attempt to resume the signup flow
+		if ( ! parsedURL.pathname.startsWith( '/start' ) ) { // Don't attempt to resume the signup flow
 			Settings.saveSetting( settingConstants.LAST_LOCATION, parsedURL.pathname );
 		}
 	} );
