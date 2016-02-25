@@ -35,12 +35,6 @@ module.exports = function( mainWindow ) {
 			}
 		},
 		{
-			label: 'Support docs',
-			click: function() {
-				shell.openExternal( 'https://support.wordpress.com' );
-			}
-		},
-		{
 			label: 'Forums',
 			click: function() {
 				shell.openExternal( 'https://forums.wordpress.com/' );
