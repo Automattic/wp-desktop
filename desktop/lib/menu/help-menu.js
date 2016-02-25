@@ -38,6 +38,12 @@ menuItems = menuItems.concat( [
 		}
 	},
 	{
+		label: 'Report an Issue...',
+		click: function() {
+			shell.openExternal( 'https://github.com/Automattic/wp-desktop/issues' );
+		}
+	},
+	{
 		label: 'Privacy Policy',
 		click: function() {
 			shell.openExternal( 'https://automattic.com/privacy/' );
