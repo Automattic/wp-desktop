@@ -7,6 +7,7 @@ const BrowserWindow = require( 'electron' ).BrowserWindow;
  */
 const Config = require( 'lib/config' );
 const debugMenu = require( './debug-menu' );
+const i18n = require( 'lib/i18n' );
 
 /**
  * Module variables
@@ -19,7 +20,7 @@ if ( Config.debug ) {
 
 menuItems.push(
 	{
-		label: 'Toggle Full Screen',
+		label: i18n.translate( 'Toggle Full Screen', { context: 'Desktop App Action' } ),
 		fullscreen: true,
 		click: function() {
 			const focusedWindow = BrowserWindow.getFocusedWindow();

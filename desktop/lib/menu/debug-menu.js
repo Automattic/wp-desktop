@@ -5,9 +5,14 @@
  */
 const BrowserWindow = require( 'electron' ).BrowserWindow;
 
+/**
+ * Internal dependencies
+ */
+const i18n = require( 'lib/i18n' );
+
 module.exports = [
 	{
-		label: 'Reload',
+		label: i18n.translate( 'Reload', { context: 'Desktop App Action' } ),
 		accelerator: 'CmdOrCtrl+R',
 		click: function() {
 			const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -18,7 +23,7 @@ module.exports = [
 		}
 	},
 	{
-		label: 'Developer Tools',
+		label: i18n.translate( 'Developer Tools', { context: 'Desktop App Tool' } ),
 		accelerator: 'Alt+CmdOrCtrl+I',
 		click: function() {
 			const focusedWindow = BrowserWindow.getFocusedWindow();

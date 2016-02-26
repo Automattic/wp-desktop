@@ -5,6 +5,7 @@
  */
 const calypsoMenu = require( './calypso-menu' );
 const platform = require( 'lib/platform' );
+const i18n = require( 'lib/i18n' );
 
 module.exports = function( mainWindow ) {
 	let menu = calypsoMenu( mainWindow ).concat(
@@ -12,12 +13,12 @@ module.exports = function( mainWindow ) {
 			type: 'separator'
 		},
 		{
-			label: 'Minimize',
+			label: i18n.translate( 'Minimize', { context: 'Desktop App Window Action' } ),
 			accelerator: 'CmdOrCtrl+M',
 			role: 'minimize'
 		},
 		{
-			label: 'Close',
+			label: i18n.translate( 'Close', { context: 'Desktop App Window Action' } ),
 			accelerator: 'CmdOrCtrl+W',
 			role: 'close'
 		}
@@ -25,7 +26,7 @@ module.exports = function( mainWindow ) {
 
 	if ( platform.isOSX() ) {
 		menu.push( { type: 'separator' } );
-		menu.push( { label: 'Bring All to Front', role: 'front' } );
+		menu.push( { label: i18n.translate( 'Bring All to Front', { context: 'Desktop App Window Action' } ), role: 'front' } );
 	}
 
 	return menu

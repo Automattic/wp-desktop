@@ -1,13 +1,18 @@
 'use strict';
 
+/**
+ * Internal dependencies
+ */
+const i18n = require( 'lib/i18n' );
+
 module.exports = [
 	{
-		label: 'Undo',
+		label: i18n.translate( 'Undo', { context: 'Desktop App Action' } ),
 		accelerator: 'CmdOrCtrl+Z',
 		role: 'undo'
 	},
 	{
-		label: 'Redo',
+		label: i18n.translate( 'Redo', { context: 'Desktop App Action' } ),
 		accelerator: 'Shift+CmdOrCtrl+Z',
 		role: 'redo'
 	},
@@ -15,22 +20,22 @@ module.exports = [
 		type: 'separator'
 	},
 	{
-		label: 'Cut',
+		label: i18n.translate( 'Cut', { context: 'Desktop App Action' } ),
 		accelerator: 'CmdOrCtrl+X',
 		role: 'cut'
 	},
 	{
-		label: 'Copy',
+		label: i18n.translate( 'Copy', { context: 'Desktop App Action' } ),
 		accelerator: 'CmdOrCtrl+C',
 		role: 'copy'
 	},
 	{
-		label: 'Paste',
+		label: i18n.translate( 'Paste', { context: 'Desktop App Action' } ),
 		accelerator: 'CmdOrCtrl+V',
 		role: 'paste'
 	},
 	{
-		label: 'Select All',
+		label: i18n.translate( 'Select All', { context: 'Desktop App Action' } ),
 		accelerator: 'CmdOrCtrl+A',
 		role: 'selectall'
 	}

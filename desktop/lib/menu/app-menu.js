@@ -14,6 +14,7 @@ const Settings = require( 'lib/settings' );
 const WindowManager = require( 'lib/window-manager' );
 const platform = require( 'lib/platform' );
 const debugMenu = require( './debug-menu' );
+const i18n = require( 'lib/i18n' );
 
 /**
  * Module variables
@@ -23,7 +24,7 @@ const debugEnabled = Settings.getSettingGroup( Config.debug.enabled_by_default, 
 module.exports = function( app, mainWindow ) {
 	let menuItems = [
 		{
-			label: 'Preferences...',
+			label: i18n.translate( 'Preferences...', { context: 'Desktop App Menu Item' } ),
 			accelerator: 'CmdOrCtrl+,',
 			click: function() {
 				WindowManager.openPreferences();
@@ -33,7 +34,7 @@ module.exports = function( app, mainWindow ) {
 			type: 'separator'
 		},
 		{
-			label: 'Sign Out',
+			label: i18n.translate( 'Sign Out' ),
 			requiresUser: true,
 			enabled: false,
 			id: 'loggedin',
@@ -46,7 +47,7 @@ module.exports = function( app, mainWindow ) {
 			type: 'separator'
 		},
 		{
-			label: 'Quit',
+			label: i18n.translate( 'Quit', { context: 'Desktop App Action' } ),
 			accelerator: 'CmdOrCtrl+Q',
 			click: function() {
 				app.quit();
@@ -57,17 +58,17 @@ module.exports = function( app, mainWindow ) {
 	if ( Config.debug ) {
 		menuItems.splice( 1, 0,
 			{
-				label: 'Debug Mode',
+				label: i18n.translate( 'Debug Mode' ),
 				type: 'checkbox',
 				checked: debugEnabled,
 				click: function( menu ) {
 					Settings.saveSetting( 'debug', menu.checked );
 
 					dialog.showMessageBox( {
-						buttons: [ 'OK' ],
-						title: 'Restart',
-						message: 'Please restart the app for the change to have effect',
-						detail: "Sorry, we're unable to restart it for you right now"
+						buttons: [ i18n.translate( 'OK' ) ],
+						title: i18n.translate( 'Restart' ),
+						message: i18n.translate( 'Please restart the app for the change to have effect' ),
+						detail: i18n.translate( "Sorry, we're unable to restart it for you right now" )
 					} );
 				}
 			}
@@ -82,7 +83,7 @@ module.exports = function( app, mainWindow ) {
 		// Add an 'about' item to the start of the menu, as per OS X standards
 		menuItems.splice( 0, 0,
 			{
-				label: 'About WordPress.com',
+				label: i18n.translate( 'About WordPress.com' ),
 				click: function() {
 					WindowManager.openAbout();
 				}
@@ -95,7 +96,7 @@ module.exports = function( app, mainWindow ) {
 		// Add the standard OS X app items just before the quit
 		menuItems.splice( menuItems.length - 1, 0,
 			{
-				label: 'Services',
+				label: i18n.translate( 'Services', { context: 'Desktop App "Services" Menu Item on OSX' } ),
 				role: 'services',
 				submenu: []
 			},
@@ -103,17 +104,17 @@ module.exports = function( app, mainWindow ) {
 				type: 'separator'
 			},
 			{
-				label: 'Hide WordPress.com',
+				label: i18n.translate( 'Hide WordPress.com', { context: 'Desktop App Window Action' } ),
 				accelerator: 'Command+H',
 				role: 'hide'
 			},
 			{
-				label: 'Hide Others',
+				label: i18n.translate( 'Hide Others', { context: 'Desktop App Window Action' } ),
 				accelerator: 'Command+Shift+H',
 				role: 'hideothers'
 			},
 			{
-				label: 'Show All',
+				label: i18n.translate( 'Show All', { context: 'Desktop App Window Action' } ),
 				role: 'unhide'
 			},
 			{
