@@ -31,6 +31,11 @@ module.exports = {
 		mainWindow.webContents.send( 'toggle-notification-bar' );
 	},
 
+	showHelp: function( mainWindow ) {
+		debug( 'showHelp triggered' );
+		mainWindow.webContents.send( 'page-help' );
+	},
+
 	signOut: function( mainWindow ) {
 		debug( 'signOut triggered' );
 		mainWindow.webContents.send( 'signout' );

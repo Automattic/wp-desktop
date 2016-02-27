@@ -28,7 +28,7 @@ module.exports = function( app, mainWindow ) {
 		{
 			label: 'Help',
 			role: 'help',
-			submenu: helpMenu
+			submenu: helpMenu( mainWindow )
 		}
 	];
 

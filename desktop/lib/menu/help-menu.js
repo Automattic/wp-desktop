@@ -4,6 +4,7 @@
  * External dependencies
  */
 const shell = require( 'electron' ).shell;
+const ipc = require( 'lib/calypso-commands' );
 
 /**
  * Internal dependencies
@@ -24,31 +25,26 @@ if ( platform.isWindows() || platform.isLinux() ) {
 	menuItems.push( { type: 'separator' } );
 }
 
-menuItems = menuItems.concat( [
-	{
-		label: 'Support',
-		click: function() {
-			shell.openExternal( 'https://support.wordpress.com' );
-		}
-	},
-	{
-		label: 'Forums',
-		click: function() {
-			shell.openExternal( 'https://forums.wordpress.com/' );
-		}
-	},
-	{
-		label: 'Report an Issue...',
-		click: function() {
-			shell.openExternal( 'https://github.com/Automattic/wp-desktop/issues' );
-		}
-	},
-	{
-		label: 'Privacy Policy',
-		click: function() {
-			shell.openExternal( 'https://automattic.com/privacy/' );
-		}
-	},
-] );
-
-module.exports = menuItems;
+module.exports = function( mainWindow ) {
+	return menuItems.concat( [
+		{
+			label: 'How can we help?',
+			click: function() {
+				mainWindow.show();
+				ipc.showHelp( mainWindow );
+			}
+		},
+		{
+			label: 'Forums',
+			click: function() {
+				shell.openExternal( 'https://forums.wordpress.com/' );
+			}
+		},
+		{
+			label: 'Privacy Policy',
+			click: function() {
+				shell.openExternal( 'https://automattic.com/privacy/' );
+			}
+		},
+	] );
+}
