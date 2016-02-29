@@ -19,6 +19,7 @@ PACKAGE_DMG := $(THIS_DIR)/resource/build-scripts/package-dmg.js
 PACKAGE_WIN32 := @$(NPM_BIN)/electron-builder
 CERT_SPC := $(THIS_DIR)/resource/secrets/automattic-code.spc
 CERT_PVK := $(THIS_DIR)/resource/secrets/automattic-code.pvk
+DESKTOP_PUBLIC_DIR := $(THIS_DIR)/public_desktop
 CALYPSO_DIR := $(THIS_DIR)/calypso
 CALYPSO_JS := $(CALYPSO_DIR)/public/build.js
 CALYPSO_JS_STD := $(CALYPSO_DIR)/public/build-desktop.js
@@ -193,6 +194,7 @@ test-osx: osx
 # Misc
 fetch-translations:
 	@echo "Fetching translations"
+	@rm -rf $(DESKTOP_PUBLIC_DIR)/languages
 	@node $(FETCH_TRANSLATIONS_JS)
 	@echo "---"
 
