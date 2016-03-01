@@ -6,6 +6,7 @@
 const app = require( 'electron' ).app;
 const path = require( 'path' );
 const fs = require( 'fs' );
+const debug = require( 'debug' )( 'desktop:settings' );
 
 /**
  * Internal dependencies
@@ -28,7 +29,12 @@ module.exports = {
 		const settingsFile = getSettingsFile();
 
 		if ( fs.existsSync( settingsFile ) ) {
-			return JSON.parse( fs.readFileSync( settingsFile ) );
+			try {
+				return JSON.parse( fs.readFileSync( settingsFile ) );
+			}
+			catch (e) {
+				debug( 'Error reading settings file' );
+			}
 		}
 
 		firstRun = true;
@@ -37,7 +43,7 @@ module.exports = {
 	},
 
 	save: function( group, groupData ) {
-		const debug = require( 'debug' )( 'desktop:settings' );
+
 		const settingsFile = getSettingsFile();
 		let data = {};
 
