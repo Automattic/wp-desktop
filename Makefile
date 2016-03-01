@@ -20,6 +20,7 @@ PACKAGE_WIN32 := @$(NPM_BIN)/electron-builder
 CERT_SPC := $(THIS_DIR)/resource/secrets/automattic-code.spc
 CERT_PVK := $(THIS_DIR)/resource/secrets/automattic-code.pvk
 DESKTOP_PUBLIC_DIR := $(THIS_DIR)/public_desktop
+DESKTOP_JS := $(BUILD_DIR)/desktop.js
 CALYPSO_DIR := $(THIS_DIR)/calypso
 CALYPSO_JS := $(CALYPSO_DIR)/public/build.js
 CALYPSO_JS_STD := $(CALYPSO_DIR)/public/build-desktop.js
@@ -28,6 +29,7 @@ CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -nam
 CALYPSO_CHANGES_MAS := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_MAS)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 FETCH_TRANSLATIONS_JS = $(THIS_DIR)/resource/i18n/downloader.js
+GET_I18N = $(CALYPSO_DIR)/bin/get-i18n
 WEBPACK_BIN := @$(NPM_BIN)/webpack
 
 # sets to 1 if NPM version is >= 3
@@ -192,6 +194,9 @@ test-osx: osx
 	@NODE_PATH=./release/WordPress.com-darwin-x64-unpackaged/node_modules ELECTRON_PATH=$(NPM_BIN)/electron ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha/bin/electron-mocha --inline-diffs --timeout 5000 ./resource/test/osx.js
 
 # Misc
+translate: config-release package
+	@$(GET_I18N) ./wpcom-desktop-strings.php wpcom_desktop_i18n_strings $(DESKTOP_JS)
+
 fetch-translations:
 	@echo "Fetching translations"
 	@rm -rf $(DESKTOP_PUBLIC_DIR)/languages
