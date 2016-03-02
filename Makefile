@@ -14,7 +14,6 @@ DESKTOP_CONFIG := $(THIS_DIR)/desktop-config
 BUILDER := $(THIS_DIR)/builder.js
 BUILD_CONFIG := $(THIS_DIR)/resource/build-scripts/build-config-file.js
 BUILD_DIR := $(THIS_DIR)/build
-PACKAGE_MAS := $(THIS_DIR)/resource/build-scripts/package-mas.js
 PACKAGE_DMG := $(THIS_DIR)/resource/build-scripts/package-dmg.js
 PACKAGE_WIN32 := @$(NPM_BIN)/electron-builder
 CERT_SPC := $(THIS_DIR)/resource/secrets/automattic-code.spc
@@ -22,9 +21,7 @@ CERT_PVK := $(THIS_DIR)/resource/secrets/automattic-code.pvk
 CALYPSO_DIR := $(THIS_DIR)/calypso
 CALYPSO_JS := $(CALYPSO_DIR)/public/build.js
 CALYPSO_JS_STD := $(CALYPSO_DIR)/public/build-desktop.js
-CALYPSO_JS_MAS := $(CALYPSO_DIR)/public/build-desktop-mac-app-store.js
 CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
-CALYPSO_CHANGES_MAS := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_MAS)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 WEBPACK_BIN := @$(NPM_BIN)/webpack
 
@@ -36,17 +33,14 @@ secret:
 	@if [ ! -f $(THIS_DIR)/calypso/config/secrets.json ]; then if [ -z "${CIRCLECI}" ]; then { echo "calypso/config/secrets.json not found. Required file, see docs/secrets.md"; exit 1; } fi; fi
 
 # confirm proper clientid for production release
-secret-clientid: 
-	@grep -q 43452 $(THIS_DIR)/calypso/config/secrets.json 
+secret-clientid:
+	@grep -q 43452 $(THIS_DIR)/calypso/config/secrets.json
 
 # Just runs Electron with whatever version of Calypso exists
 run: config-dev package
 	$(START_APP)
 
 run-release: config-release package
-	$(START_APP)
-
-run-mas: config-mas package
 	$(START_APP)
 
 # Builds Calypso (desktop)
@@ -62,19 +56,6 @@ build-if-not-exists:
 build-if-changed: build-if-not-exists
 	@if [ $(CALYPSO_CHANGES_STD) -eq 0 ]; then true; else make build; fi;
 
-# Builds Calypso (Mac App Store)
-build-mas: install
-	@echo "Building Calypso (Mac App Store on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
-	@CALYPSO_ENV=desktop-mac-app-store make build -C $(THIS_DIR)/calypso/
-	@rm $(THIS_DIR)/calypso/public/devmodules.*
-	@cp $(CALYPSO_JS_MAS) $(CALYPSO_JS_STD)
-
-build-mas-if-not-exists:
-	@if [ -f $(CALYPSO_JS_MAS) ]; then true; else make build-mas; fi
-
-build-mas-if-changed: build-mas-if-not-exists
-	@if [ $(CALYPSO_CHANGES_MAS) -eq 0 ]; then true; else make build-mas; fi;
-
 # Build packages
 osx: config-release package
 	@node $(BUILDER) darwin
@@ -87,9 +68,6 @@ win32-dev: config-dev package
 
 win32: config-release package
 	@node $(BUILDER) win32
-
-mas: config-mas build-mas-if-changed package
-	@node $(BUILDER) mas
 
 updater: config-updater package
 	@node $(BUILDER) darwin
@@ -107,7 +85,6 @@ package: build-if-changed
 	@cp -R $(CALYPSO_DIR)/server/pages $(BUILD_DIR)/calypso/server/pages
 	@if [ -f $(CALYPSO_DIR)/config/secrets.json ]; then cp $(CALYPSO_DIR)/config/secrets.json $(BUILD_DIR)/calypso/config/secrets.json; else cp $(CALYPSO_DIR)/config/empty-secrets.json $(BUILD_DIR)/calypso/config/secrets.json; fi;
 	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
-	@cp $(CALYPSO_DIR)/config/desktop-mac-app-store.json $(BUILD_DIR)/calypso/config/
 	@rm $(BUILD_DIR)/calypso/public/build-desktop.js $(BUILD_DIR)/calypso/public/style-debug.css*
 	@mv $(BUILD_DIR)/calypso/public/build-desktop.min.js $(BUILD_DIR)/calypso/public/build.js
 	@rm -rf $(BUILD_DIR)/calypso/server/pages/test $(BUILD_DIR)/calypso/server/pages/Makefile $(BUILD_DIR)/calypso/server/pages/README.md
@@ -122,9 +99,6 @@ package-osx: osx
 	@node $(PACKAGE_DMG)
 	@ditto -c -k --sequesterRsrc --keepParent --zlibCompressionLevel 9 ./release/WordPress.com-darwin-x64/WordPress.com.app ./release/WordPress.com.app.zip
 	@node $(THIS_DIR)/resource/build-scripts/rename-with-version-osx.js
-
-package-mas: mas
-	@node $(PACKAGE_MAS)
 
 package-linux: linux
 	@node $(THIS_DIR)/resource/build-scripts/package-linux.js
@@ -144,9 +118,6 @@ config-dev: install
 
 config-release: install secret secret-clientid
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-release.json > $(CONFIG)
-
-config-mas: install secret
-	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-mac-app-store.json > $(CONFIG)
 
 config-test: install secret
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-test.json > $(CONFIG)
