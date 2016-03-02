@@ -17,10 +17,6 @@ config.isUpdater = function() {
 	return this.build === 'updater';
 };
 
-config.isMacAppStore = function() {
-	return this.build === 'mac-app-store';
-};
-
 config.isBeta = function() {
 	return this.build === 'beta';
 };
