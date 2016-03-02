@@ -183,12 +183,6 @@ a:not([href*="//"]) {
 	-webkit-user-drag: none;
 }
 
-/* Disable environment badge in MAS */
-html.build-mac-app-store .environment-badge {
-	display: none;
-}
-
-
 /**
  * Pin app reminder
  */
