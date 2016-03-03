@@ -8,7 +8,6 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const url = require( 'url' );
 const debug = require( 'debug' )( 'desktop:runapp' );
-const startsWith = require( 'lodash/string/startsWith' );
 
 /**
  * Internal dependencies
@@ -21,6 +20,7 @@ const cookieAuth = require( 'lib/cookie-auth' );
 const appInstance = require( 'lib/app-instance' );
 const platform = require( 'lib/platform' );
 const System = require( 'lib/system' );
+const i18n = require( 'lib/i18n' );
 
 /**
  * Module variables
@@ -33,6 +33,9 @@ function showAppWindow() {
 	if ( lastLocation && isValidLastLocation( lastLocation ) ) {
 		appUrl += lastLocation;
 	}
+
+	debug( 'Initialize i18n' );
+	i18n.init( app.getLocale() );
 
 	debug( 'Loading app (' + appUrl + ') in mainWindow' );
 

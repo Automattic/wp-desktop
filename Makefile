@@ -19,6 +19,8 @@ PACKAGE_DMG := $(THIS_DIR)/resource/build-scripts/package-dmg.js
 PACKAGE_WIN32 := @$(NPM_BIN)/electron-builder
 CERT_SPC := $(THIS_DIR)/resource/secrets/automattic-code.spc
 CERT_PVK := $(THIS_DIR)/resource/secrets/automattic-code.pvk
+DESKTOP_PUBLIC_DIR := $(THIS_DIR)/public_desktop
+DESKTOP_JS := $(BUILD_DIR)/desktop.js
 CALYPSO_DIR := $(THIS_DIR)/calypso
 CALYPSO_JS := $(CALYPSO_DIR)/public/build.js
 CALYPSO_JS_STD := $(CALYPSO_DIR)/public/build-desktop.js
@@ -26,6 +28,8 @@ CALYPSO_JS_MAS := $(CALYPSO_DIR)/public/build-desktop-mac-app-store.js
 CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_CHANGES_MAS := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_MAS)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+FETCH_TRANSLATIONS_JS = $(THIS_DIR)/resource/i18n/downloader.js
+GET_I18N = $(CALYPSO_DIR)/bin/get-i18n
 WEBPACK_BIN := @$(NPM_BIN)/webpack
 
 # sets to 1 if NPM version is >= 3
@@ -36,8 +40,8 @@ secret:
 	@if [ ! -f $(THIS_DIR)/calypso/config/secrets.json ]; then if [ -z "${CIRCLECI}" ]; then { echo "calypso/config/secrets.json not found. Required file, see docs/secrets.md"; exit 1; } fi; fi
 
 # confirm proper clientid for production release
-secret-clientid: 
-	@grep -q 43452 $(THIS_DIR)/calypso/config/secrets.json 
+secret-clientid:
+	@grep -q 43452 $(THIS_DIR)/calypso/config/secrets.json
 
 # Just runs Electron with whatever version of Calypso exists
 run: config-dev package
@@ -76,22 +80,22 @@ build-mas-if-changed: build-mas-if-not-exists
 	@if [ $(CALYPSO_CHANGES_MAS) -eq 0 ]; then true; else make build-mas; fi;
 
 # Build packages
-osx: config-release package
+osx: config-release fetch-translations package
 	@node $(BUILDER) darwin
 
-linux: config-release package
+linux: config-release fetch-translations package
 	@node $(BUILDER) linux
 
-win32-dev: config-dev package
+win32-dev: config-dev fetch-translations package
 	@node $(BUILDER) win32
 
-win32: config-release package
+win32: config-release fetch-translations package
 	@node $(BUILDER) win32
 
-mas: config-mas build-mas-if-changed package
+mas: config-mas build-mas-if-changed fetch-translations package
 	@node $(BUILDER) mas
 
-updater: config-updater package
+updater: config-updater fetch-translations package
 	@node $(BUILDER) darwin
 
 # Packagers
@@ -188,5 +192,15 @@ test-osx: osx
 	@mkdir ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha
 	@cp -R ./node_modules/electron-mocha ./release/WordPress.com-darwin-x64-unpacked/node_modules/
 	@NODE_PATH=./release/WordPress.com-darwin-x64-unpackaged/node_modules ELECTRON_PATH=$(NPM_BIN)/electron ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha/bin/electron-mocha --inline-diffs --timeout 5000 ./resource/test/osx.js
+
+# Misc
+translate: config-release package
+	@$(GET_I18N) ./wpcom-desktop-strings.php wpcom_desktop_i18n_strings $(DESKTOP_JS)
+
+fetch-translations:
+	@echo "Fetching translations"
+	@rm -rf $(DESKTOP_PUBLIC_DIR)/languages
+	@node $(FETCH_TRANSLATIONS_JS)
+	@echo "---"
 
 .PHONY: run test

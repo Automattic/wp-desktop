@@ -7,3 +7,5 @@ publish/publish-config.js
 publish/node_modules/
 resource/secrets
 build
+public_desktop/languages/
+wpcom-desktop-strings.php

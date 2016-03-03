@@ -11,12 +11,13 @@ const ipc = require( 'lib/calypso-commands' );
  */
 const platform = require( 'lib/platform' );
 const WindowManager = require( 'lib/window-manager' );
+const i18n = require( 'lib/i18n' );
 
 let menuItems = [];
 
 if ( platform.isWindows() || platform.isLinux() ) {
 	menuItems.push( {
-		label: 'About WordPress.com',
+		label: i18n.translate( 'About WordPress.com' ),
 		click: function() {
 			WindowManager.openAbout();
 		}
@@ -28,20 +29,20 @@ if ( platform.isWindows() || platform.isLinux() ) {
 module.exports = function( mainWindow ) {
 	return menuItems.concat( [
 		{
-			label: 'How can we help?',
+			label: i18n.translate( 'How can we help?' ),
 			click: function() {
 				mainWindow.show();
 				ipc.showHelp( mainWindow );
 			}
 		},
 		{
-			label: 'Forums',
+			label: i18n.translate( 'Forums', { context: 'Link to Support Forums' } ),
 			click: function() {
 				shell.openExternal( 'https://forums.wordpress.com/' );
 			}
 		},
 		{
-			label: 'Privacy Policy',
+			label: i18n.translate( 'Privacy Policy' ),
 			click: function() {
 				shell.openExternal( 'https://automattic.com/privacy/' );
 			}

@@ -12,7 +12,7 @@
   "scripts": {
     "start": "make run",
     "build": "make build",
-    "test" : "make test"
+    "test": "make test"
   },
   "keywords": [
     "desktop",
@@ -20,7 +20,7 @@
     "wordpress.com"
   ],
   "engines": {
-      "npm": "^3.5.3"
+    "npm": "^3.5.3"
   },
   "optionalDependencies": {
     "appdmg": "^0.3.4"

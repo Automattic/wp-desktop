@@ -41,7 +41,15 @@ module.exports = {
 	],
 	resolve: {
 		extensions: [ '', '.js', '.jsx' ],
-		modulesDirectories: [ 'node_modules', path.join( __dirname, 'calypso', 'server' ), path.join( __dirname, 'calypso', 'client' ), 'desktop' ]
+		modulesDirectories: [
+			'node_modules',
+			// For require/import resolution within Calypso
+			'calypso/server',
+			'calypso/client',
+			// For require/import within Desktop
+			'calypso',
+			'desktop'
+		]
 	},
 	plugins: [
 		// new webpack.optimize.DedupePlugin(),
