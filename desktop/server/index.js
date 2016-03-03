@@ -30,7 +30,7 @@ var mainWindow = null;
 function showAppWindow() {
 	let appUrl = Config.server_url + ':' + Config.server_port;
 	let lastLocation = Settings.getSetting( settingConstants.LAST_LOCATION );
-	if ( lastLocation ) {
+	if ( lastLocation && isValidLastLocation( lastLocation ) ) {
 		appUrl += lastLocation;
 	}
 
@@ -52,7 +52,7 @@ function showAppWindow() {
 	mainWindow.on( 'close', function() {
 		let currentURL = mainWindow.webContents.getURL();
 		let parsedURL = url.parse( currentURL );
-		if ( ! parsedURL.pathname.startsWith( '/start' ) ) { // Don't attempt to resume the signup flow
+		if ( isValidLastLocation( parsedURL.pathname ) ) {
 			Settings.saveSetting( settingConstants.LAST_LOCATION, parsedURL.pathname );
 		}
 	} );
@@ -73,6 +73,21 @@ function startApp( started_cb ) {
 	server.start( app, function() {
 		started_cb( showAppWindow() );
 	} );
+}
+
+function isValidLastLocation( loc ) {
+	const invalids = [
+		'/desktop/',     // Page shown when no Electron
+		'/start'         // Don't attempt to resume the signup flow
+	];
+
+	for ( let s of invalids ) {
+		if ( loc.startsWith( s ) ) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 module.exports = function( started_cb ) {
