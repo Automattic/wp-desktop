@@ -77,8 +77,8 @@ function startApp( started_cb ) {
 
 function isValidLastLocation( loc ) {
 	const invalids = [
-		'/desktop/hey.html',	// Page shown when no Electron
-		'/start'				// Don't attempt to resume the signup flow
+		'/desktop/',     // Page shown when no Electron
+		'/start'         // Don't attempt to resume the signup flow
 	];
 
 	for ( let s of invalids ) {
