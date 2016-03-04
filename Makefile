@@ -27,6 +27,7 @@ WEBPACK_BIN := @$(NPM_BIN)/webpack
 
 # sets to 1 if NPM version is >= 3
 NPMGTE3 := $(shell expr `npm -v | cut -f1 -d.` \>= 3)
+MAKENSIS_VERSION=`makensis -VERSION`
 
 # check for secrets.json
 secret:
@@ -72,6 +73,11 @@ win32: config-release package
 updater: config-updater package
 	@node $(BUILDER) darwin
 
+# confirm using recent version of makensis
+# v2.5.0 and up have fixes for DLL hijacjk
+verify-makensis:
+	@if [ ! "$(MAKENSIS_VERSION)" = "v08-Feb-2016.cvs" ]; then echo "$(RED)Please upgrade NSIS installer requires >= v2.5.0.\nbrew update; brew upgrade makensis$(RESET)"; exit 1; fi
+
 # Packagers
 package: build-if-changed
 	@echo "Bundling app and server"
@@ -90,7 +96,7 @@ package: build-if-changed
 	@rm -rf $(BUILD_DIR)/calypso/server/pages/test $(BUILD_DIR)/calypso/server/pages/Makefile $(BUILD_DIR)/calypso/server/pages/README.md
 	@cd $(BUILD_DIR); $(NPM) install --production --no-optional; $(NPM) prune
 
-package-win32: win32
+package-win32: win32 verify-makensis
 	@$(PACKAGE_WIN32) ./release/WordPress.com-win32-ia32 --platform=win --out=./release --config=./resource/build-config/win32-package.json
 	@node $(THIS_DIR)/resource/build-scripts/rename-with-version-win.js
 	@node $(THIS_DIR)/resource/build-scripts/code-sign-win.js --spc=$(CERT_SPC) --pvk=$(CERT_PVK)
