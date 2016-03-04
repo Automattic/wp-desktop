@@ -7,7 +7,6 @@ In order to run outside of the development environment you need to build a relea
 To do this, run one of the following commands:
 
 * `make osx`
-* `make mas` - A Mac App Store version
 * `make linux`
 * `make win32`
 

@@ -11,5 +11,4 @@ The following variables are also provided from `package.json`:
 
 Also provides these functions:
 - `isRelease` - Release build
-- `isMacAppStore` - Mac App Store build
 - `isBeta` - Beta release

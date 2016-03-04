@@ -27,14 +27,12 @@ AppInstance.prototype.anotherInstanceStarted = function() {
 AppInstance.prototype.isSingleInstance = function() {
 	let shouldQuit;
 
-	if ( config.isMacAppStore() === false ) {
-		shouldQuit = app.makeSingleInstance( this.anotherInstanceStarted.bind( this ) );
+	shouldQuit = app.makeSingleInstance( this.anotherInstanceStarted.bind( this ) );
 
-		if ( shouldQuit ) {
-			debug( 'App is already running, quitting' );
-			app.quit();
-			return false;
-		}
+	if ( shouldQuit ) {
+		debug( 'App is already running, quitting' );
+		app.quit();
+		return false;
 	}
 
 	return true;
