@@ -196,6 +196,7 @@ test-osx: osx
 # Misc
 translate: config-release package
 	@$(GET_I18N) ./wpcom-desktop-strings.php wpcom_desktop_i18n_strings $(DESKTOP_JS)
+	@echo "Saved to ./wpcom-desktop-strings.php"
 
 fetch-translations:
 	@echo "Fetching translations"
