@@ -5,6 +5,7 @@
  */
 const shell = require( 'electron' ).shell;
 const ipc = require( 'lib/calypso-commands' );
+const url = require( 'url' );
 
 /**
  * Internal dependencies
@@ -30,8 +31,14 @@ module.exports = function( mainWindow ) {
 		{
 			label: 'How can we help?',
 			click: function() {
-				mainWindow.show();
-				ipc.showHelp( mainWindow );
+				// on login page - user logged out
+				let parsedURL = url.parse( mainWindow.webContents.getURL() );
+				if ( parsedURL.pathname === '/login' ) {
+					shell.openExternal( 'https://en.support.wordpress.com/' );
+				} else {
+					mainWindow.show();
+					ipc.showHelp( mainWindow );
+				}
 			}
 		},
 		{
