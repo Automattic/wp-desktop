@@ -89,6 +89,24 @@ function startDesktopApp() {
 			ev.preventDefault();
 		}
 	}
+	
+	var remote = require( 'electron' ).remote;
+	var buildEditorContextMenu = remote.require('electron-editor-context-menu' );
+	function contextMenu( ev ) {
+		if ( ! ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
+			return;
+		} else {
+			console.log( "Target: " + ev.target.closest );
+		}
+
+		var menu = buildEditorContextMenu();
+		// The 'contextmenu' event is emitted after 'selectionchange' has fired but possibly before the 
+		// visible selection has changed. Try to wait to show the menu until after that, otherwise the 
+		// visible selection will update after the menu dismisses and look weird. 
+		setTimeout(function() {
+			menu.popup(remote.getCurrentWindow());
+		}, 30);
+	}
 
 	debug = gGebug( 'desktop:browser' );
 
@@ -102,6 +120,7 @@ function startDesktopApp() {
 
 		document.addEventListener( 'keydown', keyboardHandler );
 		document.addEventListener( 'click', preventNewWindow );
+		document.addEventListener( 'contextmenu', contextMenu );
 	}
 
 	// This is called by Calypso
