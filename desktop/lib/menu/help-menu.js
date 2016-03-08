@@ -5,7 +5,6 @@
  */
 const shell = require( 'electron' ).shell;
 const ipc = require( 'lib/calypso-commands' );
-const url = require( 'url' );
 
 /**
  * Internal dependencies
