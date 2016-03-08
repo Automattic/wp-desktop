@@ -12,6 +12,7 @@ const url = require( 'url' );
  */
 const platform = require( 'lib/platform' );
 const WindowManager = require( 'lib/window-manager' );
+const state = require( 'lib/state' );
 
 let menuItems = [];
 
@@ -32,12 +33,11 @@ module.exports = function( mainWindow ) {
 			label: 'How can we help?',
 			click: function() {
 				// on login page - user logged out
-				let parsedURL = url.parse( mainWindow.webContents.getURL() );
-				if ( parsedURL.pathname === '/login' ) {
-					shell.openExternal( 'https://en.support.wordpress.com/' );
-				} else {
+				if ( state.isLoggedIn() ) {
 					mainWindow.show();
 					ipc.showHelp( mainWindow );
+				} else {
+					shell.openExternal( 'https://en.support.wordpress.com/' );
 				}
 			}
 		},
