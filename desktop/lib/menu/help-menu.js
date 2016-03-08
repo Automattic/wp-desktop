@@ -11,6 +11,7 @@ const ipc = require( 'lib/calypso-commands' );
  */
 const platform = require( 'lib/platform' );
 const WindowManager = require( 'lib/window-manager' );
+const state = require( 'lib/state' );
 
 let menuItems = [];
 
@@ -30,8 +31,13 @@ module.exports = function( mainWindow ) {
 		{
 			label: 'How can we help?',
 			click: function() {
-				mainWindow.show();
-				ipc.showHelp( mainWindow );
+				// on login page - user logged out
+				if ( state.isLoggedIn() ) {
+					mainWindow.show();
+					ipc.showHelp( mainWindow );
+				} else {
+					shell.openExternal( 'https://en.support.wordpress.com/' );
+				}
 			}
 		},
 		{

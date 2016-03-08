@@ -12,6 +12,7 @@ const app = electron.app;
  */
 const menu = require( 'lib/menu' );
 const platform = require( 'lib/platform' );
+const state = require( 'lib/state' );
 
 module.exports = function( mainWindow ) {
 	menu.set( app, mainWindow );
@@ -20,9 +21,11 @@ module.exports = function( mainWindow ) {
 		if ( loggedIn ) {
 			menu.enableLoggedInItems( app, mainWindow );
 			platform.setDockMenu( true );
+			state.login();
 		} else {
 			menu.disableLoggedInItems( app, mainWindow );
 			platform.setDockMenu( false );
+			state.logout();
 		}
 	} );
 }
