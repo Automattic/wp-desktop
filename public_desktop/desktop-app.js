@@ -93,7 +93,7 @@ function startDesktopApp() {
 	var remote = require( 'electron' ).remote;
 	var buildEditorContextMenu = remote.require('electron-editor-context-menu' );
 	function contextMenu( ev ) {
-		if ( ! ev.target.closest( 'iframe body, textarea, input, [contenteditable="true"]' ) ) {
+		if ( ! ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
 			return;
 		} else {
 			console.log( "Target: " + ev.target.closest );
