@@ -90,21 +90,21 @@ function startDesktopApp() {
 		}
 	}
 	
-	var remote = require( 'electron' ).remote;
-	var buildEditorContextMenu = remote.require('electron-editor-context-menu' );
+	var buildEditorContextMenu = electron.remote.require( '../desktop/lib/menu/editor-context-menu' );
 	function contextMenu( ev ) {
-		if ( ! ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
-			return;
+		var menu = {};
+		if ( ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
+			menu = buildEditorContextMenu();
 		} else {
 			console.log( "Target: " + ev.target.closest );
+			return;
 		}
 
-		var menu = buildEditorContextMenu();
 		// The 'contextmenu' event is emitted after 'selectionchange' has fired but possibly before the 
 		// visible selection has changed. Try to wait to show the menu until after that, otherwise the 
 		// visible selection will update after the menu dismisses and look weird. 
 		setTimeout(function() {
-			menu.popup(remote.getCurrentWindow());
+			menu.popup(electron.remote.getCurrentWindow());
 		}, 30);
 	}
 
