@@ -91,13 +91,13 @@ function startDesktopApp() {
 	}
 	
 	var buildEditorContextMenu = electron.remote.require( '../desktop/lib/menu/editor-context-menu' );
+	var buildGeneralContextMenu = electron.remote.require( '../desktop/lib/menu/general-context-menu' );
 	function contextMenu( ev ) {
 		var menu = {};
 		if ( ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
 			menu = buildEditorContextMenu();
 		} else {
-			console.log( "Target: " + ev.target.closest );
-			return;
+			menu = buildGeneralContextMenu();
 		}
 
 		// The 'contextmenu' event is emitted after 'selectionchange' has fired but possibly before the 
