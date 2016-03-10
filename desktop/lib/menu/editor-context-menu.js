@@ -34,11 +34,6 @@ var DEFAULT_MAIN_TPL = [{
   label: 'Paste',
   role: 'paste'
 }, {
-  label: 'Paste and Match Style',
-  click: function() {
-    BrowserWindow.getFocusedWindow().webContents.pasteAndMatchStyle();
-  }
-}, {
   label: 'Select All',
   role: 'selectall'
 }];
@@ -71,6 +66,7 @@ function getTemplate(val, defaultVal) {
     return cloneDeep(defaultVal);
   }
 }
+
 
 /**
  * Builds a context menu suitable for showing in a text editor.
