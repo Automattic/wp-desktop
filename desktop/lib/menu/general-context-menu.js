@@ -6,10 +6,27 @@
 var Menu = require( 'electron' ).Menu;
 var cloneDeep = require('lodash.cloneDeep');
 var BrowserWindow = require('browser-window');
+var platform = require( '../platform' );
 
 // selectable attribute determines if menu item
 // should only be enabled when text is selected
 var DEFAULT_MAIN_TPL = [{
+	label: 'Copy',
+	role: 'copy',
+	selectable: true,
+	enabled: true
+},{
+	type: 'separator'
+},{
+	label: 'Minimize',
+	role: 'minimize'
+}];
+
+
+// OS X Menu
+// selectable attribute determines if menu item
+// should only be enabled when text is selected
+var DEFAULT_OSX_TPL = [{
 	label: 'Copy',
 	role: 'copy',
 	selectable: true,
@@ -32,7 +49,12 @@ function defineTerm() {
 }
 
 module.exports = function( selectedText ) {
-	var template = cloneDeep(DEFAULT_MAIN_TPL);
+	var template = {};
+	if ( platform.isOSX() && false ) {
+		template = cloneDeep(DEFAULT_OSX_TPL);
+	} else {
+		template = cloneDeep(DEFAULT_MAIN_TPL);
+	}
 
 	template.map( function( item ) {
 		if ( ! selectedText ) {			// if no text is selected
