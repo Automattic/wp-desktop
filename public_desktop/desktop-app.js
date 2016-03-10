@@ -13,6 +13,7 @@ var booted = false;
 var spellchecker;
 var selection;
 var webFrame;
+var loadContextMenu = true;
 
 function startDesktopApp() {
 	if ( desktop.settings.isDebug() ) {
@@ -90,19 +91,16 @@ function startDesktopApp() {
 			ev.preventDefault();
 		}
 	}
-	
-	function resetSelection() {
-		selection = {
-			isMisspelled: false,
-			spellingSuggestions: []
-		};
+
+	debug = gGebug( 'desktop:browser' );
+
+	try {
+		var buildEditorContextMenu = electron.remote.require( '../desktop/lib/menu/editor-context-menu' );
+		var buildGeneralContextMenu = electron.remote.require( '../desktop/lib/menu/general-context-menu' );
+	} catch (e) {
+		debug( "Error loading context menus", e.message);
+		loadContextMenu = false;
 	}
-	resetSelection();
-	document.addEventListener( 'mousedown', resetSelection );
-
-
-	var buildEditorContextMenu = electron.remote.require( '../desktop/lib/menu/editor-context-menu' );
-	var buildGeneralContextMenu = electron.remote.require( '../desktop/lib/menu/general-context-menu' );
 	function contextMenu( ev ) {
 		var menu = {};
 		if ( ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
@@ -120,7 +118,17 @@ function startDesktopApp() {
 		}, 30);
 	}
 
-	debug = gGebug( 'desktop:browser' );
+	function resetSelection() {
+		selection = {
+			isMisspelled: false,
+			spellingSuggestions: []
+		};
+	}
+
+	if ( loadContextMenu ) {
+		resetSelection();
+		document.addEventListener( 'mousedown', resetSelection );
+	}
 
 	// Everything is ready, start Calypso
 	debug( 'Received app configuration, starting in browser' );
@@ -132,7 +140,10 @@ function startDesktopApp() {
 
 		document.addEventListener( 'keydown', keyboardHandler );
 		document.addEventListener( 'click', preventNewWindow );
-		document.addEventListener( 'contextmenu', contextMenu );
+
+		if ( loadContextMenu )  {
+			document.addEventListener( 'contextmenu', contextMenu );
+		}
 	}
 
 	// This is called by Calypso
@@ -175,7 +186,7 @@ function setupSpellchecker( locale ) {
 				}
 			} } );
 	} catch ( e ) {
-		debug( 'Failed to initialize spellchecker', e );
+		debug( 'Failed to initialize spellchecker', e.message );
 	}
 }
 
