@@ -50,7 +50,7 @@ function defineTerm() {
 
 module.exports = function( selectedText ) {
 	var template = {};
-	if ( platform.isOSX() && false ) {
+	if ( platform.isOSX() ) {
 		template = cloneDeep(DEFAULT_OSX_TPL);
 	} else {
 		template = cloneDeep(DEFAULT_MAIN_TPL);
