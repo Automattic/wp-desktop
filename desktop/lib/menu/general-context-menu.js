@@ -7,10 +7,15 @@ var Menu = require( 'electron' ).Menu;
 
 var DEFAULT_MAIN_TPL = [{
 	label: 'Copy',
-	role: 'copy'
+	role: 'copy',
+	enabled: true
+},{
+	label: 'Minimize',
+	role: 'minimize'
 }];
 
 module.exports = function( selection ) {
+
 	return Menu.buildFromTemplate( DEFAULT_MAIN_TPL );
 };
 
