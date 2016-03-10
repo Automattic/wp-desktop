@@ -11,6 +11,7 @@ var desktop;
 var debug;
 var booted = false;
 var spellchecker;
+var selection;
 var webFrame;
 
 function startDesktopApp() {
@@ -90,12 +91,23 @@ function startDesktopApp() {
 		}
 	}
 	
+	function resetSelection() {
+		console.log("Resetting selection...");
+		selection = {
+			isMisspelled: false,
+			spellingSuggestions: []
+		};
+	}
+	resetSelection();
+	document.addEventListener( 'mousedown', resetSelection );
+
+
 	var buildEditorContextMenu = electron.remote.require( '../desktop/lib/menu/editor-context-menu' );
 	var buildGeneralContextMenu = electron.remote.require( '../desktop/lib/menu/general-context-menu' );
 	function contextMenu( ev ) {
 		var menu = {};
 		if ( ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
-			menu = buildEditorContextMenu();
+			menu = buildEditorContextMenu(selection);
 		} else {
 			menu = buildGeneralContextMenu();
 		}
@@ -152,14 +164,21 @@ function setupSpellchecker( locale ) {
 		spellchecker = electron.remote.require( 'spellchecker' );
 
 		webFrame.setSpellCheckProvider( locale, false, {
-			spellCheck: function( text ) {
-				return ! spellchecker.isMisspelled( text );
-			}
-		} )
+			spellCheck: function(text) {
+				if ( spellchecker.isMisspelled(text) ) {
+					var suggestions = spellchecker.getCorrectionsForMisspelling(text);
+					selection.isMisspelled = true;
+					selection.spellingSuggestions = suggestions.slice(0, 3);
+					return false;
+				} else {
+					return true;
+				}
+			} } );
 	} catch ( e ) {
 		debug( 'Failed to initialize spellchecker', e );
 	}
 }
+
 
 // Wrap this in an exception handler. If it fails then it means Electron is not present, and we are in a browser
 // This will then cause the browser to redirect to hey.html
