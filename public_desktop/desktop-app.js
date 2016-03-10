@@ -92,7 +92,6 @@ function startDesktopApp() {
 	}
 	
 	function resetSelection() {
-		console.log("Resetting selection...");
 		selection = {
 			isMisspelled: false,
 			spellingSuggestions: []
