@@ -109,7 +109,8 @@ function startDesktopApp() {
 		if ( ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
 			menu = buildEditorContextMenu(selection);
 		} else {
-			menu = buildGeneralContextMenu();
+			var selectedText = window.getSelection().toString();
+			menu = buildGeneralContextMenu(selectedText);
 		}
 
 		// The 'contextmenu' event is emitted after 'selectionchange' has fired but possibly before the 
