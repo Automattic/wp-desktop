@@ -4,7 +4,7 @@
  */
 
 var Menu = require( 'electron' ).Menu;
-var cloneDeep = require('lodash.cloneDeep');
+var cloneDeep = require('lodash.clonedeep');
 var BrowserWindow = require('browser-window');
 var platform = require( '../platform' );
 

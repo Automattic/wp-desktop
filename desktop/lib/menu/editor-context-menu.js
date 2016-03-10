@@ -8,10 +8,10 @@
 
 var noop = function(){};
 var defaults = require('lodash.defaults');
-var isEmpty = require('lodash.isEmpty');
-var isFunction = require('lodash.isFunction');
-var isArray = require('lodash.isArray');
-var cloneDeep = require('lodash.cloneDeep');
+var isEmpty = require('lodash.isempty');
+var isFunction = require('lodash.isfunction');
+var isArray = require('lodash.isarray');
+var cloneDeep = require('lodash.clonedeep');
 var BrowserWindow = require('electron').BrowserWindow;
 var Menu = require('electron').Menu;
 
