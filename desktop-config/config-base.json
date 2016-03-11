@@ -59,6 +59,7 @@
 		"proxy-type": "",
 		"proxy-url": "socks5://localhost",
 		"proxy-port": "8080",
-		"proxy-pac": ""
+		"proxy-pac": "",
+		"spellcheck-enabled": true
 	}
 }
