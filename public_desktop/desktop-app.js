@@ -134,6 +134,11 @@ function setupSpellchecker( locale ) {
 		return;
 	}
 
+	if ( locale.toLowerCase() !== 'en-us' ) {
+		debug( 'Disabling spellcheck, temporary only en-us support' );
+		return;
+	}
+
 	try {
 		spellchecker = electron.remote.require( 'spellchecker' );
 
