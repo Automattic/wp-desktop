@@ -129,6 +129,11 @@ function startDesktopApp() {
 }
 
 function setupSpellchecker( locale ) {
+	if ( !desktop.settings.getSetting( 'spellcheck-enabled' ) ) {
+		debug( 'Spellchecker not enabled; skipping setup' );
+		return;
+	}
+
 	try {
 		spellchecker = electron.remote.require( 'spellchecker' );
 
