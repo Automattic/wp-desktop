@@ -9,8 +9,6 @@
 var noop = function(){};
 var defaults = require('lodash.defaults');
 var isEmpty = require('lodash.isempty');
-var isFunction = require('lodash.isfunction');
-var isArray = require('lodash.isarray');
 var cloneDeep = require('lodash.clonedeep');
 var BrowserWindow = require('electron').BrowserWindow;
 var Menu = require('electron').Menu;
@@ -48,27 +46,6 @@ var DEFAULT_SUGGESTIONS_TPL = [
 ];
 
 /**
- * if passed a function, invoke it and pass a clone of the default (for safe mutations)
- * if passed an array, use as is
- * otherwise, just return a clone of the default
- * @param val {*}
- * @param defaultVal {Array}
- * @returns {Array}
- */
-function getTemplate(val, defaultVal) {
-  if(isFunction(val)) {
-    return val(cloneDeep(defaultVal));
-  }
-  else if(isArray(val)) {
-    return val;
-  }
-  else {
-    return cloneDeep(defaultVal);
-  }
-}
-
-
-/**
  * Builds a context menu suitable for showing in a text editor.
  *
  * @param {Object=} selection - An object describing the current text selection.
@@ -84,15 +61,15 @@ function getTemplate(val, defaultVal) {
  *    Receives the default suggestions template as a parameter. Should return a template.
  * @return {Menu}
  */
-var buildEditorContextMenu = function(selection, mainTemplate, suggestionsTemplate) {
+var buildEditorContextMenu = function(selection) {
 
   selection = defaults({}, selection, {
     isMisspelled: false,
     spellingSuggestions: []
   });
 
-  var template = getTemplate(mainTemplate, DEFAULT_MAIN_TPL);
-  var suggestionsTpl = getTemplate(suggestionsTemplate, DEFAULT_SUGGESTIONS_TPL);
+  var template = cloneDeep(DEFAULT_MAIN_TPL);
+  var suggestionsTpl = cloneDeep(DEFAULT_SUGGESTIONS_TPL);
 
   if (selection.isMisspelled) {
     var suggestions = selection.spellingSuggestions;
