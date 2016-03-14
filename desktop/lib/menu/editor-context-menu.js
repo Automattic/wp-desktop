@@ -7,7 +7,6 @@
  */
 
 var noop = function(){};
-var defaults = require('lodash.defaults');
 var cloneDeep = require('lodash.clonedeep');
 var BrowserWindow = require('electron').BrowserWindow;
 var Menu = require('electron').Menu;
@@ -46,26 +45,17 @@ var DEFAULT_SUGGESTIONS_TPL = [
 
 /**
  * Builds a context menu suitable for showing in a text editor.
- *
- * @param {Object=} selection - An object describing the current text selection.
- *   @property {Boolean=false} isMisspelled - `true` if the selection is
- *     misspelled, `false` if it is spelled correctly or is not text.
- *   @property {Array<String>=[]} spellingSuggestions - An array of suggestions
- *     to show to correct the misspelling. Ignored if `isMisspelled` is `false`.
- * @param {Function|Array} mainTemplate - Optional. If it's an array, use as is.
- *    If it's a function, used to customize the template of always-present menu items.
- *    Receives the default template as a parameter. Should return a template.
- * @param {Function|Array} suggestionsTemplate - Optional. If it's an array, use as is.
- *    If it's a function, used to customize the template of spelling suggestion items.
- *    Receives the default suggestions template as a parameter. Should return a template.
+ * select
  * @return {Menu}
  */
 var buildEditorContextMenu = function(selection) {
 
-  selection = defaults({}, selection, {
-    isMisspelled: false,
-    spellingSuggestions: []
-  });
+	if ( typeof selection === 'undefined' ) {
+		selection = {
+			isMisspelled: false,
+			spellingSuggestions: []
+		}
+	}
 
   var template = cloneDeep(DEFAULT_MAIN_TPL);
   var suggestionsTpl = cloneDeep(DEFAULT_SUGGESTIONS_TPL);
