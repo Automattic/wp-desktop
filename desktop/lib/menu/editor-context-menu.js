@@ -8,7 +8,6 @@
 
 var noop = function(){};
 var defaults = require('lodash.defaults');
-var isEmpty = require('lodash.isempty');
 var cloneDeep = require('lodash.clonedeep');
 var BrowserWindow = require('electron').BrowserWindow;
 var Menu = require('electron').Menu;
@@ -73,7 +72,7 @@ var buildEditorContextMenu = function(selection) {
 
   if (selection.isMisspelled) {
     var suggestions = selection.spellingSuggestions;
-    if (isEmpty(suggestions)) {
+    if ( suggestions.length == 0 ) {
       template.unshift.apply(template, suggestionsTpl);
     } else {
       template.unshift.apply(template, suggestions.map(function(suggestion) {
