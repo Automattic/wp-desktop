@@ -81,6 +81,12 @@
 <div class="options">
 	<table class="option-group">
 		<tr class="option-notifications">
+			<td class="option-title"><span>Writing: </span></td>
+			<td><label><input type="checkbox" name="spellcheck-enabled"> Enable spell checking </label></td>
+		</tr>
+	</table>
+	<table class="option-group">
+		<tr class="option-notifications">
 			<td class="option-title"><span>Notifications: </span></td>
 			<td><label><input type="checkbox" name="notification-badge"> Show notification badge </label></td>
 		</tr>
@@ -150,7 +156,6 @@
 		}
 
 		[ 'proxy-url', 'proxy-port', 'proxy-pac' ].forEach( function( item ) {
-			console.log( item );
 			document.querySelector( 'input[name=' + item + ']' ).value = settings.getSetting( item );
 		} );
 
