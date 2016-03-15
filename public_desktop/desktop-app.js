@@ -94,9 +94,21 @@ function startDesktopApp() {
 
 	function contextMenu( ev ) {
 		var menu = {};
-		if ( ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
+		var showEditorMenu = false;
+
+		// check if in visual editor, ipc sends an EventEmitter
+		if ( typeof ev.sender !== 'undefined' )  {
+			showEditorMenu = true;
+		}
+		// check if in textarea or similar
+		else if ( ( typeof ev.target !== 'undefined' ) && ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
+			showEditorMenu = true;
+		}
+
+		if ( showEditorMenu ) {
 			menu = buildEditorContextMenu(selection);
-		} else {
+		}
+		else {
 			var selectedText = window.getSelection().toString();
 			menu = buildGeneralContextMenu(selectedText);
 		}
@@ -147,6 +159,10 @@ function startDesktopApp() {
 
 		if ( loadContextMenu )  {
 			document.addEventListener( 'contextmenu', contextMenu );
+
+			// listen for tinymce IPC event for context menu
+			// required for visual editor since within iframe
+			ipc.on( 'mce-context-menu', contextMenu );
 		}
 	}
 
@@ -216,7 +232,9 @@ try {
 
 	ipc.on( 'is-calypso', function() {
 		ipc.send( 'is-calypso-response', document.getElementById( 'wpcom' ) !== null );
+		
 	} );
+
 
 	ipc.on( 'app-config', function( event, config, debug, details ) {
 
@@ -260,7 +278,7 @@ try {
 	} );
 
 } catch ( e ) {
-	debug( 'Failed to initialize calypso', e );
+	debug( 'Failed to initialize calypso', e.message );
 }
 
 startDesktopApp();
