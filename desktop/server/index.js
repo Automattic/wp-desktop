@@ -44,6 +44,12 @@ function showAppWindow() {
 
 	mainWindow.webContents.on( 'did-finish-load', function() {
 		mainWindow.webContents.send( 'app-config', Config, Settings.isDebug(), System.getDetails() );
+
+		const ipc = electron.ipcMain;
+		ipc.on( 'mce-context-menu', function( ev ) {
+			mainWindow.send( 'mce-context-menu', ev );
+		});
+
 	} );
 
 	mainWindow.loadURL( appUrl );
