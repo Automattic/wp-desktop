@@ -13,6 +13,8 @@ const dialog = require( 'electron' ).dialog;
  */
 const config = require( './lib/config' );
 const Settings = require( './lib/settings' );
+const EditorContextMenu = require( './lib/menu/editor-context-menu' );
+const GeneralContextMenu = require( './lib/menu/general-context-menu' );
 
 /**
  * Module variables
@@ -83,5 +85,8 @@ debug( '========================================================================
 // Define a global 'desktop' variable that can be used in browser windows to access config and settings
 global.desktop = {
 	config: config,
-	settings: Settings
+	settings: Settings,
+	editorContextMenu: EditorContextMenu,
+	generalContextMenu: GeneralContextMenu
 };
+
