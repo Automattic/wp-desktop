@@ -5,7 +5,7 @@
 
 var Menu = require( 'electron' ).Menu;
 var cloneDeep = require('lodash.clonedeep');
-var BrowserWindow = require('browser-window');
+var BrowserWindow = require('electron').BrowserWindow;
 var platform = require( '../platform' );
 
 // selectable attribute determines if menu item
