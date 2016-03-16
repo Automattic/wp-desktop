@@ -113,9 +113,9 @@ function startDesktopApp() {
 			menu = buildGeneralContextMenu(selectedText);
 		}
 
-		// The 'contextmenu' event is emitted after 'selectionchange' has fired but possibly before the 
-		// visible selection has changed. Try to wait to show the menu until after that, otherwise the 
-		// visible selection will update after the menu dismisses and look weird. 
+		// The 'contextmenu' event is emitted after 'selectionchange' has fired but possibly before the
+		// visible selection has changed. Try to wait to show the menu until after that, otherwise the
+		// visible selection will update after the menu dismisses and look weird.
 		setTimeout(function() {
 			menu.popup(electron.remote.getCurrentWindow());
 		}, 30);
@@ -131,7 +131,7 @@ function startDesktopApp() {
 
 	debug = gGebug( 'desktop:browser' );
 
-	
+
 	debug( 'Setting up Context Menus' );
 	try {
 		var buildEditorContextMenu = electron.remote.require( '../desktop/lib/menu/editor-context-menu' );
@@ -232,7 +232,7 @@ try {
 
 	ipc.on( 'is-calypso', function() {
 		ipc.send( 'is-calypso-response', document.getElementById( 'wpcom' ) !== null );
-		
+
 	} );
 
 
@@ -244,19 +244,19 @@ try {
 
 				var container = document.querySelector( '#wpcom' );
 				var pinApp = container.querySelector( '.pin-app' );
-		
+
 				if ( ! pinApp ) {
 					var node = document.createElement( 'div' );
 					node.className = 'pin-app';
 					container.appendChild( node );
 					pinApp = container.querySelector( '.pin-app' );
 				}
-	
+
 				var closeButton = '<a href="#" class="pin-app-close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.705,7.705l-1.41-1.41L12,10.59L7.705,6.295l-1.41,1.41L10.59,12l-4.295,4.295l1.41,1.41L12,13.41 l4.295,4.295l1.41-1.41L13.41,12L17.705,7.705z"/></svg></a>';
 				var pinAppMsg = "";
-	
+
 				if ( details.platform === "windows" ) {
-					pinAppMsg = "<h2>Keep WordPress.com in your taskbar</h2>" + 
+					pinAppMsg = "<h2>Keep WordPress.com in your taskbar</h2>" +
 					"<p>Drag the icon from your desktop to your taskbar</p>" +
 					'<img src="/desktop/pin-app-taskbar.png" alt="" width="143" height="27" />';
 				} else if ( details.platform === "darwin" && !details.pinned ) {
@@ -266,7 +266,7 @@ try {
 				}
 
 				pinApp.innerHTML = closeButton + pinAppMsg;
-	
+
 				// close button
 				var pinAppClose = container.querySelector( '.pin-app-close' );
 				pinAppClose.onclick = function () {
