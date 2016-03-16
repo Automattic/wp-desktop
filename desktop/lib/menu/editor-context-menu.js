@@ -13,23 +13,23 @@ var Menu = require('electron').Menu;
 var platform = require( '../platform' );
 
 var DEFAULT_MAIN_MENU = [{
-  label: 'Cut',
-  role: 'cut'
+	label: 'Cut',
+	role: 'cut'
 }, {
-  label: 'Copy',
-  role: 'copy'
+	label: 'Copy',
+	role: 'copy'
 }, {
-  label: 'Paste',
-  role: 'paste'
+	label: 'Paste',
+	role: 'paste'
 }, {
-  label: 'Select All',
-  role: 'selectall'
+	label: 'Select All',
+	role: 'selectall'
 }];
 
 var NO_SUGGESTIONS_ITEM = [{
-    label: 'No suggestions',
-    click: noop
-  }, { type: 'separator' } ];
+	label: 'No suggestions',
+	click: noop
+}, { type: 'separator' } ];
 
 var DEFINE_MENU_ITEM = [{
 	label: 'Define',
@@ -74,7 +74,7 @@ var buildEditorContextMenu = function(selection) {
 			} ).concat( {
 			  type: 'separator'
 			} ) );
-	  }
+		}
 	} else { // not misspelled, include define menu item
 		if ( platform.isOSX() ) {
 			contextMenu.unshift.apply(contextMenu, DEFINE_MENU_ITEM);
