@@ -106,11 +106,11 @@ function startDesktopApp() {
 		}
 
 		if ( showEditorMenu ) {
-			menu = buildEditorContextMenu(selection);
+			menu = desktop.contextMenus.editor(selection);
 		}
 		else {
 			var selectedText = window.getSelection().toString();
-			menu = buildGeneralContextMenu(selectedText);
+			menu = desktop.contextMenus.general(selectedText);
 		}
 
 		// The 'contextmenu' event is emitted after 'selectionchange' has fired but possibly before the
@@ -131,21 +131,6 @@ function startDesktopApp() {
 
 	debug = gGebug( 'desktop:browser' );
 
-
-	debug( 'Setting up Context Menus' );
-	try {
-		var buildEditorContextMenu = desktop.editorContextMenu;
-		var buildGeneralContextMenu = desktop.generalContextMenu;
-	} catch (e) {
-		debug( "Error loading context menus", e.message);
-		loadContextMenu = false;
-	}
-
-	if ( loadContextMenu ) {
-		resetSelection();
-		document.addEventListener( 'mousedown', resetSelection );
-	}
-
 	// Everything is ready, start Calypso
 	debug( 'Received app configuration, starting in browser' );
 
@@ -157,7 +142,12 @@ function startDesktopApp() {
 		document.addEventListener( 'keydown', keyboardHandler );
 		document.addEventListener( 'click', preventNewWindow );
 
-		if ( loadContextMenu )  {
+		if ( loadContextMenu ) {
+			debug( 'Setting up Context Menus' );
+
+			resetSelection();
+
+			document.addEventListener( 'mousedown', resetSelection );
 			document.addEventListener( 'contextmenu', contextMenu );
 
 			// listen for tinymce IPC event for context menu

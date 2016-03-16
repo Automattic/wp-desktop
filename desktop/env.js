@@ -86,7 +86,8 @@ debug( '========================================================================
 global.desktop = {
 	config: config,
 	settings: Settings,
-	editorContextMenu: EditorContextMenu,
-	generalContextMenu: GeneralContextMenu
+	contextMenus: {
+		editor: EditorContextMenu,
+		general: GeneralContextMenu
+	}
 };
-
