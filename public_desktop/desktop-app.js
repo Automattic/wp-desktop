@@ -162,7 +162,7 @@ function startDesktopApp() {
 
 			// listen for tinymce IPC event for context menu
 			// required for visual editor since within iframe
-			ipc.on( 'mce-context-menu', contextMenu );
+			ipc.on( 'mce-contextmenu', contextMenu );
 		}
 	}
 
