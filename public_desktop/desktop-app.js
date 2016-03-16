@@ -134,8 +134,8 @@ function startDesktopApp() {
 
 	debug( 'Setting up Context Menus' );
 	try {
-		var buildEditorContextMenu = electron.remote.require( '../desktop/lib/menu/editor-context-menu' );
-		var buildGeneralContextMenu = electron.remote.require( '../desktop/lib/menu/general-context-menu' );
+		var buildEditorContextMenu = desktop.editorContextMenu;
+		var buildGeneralContextMenu = desktop.generalContextMenu;
 	} catch (e) {
 		debug( "Error loading context menus", e.message);
 		loadContextMenu = false;
