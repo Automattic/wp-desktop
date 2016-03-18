@@ -11,6 +11,7 @@ const dialog = electron.dialog;
  * Internal dependencies
  */
 const crashTracker = require( 'lib/crash-tracker' );
+const system = require( 'lib/system' );
 
 /**
  * Module variables
@@ -42,7 +43,9 @@ function showErrorAndExit( error ) {
 		'\n\n' +
 		'If you continue to have issues, please contact us at help@wordpress.com and mention the error details below:' +
 		'\n\n' +
-		error.stack
+		error.stack +
+		'\n\n' +
+		'System info: ' + JSON.stringify( system.getVersionData() )
 	);
 
 	exit();

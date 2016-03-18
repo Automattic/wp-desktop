@@ -7,11 +7,12 @@
 const Platform = require( 'lib/platform' );
 const exec = require( 'child_process' ).execSync;
 const debug = require( 'debug' )( 'desktop:system' );
+const os = require( 'os' );
 
 /**
  * Internal dependencies
  */
-
+const config = require( 'lib/config' );
 const SettingsFile = require( 'lib/settings/settings-file' );
 const APPS_DIRECTORY = '/Applications';
 
@@ -53,5 +54,13 @@ module.exports = {
 
 		debug( 'System details: ', details );
 		return details;
+	},
+	getVersionData: function() {
+		return {
+			platform: process.platform,
+			release: os.release(),
+			version: config.version,
+			build: config.build,
+		};
 	}
 };
