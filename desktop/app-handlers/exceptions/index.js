@@ -10,7 +10,6 @@ const dialog = electron.dialog;
 /**
  * Internal dependencies
  */
-const config = require( 'lib/config' );
 const crashTracker = require( 'lib/crash-tracker' );
 
 /**
@@ -21,6 +20,33 @@ let thereCanBeOnlyOne = false;
 
 // We ignore any of these errors as they are probably temporary
 const NETWORK_ERRORS = [ 'ETIMEDOUT', 'ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET' ];
+
+function exit() {
+	if ( isReady ) {
+		app.quit();
+	} else {
+		process.exit( 1 );
+	}
+}
+
+function showErrorAndExit( error ) {
+	if ( thereCanBeOnlyOne ) {
+		exit();
+	}
+
+	thereCanBeOnlyOne = true;
+
+	dialog.showErrorBox(
+		'WordPress.com ran into an error',
+		'Please restart the app and try again.' +
+		'\n\n' +
+		'If you continue to have issues, please contact us at help@wordpress.com and mention the error details below:' +
+		'\n\n' +
+		error.stack
+	);
+
+	exit();
+}
 
 function isFatalError( error ) {
 	if ( typeof error.code ) {
@@ -37,24 +63,15 @@ function exceptionHandler( error ) {
 		return;
 	}
 
-	crashTracker.track( 'exception', { name: error.name, message: error.message, stack: error.stack }, function() {
-		if ( isReady && ! thereCanBeOnlyOne ) {
-			const errorDialog = {
-				buttons: [ 'Quit' ],
-				title: 'A fatal error occurred',
-				message: 'A fatal error occurred',
-				detail: "Something bad happened and we can't recover\n\n" + error.name + ': ' + error.message
-			};
+	console.log( 'uncaughtException (fatal)', error, error.stack, typeof error );
 
-			thereCanBeOnlyOne = true;
-			dialog.showMessageBox( errorDialog, function() {
-				app.quit();
-			} );
-		} else {
-			console.log( 'An error occurred: ' + error.name + ' = ' + error.message );
-			app.quit();
-		}
-	} );
+	if ( crashTracker.isEnabled() ) {
+		crashTracker.track( 'exception', { name: error.name, message: error.message, stack: error.stack }, function() {
+			showErrorAndExit( error );
+		} );
+	} else {
+		showErrorAndExit( error );
+	}
 }
 
 module.exports = function() {
@@ -62,7 +79,5 @@ module.exports = function() {
 		isReady = true;
 	} );
 
-	if ( config.isRelease() ) {
-		process.on( 'uncaughtException', exceptionHandler );
-	}
+	process.on( 'uncaughtException', exceptionHandler );
 };

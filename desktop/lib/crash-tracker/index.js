@@ -43,6 +43,10 @@ function gatherData( errorType, errorData ) {
 }
 
 module.exports = {
+	isEnabled: function() {
+		return config.crash_reporter.tracker;
+	},
+
 	track: function( errorType, errorData, cb ) {
 		if ( config.crash_reporter.tracker ) {
 			// Send to crash tracker
