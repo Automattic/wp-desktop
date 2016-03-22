@@ -202,6 +202,11 @@ function setupSpellchecker( locale ) {
 		return;
 	}
 
+	if ( process.platform === 'windows' ) {
+		debug( 'Disabling spellcheck, Windows support not working' );
+		return;
+	}
+
 	try {
 		spellchecker = electron.remote.require( 'spellchecker' );
 
