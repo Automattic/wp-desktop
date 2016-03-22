@@ -180,6 +180,17 @@ function startDesktopApp() {
 	}
 }
 
+// hard code wrongly interpreted words in spellchecker
+// electron has a bug with parsing of contractions
+// Ref: https://github.com/atom/electron/issues/1005
+var wordsToSpellSkip = {
+	'en-us': ['ain', 'couldn', 'didn', 'doesn', 'hadn', 'hasn', 'mightn', 'mustn', 'needn', 'oughtn', 'shan', 'shouldn', 'wasn', 'weren', 'wouldn']
+};
+
+function shouldNotSpellCheckWord( locale, text ) {
+	return ( wordsToSpellSkip[locale.toLowerCase()].indexOf(text) > 0 );
+}
+
 function setupSpellchecker( locale ) {
 	if ( !desktop.settings.getSetting( 'spellcheck-enabled' ) ) {
 		debug( 'Spellchecker not enabled; skipping setup' );
@@ -196,6 +207,10 @@ function setupSpellchecker( locale ) {
 
 		webFrame.setSpellCheckProvider( locale, false, {
 			spellCheck: function(text) {
+				if ( shouldNotSpellCheckWord( locale, text ) ) {
+					return true;
+				}
+
 				if ( spellchecker.isMisspelled(text) ) {
 					var suggestions = spellchecker.getCorrectionsForMisspelling(text);
 					selection.isMisspelled = true;
