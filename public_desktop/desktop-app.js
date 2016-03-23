@@ -202,7 +202,7 @@ function setupSpellchecker( locale ) {
 		return;
 	}
 
-	if ( process.platform === 'windows' ) {
+	if ( process.platform === 'win32' ) {
 		debug( 'Disabling spellcheck, Windows support not working' );
 		return;
 	}
