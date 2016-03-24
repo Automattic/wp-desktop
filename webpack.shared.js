@@ -9,6 +9,11 @@ module.exports = {
 	module: {
 		loaders: [
 			{
+				test: /sections.js$/,
+				exclude: 'node_modules',
+				loader: path.join( __dirname, 'calypso', 'server', 'isomorphic-routing', 'loader' )
+			},
+			{
 				test: /\.html$/,
 				loader: 'html-loader'
 			},
