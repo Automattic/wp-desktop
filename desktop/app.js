@@ -14,7 +14,6 @@ module.exports = function( finished_cb ) {
 	debug( 'Starting app handlers' );
 
 	// Stuff that can run before the main window
-	require( './app-handlers/exceptions' )();
 	require( './app-handlers/crash-reporting' )();
 	require( './app-handlers/updater' )();
 	require( './app-handlers/preferences' )();

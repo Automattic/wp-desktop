@@ -5,7 +5,6 @@
  */
 const electron = require( 'electron' );
 const app = electron.app;
-const os = require( 'os' );
 const request = require( 'superagent' );
 const path = require( 'path' );
 const debug = require( 'debug' )( 'desktop:crash-tracker' );
@@ -14,6 +13,7 @@ const debug = require( 'debug' )( 'desktop:crash-tracker' );
  * Internal dependencies
  */
 const config = require( 'lib/config' );
+const system = require( 'lib/system' );
 
 function finished( error, response, cb ) {
 	if ( error ) {
@@ -29,20 +29,18 @@ function finished( error, response, cb ) {
 
 function gatherData( errorType, errorData ) {
 	// Gather basic data
-	const data = {
-		platform: process.platform,
-		release: os.release(),
-		version: config.version,
-		build: config.build,
+	return Object.assign( {}, system.getVersionData(), {
 		time: parseInt( new Date().getTime() / 1000, 10 ),
 		type: errorType,
 		data: errorData
-	};
-
-	return data;
+	} );
 }
 
 module.exports = {
+	isEnabled: function() {
+		return config.crash_reporter.tracker;
+	},
+
 	track: function( errorType, errorData, cb ) {
 		if ( config.crash_reporter.tracker ) {
 			// Send to crash tracker
