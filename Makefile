@@ -23,7 +23,7 @@ CALYPSO_JS := $(CALYPSO_DIR)/public/build.js
 CALYPSO_JS_STD := $(CALYPSO_DIR)/public/build-desktop.js
 CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .min. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-WEBPACK_BIN := @$(NPM_BIN)/webpack
+WEBPACK_BIN := $(NPM_BIN)/webpack
 
 # sets to 1 if NPM version is >= 3
 NPMGTE3 := $(shell expr `npm -v | cut -f1 -d.` \>= 3)
@@ -82,7 +82,7 @@ verify-makensis:
 package: build-if-changed
 	@echo "Bundling app and server"
 	@rm -rf $(BUILD_DIR)/public_desktop $(BUILD_DIR)/calypso
-	@$(WEBPACK_BIN) --config $(THIS_DIR)/webpack.config.js
+	@NODE_PATH=calypso/client $(WEBPACK_BIN) --config $(THIS_DIR)/webpack.config.js
 	@echo "Copying Calypso client and public files"
 	@sed -e 's/build\///' $(THIS_DIR)/package.json >$(BUILD_DIR)/package.json
 	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/config $(BUILD_DIR)/calypso/server
@@ -156,7 +156,7 @@ eslint: lint
 
 # Testing
 test: config-test package
-	@$(WEBPACK_BIN) --config ./webpack.config.test.js
+	@NODE_PATH=calypso/client $(WEBPACK_BIN) --config ./webpack.config.test.js
 	@CALYPSO_PATH=`pwd`/build $(ELECTRON_TEST) --inline-diffs --timeout 15000 build/desktop-test.js
 
 test-osx: osx
