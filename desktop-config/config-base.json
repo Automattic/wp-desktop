@@ -4,7 +4,7 @@
 	"server_host": "127.0.0.1",
 	"debug": false,
 	"mainWindow": {
-		"acceptFirstMouse": false,
+		"acceptFirstMouse": true,
 		"frame": true,
 		"height": 800,
 		"minHeight": 450,
@@ -17,7 +17,7 @@
 		}
 	},
 	"preferencesWindow": {
-		"acceptFirstMouse": false,
+		"acceptFirstMouse": true,
 		"center": true,
 		"fullscreen": false,
 		"height": 300,
@@ -28,7 +28,7 @@
 		"width": 450
 	},
 	"aboutWindow": {
-		"acceptFirstMouse": false,
+		"acceptFirstMouse": true,
 		"center": true,
 		"fullscreen": false,
 		"height": 260,
@@ -39,7 +39,7 @@
 		"width": 300
 	},
 	"secretWindow": {
-		"acceptFirstMouse": false,
+		"acceptFirstMouse": true,
 		"center": true,
 		"frame": false,
 		"fullscreen": false,
