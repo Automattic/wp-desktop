@@ -4,7 +4,7 @@
 	"server_host": "127.0.0.1",
 	"debug": false,
 	"mainWindow": {
-		"acceptFirstMouse": true,
+		"acceptFirstMouse": false,
 		"frame": true,
 		"height": 800,
 		"minHeight": 450,
