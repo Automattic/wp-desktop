@@ -6,7 +6,11 @@
 2.	Clone this repository locally.
  - `git submodule init`
  - `git submodule update`
-3. `make run` to build and run the app
+3. Create a calypso/config/secrets.json file and fill it with
+   [secrets](https://github.com/Automattic/wp-desktop/blob/master/docs/secrets.md)
+4. `make run` to build and run the app
+
+
 
 ## Prerequisites
 
