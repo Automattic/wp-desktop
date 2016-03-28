@@ -9,7 +9,7 @@ WordPress.com for Desktop is an [Electron](https://github.com/atom/electron) wra
 1. Clone this repository locally
 1. Update the Calypso submodule with:
  - `git submodule init`
- - `git submodule update`
+ - `git submodule update --remote`
 1. Create a `calypso/config/secrets.json` file and fill it with [secrets](docs/secrets.md)
 1. `make run` to build and run the app
 
