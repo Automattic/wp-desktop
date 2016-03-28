@@ -20,12 +20,12 @@
 		"acceptFirstMouse": true,
 		"center": true,
 		"fullscreen": false,
-		"height": 300,
+		"height": 375,
 		"resizable": false,
 		"skipTaskbar": true,
 		"title": "Preferences",
 		"useContentSize": true,
-		"width": 450
+		"width": 480
 	},
 	"aboutWindow": {
 		"acceptFirstMouse": true,
