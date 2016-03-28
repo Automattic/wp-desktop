@@ -60,6 +60,6 @@
 		"proxy-url": "socks5://localhost",
 		"proxy-port": "8080",
 		"proxy-pac": "",
-		"spellcheck-enabled": true
+		"spellcheck-enabled": false
 	}
 }
