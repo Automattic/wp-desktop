@@ -79,7 +79,7 @@
 <body>
 
 <div class="options">
-	<table class="option-group">
+	<table class="option-group spellcheck">
 		<tr class="option-notifications">
 			<td class="option-title"><span>Writing: </span></td>
 			<td><label><input type="checkbox" name="spellcheck-enabled"> Enable spell checking
@@ -163,10 +163,11 @@
 			document.querySelector( 'input[name=' + item + ']' ).value = settings.getSetting( item );
 		} );
 
-		if ( ( navigator.platform === 'Win32' ) || ( navigator.platform === 'Linux' ) ) {
+		if ( navigator.platform === 'Win32' ) {
 			document.querySelector( '.option-bounce' ).style.display = 'none';
+			document.querySelector( '.spellcheck' ).style.display = 'none';
 		}
-		else if ( navigator.platform === 'Linux x86_64' ) {
+		else if ( ( navigator.platform === 'Linux x86_64' )  || ( navigator.platform === 'Linux' ) ) {
 			document.querySelector( '.option-bounce' ).style.display = 'none';
 			document.querySelector( '.option-notifications' ).style.display = 'none';
 		}
