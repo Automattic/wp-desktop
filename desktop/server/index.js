@@ -52,6 +52,15 @@ function showAppWindow() {
 
 	} );
 
+	mainWindow.webContents.session.webRequest.onBeforeRequest( function( details, callback ) {
+		if ( details.resourceType === 'script' && details.url.startsWith( 'http://' ) && ! details.url.startsWith( 'http://127' ) ) {
+			debug( 'Redirecting http request ' + details.url + ' to ' + details.url.replace( 'http', 'https' ) );
+			callback( { redirectURL: details.url.replace( 'http', 'https' ) } );
+		} else {
+			callback( {} );
+		}
+	} );
+
 	mainWindow.loadURL( appUrl );
 	//mainWindow.openDevTools();
 
