@@ -7,7 +7,7 @@ var config = require( process.argv[2] );
 
 // if linux, add icon to mainWindow
 if ( ( process.argv.length > 2 ) && ( process.argv[3] == 'linux' ) ) {
-	Object.assign( base.mainWindow, { "icon": "/usr/share/pixmaps/wpcom/png" } );
+	Object.assign( base.mainWindow, { "icon": "/usr/share/pixmaps/wpcom.png" } );
 }
 
 Object.assign( base, config );
