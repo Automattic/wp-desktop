@@ -2,7 +2,7 @@
 Name=WordPress.com
 Comment=WordPress.com Desktop Client
 Exec=/usr/share/wpcom/wpcom
-Icon=wpcom
+Icon=/usr/share/pixmaps/wpcom.png
 Type=Application
 StartupNotify=true
 Categories=Development;
