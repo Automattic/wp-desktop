@@ -8,7 +8,6 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const url = require( 'url' );
 const debug = require( 'debug' )( 'desktop:runapp' );
-const startsWith = require( 'lodash/string/startsWith' );
 
 /**
  * Internal dependencies
