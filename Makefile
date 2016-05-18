@@ -61,7 +61,7 @@ build-if-changed: build-if-not-exists
 osx: config-release package
 	@node $(BUILDER) darwin
 
-linux: config-release package
+linux: config-release-linux package
 	@node $(BUILDER) linux
 
 win32-dev: config-dev package
@@ -124,6 +124,9 @@ config-dev: install
 
 config-release: install secret secret-clientid
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-release.json > $(CONFIG)
+
+config-release-linux: install secret secret-clientid
+	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-release.json linux > $(CONFIG)
 
 config-test: install secret
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-test.json > $(CONFIG)
