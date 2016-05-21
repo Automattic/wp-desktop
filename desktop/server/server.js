@@ -50,7 +50,7 @@ module.exports = {
 
 		portscanner.findAPortNotInUse( Config.server_port.min, Config.server_port.max, Config.server_host, function( error, port ) {
 			if ( error ) {
-				debug( 'Port check failed - ' + status, error );
+				debug( 'Port check failed - ' + error );
 				showFailure( app );
 				return;
 			}
