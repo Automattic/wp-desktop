@@ -8,6 +8,7 @@ let state = false;
 
 function State() {
 	this.loggedIn = false;
+	this.serverPort = 41050;
 }
 
 State.prototype.isLoggedIn = function( ) {
