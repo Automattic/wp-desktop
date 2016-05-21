@@ -26,10 +26,12 @@ function showFailure( app ) {
 	} );
 }
 
-function startServer( running_cb ) {
+function startServer( port, running_cb ) {
 	var boot = require( 'boot' );
 	var http = require( 'http' );
 	var server = http.createServer( boot() );
+
+	state.serverPort = port;
 
 	debug( 'Server created, binding to ' + state.serverPort );
 
@@ -46,15 +48,15 @@ module.exports = {
 	start: function( app, running_cb ) {
 		debug( 'Checking server port: ' + state.serverPort + ' on host ' + Config.server_host );
 
-		portscanner.checkPortStatus( state.serverPort, Config.server_host, function( error, status ) {
-			if ( error || status === 'open' ) {
+		portscanner.findAPortNotInUse( Config.server_port.min, Config.server_port.max, Config.server_host, function( error, port ) {
+			if ( error ) {
 				debug( 'Port check failed - ' + status, error );
 				showFailure( app );
 				return;
 			}
 
 			debug( 'Starting server' );
-			startServer( running_cb );
+			startServer( port, running_cb );
 		} );
 	}
 };
