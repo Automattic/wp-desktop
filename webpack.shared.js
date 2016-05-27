@@ -42,7 +42,8 @@ module.exports = {
 		// These are Calypso server modules we don't need, so let's not bundle them
 		'webpack.config',
 		'bundler/hot-reloader',
-		'devdocs/search-index'
+		'devdocs/search-index',
+		'devdocs/components-usage-stats.json'
 	],
 	resolve: {
 		extensions: [ '', '.js', '.jsx' ],
