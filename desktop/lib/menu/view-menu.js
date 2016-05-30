@@ -7,6 +7,7 @@ const BrowserWindow = require( 'electron' ).BrowserWindow;
  */
 const Config = require( 'lib/config' );
 const debugMenu = require( './debug-menu' );
+const platform = require( 'lib/platform' );
 
 /**
  * Module variables
@@ -20,6 +21,7 @@ if ( Config.debug ) {
 menuItems.push(
 	{
 		label: 'Toggle Full Screen',
+		accelerator: platform.isOSX() ? 'Command+Ctrl+F' : undefined,
 		fullscreen: true,
 		click: function() {
 			const focusedWindow = BrowserWindow.getFocusedWindow();
