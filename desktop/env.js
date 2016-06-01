@@ -23,7 +23,13 @@ require( './app-handlers/exceptions' )();
 /**
  * Module variables
  */
-process.chdir( app.getAppPath() );
+
+// if app path set to asar, switch to the dir, not file
+var apppath = app.getAppPath();
+if ( path.extname( apppath ) === '.asar' ) {
+	apppath = path.dirname( apppath );
+}
+process.chdir( apppath );
 
 process.env.CALYPSO_ENV = config.calypso_config;
 
