@@ -4,7 +4,7 @@
 
 /* Disable text selection where it doesn't make sense. Let's be conservative as it's a usability hit. */
 header.masterbar,
-div#secondary
+.layout__secondary
 {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
@@ -37,11 +37,6 @@ html.is-desktop.detail-page-open {
 /**
  * Desktop-only screens (failed-to-start.html etc.)
  */
-
-html.desktop-auth {
-	height: 100%;
-	overflow-y: auto;
-}
 
 html.desktop-auth body {
 	font-family: 'Open Sans', Helvetica, Arial, sans-serif;
@@ -126,12 +121,6 @@ html.desktop-auth .button-emphasis {
 /**
  * Offline warning
  */
-
-html.is-desktop,
-html.is-desktop body,
-#wpcom {
-	height: 100%;
-}
 
 html.is-desktop .warning {
 	position: fixed;
