@@ -32,6 +32,7 @@ module.exports = {
 		__filename: true,
 		__dirname: true
 	},
+	context: __dirname,
 	externals: [
 		'express',
 		'webpack',
