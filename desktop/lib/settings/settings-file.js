@@ -31,19 +31,21 @@ module.exports = {
 		if ( fs.existsSync( settingsFile ) ) {
 			try {
 				return JSON.parse( fs.readFileSync( settingsFile ) );
-			}
-			catch (e) {
+			} catch ( e ) {
 				debug( 'Error reading settings file' );
 			}
 		}
 
 		firstRun = true;
-		createSettingsFile( getSettingsFile() );
+		try {
+			createSettingsFile( getSettingsFile() );
+		} catch ( e ) {
+			debug( 'Error creating settings file' );
+		}
 		return {};
 	},
 
 	save: function( group, groupData ) {
-
 		const settingsFile = getSettingsFile();
 		let data = {};
 
