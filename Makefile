@@ -49,7 +49,7 @@ build: install
 	@echo "Building Calypso (Desktop on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
 	@CALYPSO_ENV=desktop make build -C $(THIS_DIR)/calypso/
 	@cp $(THIS_DIR)/calypso/public/build-desktop.js $(THIS_DIR)/calypso/public/build.js
-	@rm $(THIS_DIR)/calypso/public/devmodules.*
+	@rm -f $(THIS_DIR)/calypso/public/devmodules.*
 
 build-if-not-exists:
 	@if [ -f $(CALYPSO_JS_STD) ]; then true; else make build; fi
