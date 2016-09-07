@@ -53,6 +53,7 @@ module.exports = {
 	plugins: [
 		// new webpack.optimize.DedupePlugin(),
 		new webpack.optimize.OccurenceOrderPlugin(),
+		new webpack.NormalModuleReplacementPlugin( /^lib\/olark$/, 'lodash/noop' ), // Too many dependencies, e.g. sites-list
 		new webpack.NormalModuleReplacementPlugin( /^components\/seo\/preview-upgrade-nudge$/, 'components/empty-component' ), // Depends on BOM
 		new webpack.NormalModuleReplacementPlugin( /^lib\/analytics$/, 'lodash/noop' ), // Depends on BOM
 		new webpack.NormalModuleReplacementPlugin( /^lib\/upgrades\/actions$/, 'lodash/noop' ), // Uses Flux dispatcher
