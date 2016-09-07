@@ -5,6 +5,19 @@
  */
 const electron = require( 'electron' );
 const BrowserWindow = electron.BrowserWindow;
+const app = electron.app;
+
+// HACK(sendhilp, 9/6/2016): The reason for this strange importing is there seems to be a
+// bug post Electron 1.1.1 in which attempting to access electron.screen
+// outside of app.on('ready') results in an error about require being unable
+// to find '../screen.js'. I'm not 100% certain of the cause but I think it's
+// something to do with Electron's common/reset-search-paths.js. For now this
+// is a temporary workaround that will enable us to utilize the latest version of
+// electron.
+let screen
+app.on( 'ready', ( ) => {
+	screen = electron.screen;
+} );
 
 /**
  * Internal dependencies
@@ -39,8 +52,6 @@ const windows = {
 };
 
 function setDimensions( config ) {
-	const screen = electron.screen;
-
 	let full = screen.getPrimaryDisplay();
 
 	if ( config.width === 'full' )
