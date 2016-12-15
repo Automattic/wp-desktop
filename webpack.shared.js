@@ -61,6 +61,7 @@ module.exports = {
 		new webpack.NormalModuleReplacementPlugin( /^lib\/route$/, 'lodash/noop' ), // Depends too much on page.js
 		new webpack.NormalModuleReplacementPlugin( /^my-sites\/themes\/thanks-modal$/, 'components/empty-component' ), // Depends on BOM
 		new webpack.NormalModuleReplacementPlugin( /^my-sites\/themes\/themes-site-selector-modal$/, 'components/empty-component' ), // Depends on BOM
+		new webpack.NormalModuleReplacementPlugin( /^my-sites\/themes\/theme-upload$/, 'components/empty-component' ), // Depends on BOM
 		new webpack.NormalModuleReplacementPlugin( /^my-sites\/themes\/single-site$/, 'components/empty-component' ), // Depends on DOM
 		new webpack.NormalModuleReplacementPlugin( /^my-sites\/themes\/multi-site$/, 'components/empty-component' ), // Depends on DOM
 	],
