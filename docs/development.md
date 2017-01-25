@@ -53,6 +53,8 @@ All Calypso code is contained in the `calypso` directory as a submodule. If you 
 
 When you do a `make run` it will re-compile any changes in Calypso.
 
+To update the `calypso` directory to the upstream project's latest commit, run `git submodule update --remote`. If you want to commit that change, you need to `git add calypso` to do so.
+
 ## Tell me more about the server
 
 We used to boot the Calypso server+app directly within the main Electron process by `require`-ing raw Calypso code. This eventually ran into issues because Automatticians were eager to use ES6, which node is not quite friendly with yet.
