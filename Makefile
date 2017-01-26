@@ -27,7 +27,7 @@ WEBPACK_BIN := $(NPM_BIN)/webpack
 
 # sets to 1 if NPM version is >= 3
 NPMGTE3 := $(shell expr `npm -v | cut -f1 -d.` \>= 3)
-MAKENSIS_VERSION=`makensis -VERSION`
+MAKENSIS_VERSION := $(shell expr `makensis -VERSION`)
 
 # check for secrets.json
 secret:
@@ -74,9 +74,18 @@ updater: config-updater package
 	@node $(BUILDER) darwin
 
 # confirm using recent version of makensis
-# v2.5.0 and up have fixes for DLL hijacjk
+# v2.5.0 and up have fixes for DLL hijack
+# the makensis -VERSION spits out text that
+# can't simply be numerically compared
 verify-makensis:
-	@if [ ! "$(MAKENSIS_VERSION)" = "v08-Feb-2016.cvs" ]; then echo "$(RED)Please upgrade NSIS installer requires >= v2.5.0.\nbrew update; brew upgrade makensis$(RESET)"; exit 1; fi
+ifneq "$(MAKENSIS_VERSION)" "v08-Feb-2016.cvs"
+ifneq "$(MAKENSIS_VERSION)" "v12-Dec-2016.cvs"
+	echo "$(RED)Please upgrade NSIS installer requires >= v2.5.0.";
+	echo "> If new version installed, Makefile needs updating (verify-makensis)";
+	echo "> brew update; brew upgrade makensis$(RESET)";
+	exit 1;
+endif
+endif
 
 # Packagers
 package: build-if-changed
