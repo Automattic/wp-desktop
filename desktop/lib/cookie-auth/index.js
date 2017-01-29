@@ -55,7 +55,7 @@ function parseCookie( cookieStr ) {
 	} );
 	var value;
 
-	if ( parts.length === 0 ) {
+	if ( !parts.length ) {
 		return cookie;
 	}
 
