@@ -3,12 +3,14 @@
 /**
  * External Dependencies
  */
-const portscanner = require( 'portscanner' );
 const debug = require( 'debug' )( 'desktop:server' );
+const http = require( 'http' );
+const portscanner = require( 'portscanner' );
 
 /**
  * Internal dependencies
  */
+const boot = require( 'boot' );
 const Config = require( 'lib/config' );
 
 function showFailure( app ) {
@@ -26,9 +28,7 @@ function showFailure( app ) {
 }
 
 function startServer( running_cb ) {
-	var boot = require( 'boot' );
-	var http = require( 'http' );
-	var server = http.createServer( boot() );
+	const server = http.createServer( boot() );
 
 	debug( 'Server created, binding to ' + Config.server_port );
 
