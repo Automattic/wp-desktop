@@ -34,7 +34,7 @@ function urlBuilder( version, channel ) {
 }
 
 module.exports = function() {
-	if ( Config.updater ) {
+	if ( Config.updater && !Config.disable_updates ) {
 		app.on( 'will-finish-launching', function() {
 			let url = urlBuilder( app.getVersion(), settings.getSetting( 'release-channel' ) );
 

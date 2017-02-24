@@ -8,6 +8,11 @@ var config = require( process.argv[2] );
 // if linux, add icon to mainWindow
 if ( ( process.argv.length > 2 ) && ( process.argv[3] == 'linux' ) ) {
 	Object.assign( base.mainWindow, { "icon": "/usr/share/pixmaps/wpcom.png" } );
+
+	// if flatpak, disable updates
+	if ( ( process.argv.length >= 4 ) && ( process.argv[4] == 'flatpak' ) ) {
+		Object.assign( base, { "disable_updates": true } );
+	}
 }
 
 Object.assign( base, config );
