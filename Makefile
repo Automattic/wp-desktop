@@ -20,8 +20,7 @@ CERT_SPC := $(THIS_DIR)/resource/secrets/automattic-code.spc
 CERT_PVK := $(THIS_DIR)/resource/secrets/automattic-code.pvk
 CALYPSO_DIR := $(THIS_DIR)/calypso
 CALYPSO_JS := $(CALYPSO_DIR)/public/build.js
-CALYPSO_JS_STD := $(CALYPSO_DIR)/public/build-desktop.js
-CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .m. | wc -l`
+CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .m. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 WEBPACK_BIN := $(NPM_BIN)/webpack
 
@@ -48,11 +47,10 @@ run-release: config-release package
 build: install
 	@echo "Building Calypso (Desktop on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
 	@CALYPSO_ENV=desktop make build -C $(THIS_DIR)/calypso/
-	@cp $(THIS_DIR)/calypso/public/build-desktop.js $(THIS_DIR)/calypso/public/build.js
 	@rm -f $(THIS_DIR)/calypso/public/devmodules.*
 
 build-if-not-exists:
-	@if [ -f $(CALYPSO_JS_STD) ]; then true; else make build; fi
+	@if [ -f $(CALYPSO_JS) ]; then true; else make build; fi
 
 build-if-changed: build-if-not-exists
 	@if [ $(CALYPSO_CHANGES_STD) -eq 0 ]; then true; else make build; fi;
@@ -100,8 +98,8 @@ package: build-if-changed
 	@cp -R $(CALYPSO_DIR)/server/pages $(BUILD_DIR)/calypso/server/pages
 	@if [ -f $(CALYPSO_DIR)/config/secrets.json ]; then cp $(CALYPSO_DIR)/config/secrets.json $(BUILD_DIR)/calypso/config/secrets.json; else cp $(CALYPSO_DIR)/config/empty-secrets.json $(BUILD_DIR)/calypso/config/secrets.json; fi;
 	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
-	@rm $(BUILD_DIR)/calypso/public/build-desktop.js $(BUILD_DIR)/calypso/public/style-debug.css*
-	@mv $(BUILD_DIR)/calypso/public/build-desktop.m.js $(BUILD_DIR)/calypso/public/build.js
+	@rm $(BUILD_DIR)/calypso/public/style-debug.css*
+	@mv $(BUILD_DIR)/calypso/public/build.m.js $(BUILD_DIR)/calypso/public/build.js
 	@rm -rf $(BUILD_DIR)/calypso/server/pages/test $(BUILD_DIR)/calypso/server/pages/Makefile $(BUILD_DIR)/calypso/server/pages/README.md
 	@cd $(BUILD_DIR); $(NPM) install --production --no-optional; $(NPM) prune
 
