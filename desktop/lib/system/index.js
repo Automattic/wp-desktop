@@ -12,7 +12,7 @@ const os = require( 'os' );
 /**
  * Internal dependencies
  */
-const config = require( 'lib/config' );
+const config = require( '../config' );
 const SettingsFile = require( 'lib/settings/settings-file' );
 const APPS_DIRECTORY = '/Applications';
 

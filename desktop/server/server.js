@@ -9,7 +9,7 @@ const debug = require( 'debug' )( 'desktop:server' );
 /**
  * Internal dependencies
  */
-const Config = require( 'lib/config' );
+const Config = require( '../lib/config/' );
 
 function showFailure( app ) {
 	const dialog = require( 'electron' ).dialog;

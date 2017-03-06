@@ -9,7 +9,7 @@ const debug = require( 'debug' )( 'desktop:external-links' );
 /**
  * Internal dependencies
  */
-const Config = require( 'lib/config' );
+const Config = require( '../../lib/config' );
 
 /**
  * Module variables

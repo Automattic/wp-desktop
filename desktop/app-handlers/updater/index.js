@@ -10,7 +10,7 @@ const app = electron.app;
  * Internal dependencies
  */
 const platform = require( 'lib/platform' );
-const Config = require( 'lib/config' );
+const Config = require( '../../lib/config' );
 const AutoUpdater = require( './auto-updater' );
 const ManualUpdater = require( './manual-updater' );
 const settings = require( 'lib/settings' );

@@ -12,7 +12,7 @@ const debug = require( 'debug' )( 'desktop:updater:auto' );
  * Internal dependencies
  */
 const AppQuit = require( 'lib/app-quit' );
-const Config = require( 'lib/config' );
+const Config = require( '../../../lib/config' );
 const debugTools = require( 'lib/debug-tools' );
 
 function dialogDebug( message ) {
