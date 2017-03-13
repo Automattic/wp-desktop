@@ -27,7 +27,7 @@ WEBPACK_BIN := $(NPM_BIN)/webpack
 
 # sets to 1 if NPM version is >= 3
 NPMGTE3 := $(shell expr `npm -v | cut -f1 -d.` \>= 3)
-MAKENSIS_VERSION := $(shell expr `makensis -VERSION`)
+MAKENSIS_VERSION := $(shell expr `makensis -VERSION 2>/dev/null`)
 
 # check for secrets.json
 secret:
