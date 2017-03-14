@@ -11,7 +11,7 @@ const debug = require( 'debug' )( 'desktop:crash-reporting' );
 /**
  * Internal dependencies
  */
-const Config = require( '../../lib/config' );
+const Config = require( 'lib/config' );
 
 module.exports = function() {
 	if ( Config.crash_reporter && Config.crash_reporter.electron ) {

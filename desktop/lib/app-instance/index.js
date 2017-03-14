@@ -9,7 +9,7 @@ const debug = require( 'debug' )( 'desktop:app-instance' );
 /**
  * Internal dependencies
  */
-const config = require( '../config' );
+const config = require( 'lib/config' );
 const platform = require( 'lib/platform' );
 
 function AppInstance() {

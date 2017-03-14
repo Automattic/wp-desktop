@@ -22,7 +22,7 @@ app.on( 'ready', ( ) => {
 /**
  * Internal dependencies
  */
-const Config = require( '../config' );
+const Config = require( 'lib/config' );
 
 /**
  * Module variables

@@ -9,7 +9,7 @@ const dialog = require( 'electron' ).dialog;
  * Internal dependencies
  */
 const ipc = require( 'lib/calypso-commands' );
-const Config = require( '../../lib/config' );
+const Config = require( 'lib/config' );
 const Settings = require( 'lib/settings' );
 const WindowManager = require( 'lib/window-manager' );
 const platform = require( 'lib/platform' );

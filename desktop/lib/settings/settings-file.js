@@ -11,7 +11,7 @@ const debug = require( 'debug' )( 'desktop:settings' );
 /**
  * Internal dependencies
  */
-const Config = require( '../config' );
+const Config = require( 'lib/config' );
 
 let firstRun = false;
 

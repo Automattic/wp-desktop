@@ -12,7 +12,7 @@ const debug = require( 'debug' )( 'desktop:runapp' );
 /**
  * Internal dependencies
  */
-const Config = require( '../lib/config' );
+const Config = require( 'lib/config' );
 const server = require( './server' );
 const Settings = require( 'lib/settings' );
 const settingConstants = require( 'lib/settings/constants' );

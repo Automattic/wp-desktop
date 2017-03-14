@@ -12,7 +12,7 @@ const debug = require( 'debug' )( 'desktop:crash-tracker' );
 /**
  * Internal dependencies
  */
-const config = require( '../../lib/config' );
+const config = require( 'lib/config' );
 const system = require( 'lib/system' );
 
 function finished( error, response, cb ) {
