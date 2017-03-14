@@ -1,3 +1,10 @@
+ifeq ($(OS),Windows_NT)
+SEPARATOR := ;
+else
+SEPARATOR := :
+endif
+
+
 THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
 
@@ -89,15 +96,13 @@ endif
 package: build-if-changed
 	@echo "Bundling app and server"
 	@rm -rf $(BUILD_DIR)/public_desktop $(BUILD_DIR)/calypso
-	@NODE_PATH=calypso/client $(WEBPACK_BIN) --config $(THIS_DIR)/webpack.config.js
+	@NODE_PATH=calypso/server$(SEPARATOR)calypso/client $(WEBPACK_BIN) --config $(THIS_DIR)/webpack.config.js
 	@echo "Copying Calypso client and public files"
 	@sed -e 's/build\///' $(THIS_DIR)/package.json >$(BUILD_DIR)/package.json
-	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/config $(BUILD_DIR)/calypso/server
+	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/server
 	@cp -R $(THIS_DIR)/public_desktop $(BUILD_DIR)
 	@cp -R $(CALYPSO_DIR)/public $(BUILD_DIR)/calypso/public
 	@cp -R $(CALYPSO_DIR)/server/pages $(BUILD_DIR)/calypso/server/pages
-	@if [ -f $(CALYPSO_DIR)/config/secrets.json ]; then cp $(CALYPSO_DIR)/config/secrets.json $(BUILD_DIR)/calypso/config/secrets.json; else cp $(CALYPSO_DIR)/config/empty-secrets.json $(BUILD_DIR)/calypso/config/secrets.json; fi;
-	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
 	@rm $(BUILD_DIR)/calypso/public/style-debug.css*
 	@mv $(BUILD_DIR)/calypso/public/build.m.js $(BUILD_DIR)/calypso/public/build.js
 	@rm -rf $(BUILD_DIR)/calypso/server/pages/test $(BUILD_DIR)/calypso/server/pages/Makefile $(BUILD_DIR)/calypso/server/pages/README.md
@@ -166,7 +171,7 @@ eslint: lint
 
 # Testing
 test: config-test package
-	@NODE_PATH=calypso/client $(WEBPACK_BIN) --config ./webpack.config.test.js
+	@NODE_PATH=calypso/server$(SEPARATOR)calypso/client $(WEBPACK_BIN) --config ./webpack.config.test.js
 	@CALYPSO_PATH=`pwd`/build $(ELECTRON_TEST) --inline-diffs --timeout 15000 build/desktop-test.js
 
 test-osx: osx
