@@ -4,7 +4,7 @@
 /**
  * Internal dependencies
  */
-const Config = require( 'lib/config' );
+const Config = require( '../config' );
 const settingsFile = require( './settings-file' );
 
 /**
