@@ -1,13 +1,13 @@
 machine:
     node:
-        version: 6.1.0
+        version: 6.10.0
 
 # checkout
 checkout:
     post:
         - git submodule init
         - git submodule update
-        - > 
+        - >
             cd calypso;
             if [ -n "${CALYPSO_HASH}" ]; then
                 git fetch;
