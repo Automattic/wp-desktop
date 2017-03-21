@@ -179,8 +179,8 @@ test: config-test package
 
 test-osx: osx
 	@rm -rf ./release/WordPress.com-darwin-x64-unpacked
-	@$(NPM_BIN)/asar e ./release/WordPress.com-darwin-x64/WordPress.com.app/Contents/Resources/app.asar ./release/WordPress.com-darwin-x64-unpacked
-	@mkdir ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha
+	@$(NPM_BIN)/asar e ./release/WordPress.com-darwin-x64/WordPress.com.app/Contents/Resources/electron.asar ./release/WordPress.com-darwin-x64-unpacked
+	@mkdir -p ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha
 	@cp -R ./node_modules/electron-mocha ./release/WordPress.com-darwin-x64-unpacked/node_modules/
 	@NODE_PATH=./release/WordPress.com-darwin-x64-unpackaged/node_modules ELECTRON_PATH=$(NPM_BIN)/electron ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha/bin/electron-mocha --inline-diffs --timeout 5000 ./resource/test/osx.js
 
