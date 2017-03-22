@@ -1,3 +1,10 @@
+ifeq ($(OS),Windows_NT)
+ENV_PATH_SEP := ;
+else
+ENV_PATH_SEP := :
+endif
+
+
 THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
 
@@ -20,8 +27,7 @@ CERT_SPC := $(THIS_DIR)/resource/secrets/automattic-code.spc
 CERT_PVK := $(THIS_DIR)/resource/secrets/automattic-code.pvk
 CALYPSO_DIR := $(THIS_DIR)/calypso
 CALYPSO_JS := $(CALYPSO_DIR)/public/build.js
-CALYPSO_JS_STD := $(CALYPSO_DIR)/public/build-desktop.js
-CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS_STD)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .m. | wc -l`
+CALYPSO_CHANGES_STD := `find "$(CALYPSO_DIR)" -newer "$(CALYPSO_JS)" \( -name "*.js" -o -name "*.jsx" -o -name "*.json" -o -name "*.scss" \) -type f -print -quit | grep -v .m. | wc -l`
 CALYPSO_BRANCH = $(shell git --git-dir ./calypso/.git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 WEBPACK_BIN := $(NPM_BIN)/webpack
 
@@ -48,11 +54,10 @@ run-release: config-release package
 build: install
 	@echo "Building Calypso (Desktop on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
 	@CALYPSO_ENV=desktop make build -C $(THIS_DIR)/calypso/
-	@cp $(THIS_DIR)/calypso/public/build-desktop.js $(THIS_DIR)/calypso/public/build.js
 	@rm -f $(THIS_DIR)/calypso/public/devmodules.*
 
 build-if-not-exists:
-	@if [ -f $(CALYPSO_JS_STD) ]; then true; else make build; fi
+	@if [ -f $(CALYPSO_JS) ]; then true; else make build; fi
 
 build-if-changed: build-if-not-exists
 	@if [ $(CALYPSO_CHANGES_STD) -eq 0 ]; then true; else make build; fi;
@@ -91,7 +96,7 @@ endif
 package: build-if-changed
 	@echo "Bundling app and server"
 	@rm -rf $(BUILD_DIR)/public_desktop $(BUILD_DIR)/calypso
-	@NODE_PATH=calypso/client $(WEBPACK_BIN) --config $(THIS_DIR)/webpack.config.js
+	@NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client $(WEBPACK_BIN) --config $(THIS_DIR)/webpack.config.js
 	@echo "Copying Calypso client and public files"
 	@sed -e 's/build\///' $(THIS_DIR)/package.json >$(BUILD_DIR)/package.json
 	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/config $(BUILD_DIR)/calypso/server
@@ -99,9 +104,10 @@ package: build-if-changed
 	@cp -R $(CALYPSO_DIR)/public $(BUILD_DIR)/calypso/public
 	@cp -R $(CALYPSO_DIR)/server/pages $(BUILD_DIR)/calypso/server/pages
 	@if [ -f $(CALYPSO_DIR)/config/secrets.json ]; then cp $(CALYPSO_DIR)/config/secrets.json $(BUILD_DIR)/calypso/config/secrets.json; else cp $(CALYPSO_DIR)/config/empty-secrets.json $(BUILD_DIR)/calypso/config/secrets.json; fi;
+	@cp $(CALYPSO_DIR)/config/_shared.json $(BUILD_DIR)/calypso/config/
 	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
-	@rm $(BUILD_DIR)/calypso/public/build-desktop.js $(BUILD_DIR)/calypso/public/style-debug.css*
-	@mv $(BUILD_DIR)/calypso/public/build-desktop.m.js $(BUILD_DIR)/calypso/public/build.js
+	@rm $(BUILD_DIR)/calypso/public/style-debug.css*
+	@mv $(BUILD_DIR)/calypso/public/build.m.js $(BUILD_DIR)/calypso/public/build.js
 	@rm -rf $(BUILD_DIR)/calypso/server/pages/test $(BUILD_DIR)/calypso/server/pages/Makefile $(BUILD_DIR)/calypso/server/pages/README.md
 	@cd $(BUILD_DIR); $(NPM) install --production --no-optional; $(NPM) prune
 
@@ -168,13 +174,13 @@ eslint: lint
 
 # Testing
 test: config-test package
-	@NODE_PATH=calypso/client $(WEBPACK_BIN) --config ./webpack.config.test.js
+	@NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client $(WEBPACK_BIN) --config ./webpack.config.test.js
 	@CALYPSO_PATH=`pwd`/build $(ELECTRON_TEST) --inline-diffs --timeout 15000 build/desktop-test.js
 
 test-osx: osx
 	@rm -rf ./release/WordPress.com-darwin-x64-unpacked
-	@$(NPM_BIN)/asar e ./release/WordPress.com-darwin-x64/WordPress.com.app/Contents/Resources/app.asar ./release/WordPress.com-darwin-x64-unpacked
-	@mkdir ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha
+	@$(NPM_BIN)/asar e ./release/WordPress.com-darwin-x64/WordPress.com.app/Contents/Resources/electron.asar ./release/WordPress.com-darwin-x64-unpacked
+	@mkdir -p ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha
 	@cp -R ./node_modules/electron-mocha ./release/WordPress.com-darwin-x64-unpacked/node_modules/
 	@NODE_PATH=./release/WordPress.com-darwin-x64-unpackaged/node_modules ELECTRON_PATH=$(NPM_BIN)/electron ./release/WordPress.com-darwin-x64-unpacked/node_modules/electron-mocha/bin/electron-mocha --inline-diffs --timeout 5000 ./resource/test/osx.js
 
