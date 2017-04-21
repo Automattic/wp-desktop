@@ -58,7 +58,7 @@ builder.beforeBuild( __dirname, opts, function( error ) {
 
 	packager( opts, function( err ) {
 		if ( err ) {
-			console.log( error );
+			console.log( err );
 		} else {
 			builder.cleanUp( path.join( __dirname, 'release' ), opts );
 		}
