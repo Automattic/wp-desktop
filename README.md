@@ -11,6 +11,7 @@ WordPress.com for Desktop is an [Electron](https://github.com/atom/electron) wra
  - `git submodule init`
  - `git submodule update`
 1. Create a `calypso/config/secrets.json` file and fill it with [secrets](docs/secrets.md)
+1. After obtaining the [secrets](docs/secrets.md), put your `oauth_client_id` in `calypso/config/desktop.json` too,
 1. `make run` to build and run the app
 
 Need more detailed instructions? [We have them.](docs/install.md)
