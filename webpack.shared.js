@@ -52,6 +52,9 @@ module.exports = {
 		'devdocs/components-usage-stats.json'
 	],
 	resolve: {
+		alias: {
+			'desktop': path.join( __dirname, 'desktop' ),
+		},
 		extensions: [ '', '.js', '.jsx' ],
 		modulesDirectories: [ 'node_modules', path.join( __dirname, 'calypso', 'server' ), path.join( __dirname, 'calypso', 'client' ), 'desktop' ]
 	},
