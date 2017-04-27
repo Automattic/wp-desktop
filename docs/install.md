@@ -22,6 +22,14 @@ To be able to clone the repo and run the application you need:
 
 ## Installing and Running
 
+### Ubuntu and [snap supported distros](https://snapcraft.io/docs/core/install) 
+
+Install the snap on [snap supported](https://snapcraft.io/docs/core/install) systems from the store.
+
+    snap install wordpress-desktop --beta
+
+### From source
+
 Clone this git repo to your machine via the terminal using the `git clone` command and then run `make run` from the root app directory:
 
 ```bash
