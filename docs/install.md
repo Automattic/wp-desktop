@@ -28,6 +28,8 @@ Install the snap on [snap supported](https://snapcraft.io/docs/core/install) sys
 
     snap install wordpress-desktop --beta
 
+Installing a snap is very quick. Snaps are secure. They are isolated with all of their dependencies. Snaps also auto update when a new version is released.
+
 ### From source
 
 Clone this git repo to your machine via the terminal using the `git clone` command and then run `make run` from the root app directory:
