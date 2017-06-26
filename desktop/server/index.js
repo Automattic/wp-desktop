@@ -60,6 +60,24 @@ function showAppWindow() {
 		}
 	} );
 
+	mainWindow.webContents.session.webRequest.onHeadersReceived( function( details, callback ) {
+		// always allow previews to be loaded in iframes
+		if ( details.resourceType === 'subFrame' ) {
+			const headers = Object.assign( {}, details.responseHeaders );
+			Object.keys( headers ).forEach( function ( name ) {
+				if ( name.toLowerCase() === 'x-frame-options' ) {
+					delete headers[ name ];
+				}
+			} );
+			callback( {
+				cancel: false,
+				responseHeaders: headers
+			} );
+			return;
+		}
+		callback( { cancel: false } );
+	} );
+
 	mainWindow.loadURL( appUrl );
 	//mainWindow.openDevTools();
 
