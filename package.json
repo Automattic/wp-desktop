@@ -48,13 +48,13 @@
     "webpack": "^1.13.1"
   },
   "dependencies": {
-    "debug": "^2.2.0",
-    "express": "^4.13.3",
-    "jade": "^1.11.0",
-    "lodash.clonedeep": "^4.3.0",
-    "lodash.debounce": "^4.0.0",
-    "portscanner": "^1.0.0",
-    "spellchecker": "^3.2.3",
-    "superagent": "^1.4.0"
+    "debug": "2.6.8",
+    "express": "4.15.3",
+    "jade": "1.11.0",
+    "lodash.clonedeep": "4.5.0",
+    "lodash.debounce": "4.0.8",
+    "portscanner": "1.2.0",
+    "spellchecker": "3.3.1",
+    "superagent": "1.8.5"
   }
 }
