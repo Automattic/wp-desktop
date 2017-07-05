@@ -1,7 +1,7 @@
 {
   "name": "WordPressDesktop",
   "productName": "WordPress.com",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
@@ -20,7 +20,8 @@
     "wordpress.com"
   ],
   "engines": {
-    "npm": "^3.5.3"
+    "node": "6.10.3",
+    "npm": "3.10.10"
   },
   "optionalDependencies": {
     "appdmg": "^0.4.5"
@@ -48,13 +49,13 @@
     "webpack": "^1.13.1"
   },
   "dependencies": {
-    "debug": "^2.2.0",
-    "express": "^4.13.3",
-    "jade": "^1.11.0",
-    "lodash.clonedeep": "^4.3.0",
-    "lodash.debounce": "^4.0.0",
-    "portscanner": "^1.0.0",
-    "spellchecker": "^3.2.3",
-    "superagent": "^1.4.0"
+    "debug": "2.6.8",
+    "express": "4.15.3",
+    "jade": "1.11.0",
+    "lodash.clonedeep": "4.5.0",
+    "lodash.debounce": "4.0.8",
+    "portscanner": "1.2.0",
+    "spellchecker": "3.3.1",
+    "superagent": "1.8.5"
   }
 }
