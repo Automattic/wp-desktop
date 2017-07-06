@@ -19,6 +19,4 @@ dependencies:
     cache_directories:
         - "calypso/node_modules"
     pre:
-        - npm install -g npm
-        - npm install
         - make build
