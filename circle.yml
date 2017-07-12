@@ -18,5 +18,3 @@ checkout:
 dependencies:
     cache_directories:
         - "calypso/node_modules"
-    pre:
-        - make build
