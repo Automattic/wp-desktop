@@ -113,6 +113,10 @@ function isValidLastLocation( loc ) {
 		'/start'         // Don't attempt to resume the signup flow
 	];
 
+	if ( typeof loc !== 'string' ) {
+		return false;
+	}
+
 	for ( let s of invalids ) {
 		if ( loc.startsWith( s ) ) {
 			return false;
