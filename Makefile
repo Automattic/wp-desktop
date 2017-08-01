@@ -86,10 +86,10 @@ verify-makensis:
 ifneq "$(MAKENSIS_VERSION)" "v08-Feb-2016.cvs"
 ifneq "$(MAKENSIS_VERSION)" "v12-Dec-2016.cvs"
 ifneq "$(MAKENSIS_VERSION)" "v25-Jul-2017.cvs"
-	echo "$(RED)Please upgrade NSIS installer requires >= v2.5.0.";
-	echo "> If new version installed, Makefile needs updating (verify-makensis)";
-	echo "> brew update; brew upgrade makensis$(RESET)";
-	exit 1;
+	@echo "$(RED)Please upgrade NSIS installer requires >= v2.5.0.";
+	@echo "> If new version installed, Makefile needs updating (verify-makensis)";
+	@echo "> brew update; brew upgrade makensis$(RESET)";
+	@exit 1;
 endif
 endif
 endif
