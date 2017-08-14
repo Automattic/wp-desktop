@@ -53,7 +53,7 @@ run-release: config-release package
 # Builds Calypso (desktop)
 build: install
 	@echo "Building Calypso (Desktop on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
-	@CALYPSO_ENV=desktop make build -C $(THIS_DIR)/calypso/
+	@cd calypso && CALYPSO_ENV=desktop npm run build
 	@rm -f $(THIS_DIR)/calypso/public/devmodules.*
 
 build-if-not-exists:
@@ -125,11 +125,11 @@ package-linux: linux
 	@node $(THIS_DIR)/resource/build-scripts/package-linux.js
 
 distclean: clean
-	@cd calypso; make distclean
+	@cd calypso; npm run distclean
 	@rm -rf ./node_modules
 
 clean:
-	@cd calypso; make clean
+	@cd calypso; npm run clean
 	@rm -rf ./release
 	@rm -rf ./build
 
