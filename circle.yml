@@ -1,6 +1,8 @@
 machine:
     node:
         version: 7.4.0
+    environment:
+        GYM_CODE_SIGNING_IDENTITY: "Developer ID Application: Automattic, Inc. (PZYM8XX95Q)"
 
 # checkout
 checkout:
@@ -18,3 +20,10 @@ checkout:
 dependencies:
     cache_directories:
         - "calypso/node_modules"
+
+deployment:
+    beta-release:
+        tag: /\d\.\d.\d*-beta\d
+        owner: automattic
+        commands:
+            - make release-linux
