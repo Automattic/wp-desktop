@@ -1,6 +1,8 @@
 machine:
-    node:
-        version: 6.10.3
+#    node:
+#        version: 7.4.0
+    environment:
+        GYM_CODE_SIGNING_IDENTITY: "Developer ID Application: Automattic, Inc. (PZYM8XX95Q)"
 
 # checkout
 checkout:
@@ -18,3 +20,18 @@ checkout:
 dependencies:
     cache_directories:
         - "calypso/node_modules"
+    dependencies:
+        pre:
+            - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+            - nvm install v7.4.0
+            - nvm use v7.4.0
+
+deployment:
+    beta-release:
+        tag: /v[0-9]+(\.[0-9]+)*-beta[0-9]*/
+        owner: automattic
+        commands:
+            - brew install ghr
+            - make release-linux
+            - ghr ${CIRCLE_TAG} -t ${GITHUB_ACCESS_TOKEN} -u astralbodies -r automattic/wp-desktop
+
