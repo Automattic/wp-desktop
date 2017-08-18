@@ -30,7 +30,8 @@ deployment:
     beta-release:
         tag: /v[0-9]+(\.[0-9]+)*-beta[0-9]*/
         commands:
+            - brew tap tcnksm/ghr
             - brew install ghr
             - make release-linux
-            - ghr ${CIRCLE_TAG} -t ${GITHUB_ACCESS_TOKEN} -u astralbodies -r automattic/wp-desktop
+            - ghr -t ${GITHUB_ACCESS_TOKEN} -u astralbodies -r automattic/wp-desktop ${CIRCLE_TAG} release/*.{zip,exe,deb,tar.gz}
 
