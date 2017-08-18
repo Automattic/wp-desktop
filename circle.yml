@@ -28,7 +28,10 @@ dependencies:
 
 deployment:
     beta-release:
-        tag: /\d\.\d.\d*-beta\d
+        tag: /v[0-9]+(\.[0-9]+)*-beta[0-9]*/
         owner: automattic
         commands:
+            - brew install ghr
             - make release-linux
+            - ghr ${CIRCLE_TAG} -t ${GITHUB_ACCESS_TOKEN} -u astralbodies -r automattic/wp-desktop
+
