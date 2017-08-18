@@ -1,6 +1,4 @@
 machine:
-#    node:
-#        version: 7.4.0
     environment:
         GYM_CODE_SIGNING_IDENTITY: "Developer ID Application: Automattic, Inc. (PZYM8XX95Q)"
 
@@ -23,8 +21,8 @@ dependencies:
     dependencies:
         pre:
             - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-            - nvm install v7.4.0
-            - nvm use v7.4.0
+            - nvm install v6.10.3
+            - nvm use v6.10.3
 
 deployment:
     beta-release:
