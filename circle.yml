@@ -30,6 +30,7 @@ deployment:
         commands:
             - openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
             - brew update
+            - brew cask install xquartz
             - brew install wine makensis mono gnu-tar
             - gem install fpm
             - make package-linux
