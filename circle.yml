@@ -33,6 +33,7 @@ deployment:
             - brew cask install xquartz
             - brew install wine makensis mono gnu-tar
             - gem install fpm
+            - make package-osx
             - make package-linux
             - brew tap tcnksm/ghr
             - brew install ghr
