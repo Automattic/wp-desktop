@@ -36,5 +36,5 @@ deployment:
             - make package-linux
             - brew tap tcnksm/ghr
             - brew install ghr
-            - ghr -t ${GITHUB_ACCESS_TOKEN} -u astralbodies -r automattic/wp-desktop ${CIRCLE_TAG} release/*.{zip,exe,deb,tar.gz}
+            - ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release/
 
