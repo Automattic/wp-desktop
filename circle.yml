@@ -18,6 +18,8 @@ checkout:
         - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
         - nvm install v7.4.0
         - nvm use v7.4.0
+        - security import wp-desktop/resource/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
+        - security find-identity -p codesigning
 
 deployment:
     beta-release:
