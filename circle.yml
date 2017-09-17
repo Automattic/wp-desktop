@@ -24,11 +24,11 @@ deployment:
         tag: /v[0-9]+(\.[0-9]+)*-beta[0-9]*/
         commands:
             - openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
+            - openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
+            - tar -C resource/ -zxvf resource/win32-secrets-tar.gz
             - openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
             - security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
             - security find-identity -p codesigning
-            - openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/secrets/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
-            - tar -C resource/ -zxvf resource/secrets/win32-secrets-tar.gz
             - brew update
             - brew cask install xquartz
             - brew install wine makensis mono gnu-tar
