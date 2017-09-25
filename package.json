@@ -20,8 +20,8 @@
     "wordpress.com"
   ],
   "engines": {
-    "node": "6.10.3",
-    "npm": "3.10.10"
+    "node": "7.4.0",
+    "npm": "4.0.5"
   },
   "optionalDependencies": {
     "appdmg": "^0.4.5"
