@@ -37,7 +37,7 @@ deployment:
             - make distclean
             - make package-osx
             - echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
-                timeout: 1000
+                    timeout: 1000
             - make package-linux
             - brew tap tcnksm/ghr
             - brew install ghr
