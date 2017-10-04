@@ -1,7 +1,7 @@
 {
   "name": "WordPressDesktop",
   "productName": "WordPress.com",
-  "version": "2.8.0",
+  "version": "2.9.0-beta1",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
@@ -20,8 +20,8 @@
     "wordpress.com"
   ],
   "engines": {
-    "node": "6.10.3",
-    "npm": "3.10.10"
+    "node": "7.4.0",
+    "npm": "4.0.5"
   },
   "optionalDependencies": {
     "appdmg": "^0.4.5"
@@ -55,7 +55,7 @@
     "lodash.clonedeep": "4.5.0",
     "lodash.debounce": "4.0.8",
     "portscanner": "1.2.0",
-    "spellchecker": "3.3.1",
+    "spellchecker": "3.4.3",
     "superagent": "1.8.5"
   }
 }
