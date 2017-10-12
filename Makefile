@@ -50,6 +50,28 @@ run: config-dev package
 run-release: config-release package
 	$(START_APP)
 
+CALYPSO_NODE_VERSION := $(shell node -p "require('$(CALYPSO_DIR)/package.json').engines.node")
+CALYPSO_NPM_VERSION := $(shell node -p "require('$(CALYPSO_DIR)/package.json').engines.npm")
+DESKTOP_NODE_VERSION := $(shell node -p "require('$(THIS_DIR)/package.json').engines.node")
+DESKTOP_NPM_VERSION := $(shell node -p "require('$(THIS_DIR)/package.json').engines.npm")
+
+# Check that the current node & npm versions are the versions Calypso expects to ensure it is built safely.
+check-node-and-npm-version-parity:
+	@if [ ! $(CALYPSO_NODE_VERSION) = $(DESKTOP_NODE_VERSION) ] || \
+		[ ! $(CALYPSO_NPM_VERSION) = $(DESKTOP_NPM_VERSION) ]; \
+		then { \
+			echo "Please ensure that wp-desktop and wp-calypso are using the same NPM and Node versions before continuing"; \
+			if [ ! $(CALYPSO_NODE_VERSION) = $(DESKTOP_NODE_VERSION) ]; \
+				then echo " - wp-desktop should be using node version: $(CALYPSO_NODE_VERSION)"; \
+			fi; \
+			if [ ! $(CALYPSO_NPM_VERSION) = $(DESKTOP_NPM_VERSION) ]; \
+				then echo " - wp-desktop should be using NPM version: $(CALYPSO_NPM_VERSION)"; \
+			fi; \
+			echo ""; \
+			exit 1; \
+		} \
+	fi;
+
 # Builds Calypso (desktop)
 build: install
 	@echo "Building Calypso (Desktop on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
