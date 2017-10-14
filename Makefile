@@ -73,7 +73,7 @@ check-node-and-npm-version-parity:
 	fi;
 
 # Builds Calypso (desktop)
-build: install
+build: check-node-and-npm-version-parity install
 	@echo "Building Calypso (Desktop on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
 	@cd calypso && CALYPSO_ENV=desktop npm run build
 	@rm -f $(THIS_DIR)/calypso/public/devmodules.*
