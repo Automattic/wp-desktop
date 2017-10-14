@@ -12,6 +12,7 @@ NPM ?= $(NODE) $(shell which npm)
 NPM_BIN = $(shell npm bin)
 
 RED=`tput setaf 1`
+GREEN=`tput setaf 2`
 RESET=`tput sgr0`
 
 START_APP := @$(NPM_BIN)/electron .
@@ -60,12 +61,14 @@ check-node-and-npm-version-parity:
 	@if [ ! $(CALYPSO_NODE_VERSION) = $(DESKTOP_NODE_VERSION) ] || \
 		[ ! $(CALYPSO_NPM_VERSION) = $(DESKTOP_NPM_VERSION) ]; \
 		then { \
-			echo "Please ensure that wp-desktop and wp-calypso are using the same NPM and Node versions before continuing"; \
+			echo "Please ensure that wp-desktop is using the following versions of NPM and Node to match wp-calypso before continuing"; \
+			printf " - Node: $(CALYPSO_NODE_VERSION)"; \
 			if [ ! $(CALYPSO_NODE_VERSION) = $(DESKTOP_NODE_VERSION) ]; \
-				then echo " - wp-desktop should be using node version: $(CALYPSO_NODE_VERSION)"; \
+				then echo "$(RED) x$(RESET)"; else echo "$(GREEN) ✓$(RESET)"; \
 			fi; \
+			printf " - NPM: $(CALYPSO_NPM_VERSION)"; \
 			if [ ! $(CALYPSO_NPM_VERSION) = $(DESKTOP_NPM_VERSION) ]; \
-				then echo " - wp-desktop should be using NPM version: $(CALYPSO_NPM_VERSION)"; \
+				then echo "$(RED) x$(RESET)"; else echo "$(GREEN) ✓$(RESET)"; \
 			fi; \
 			echo ""; \
 			exit 1; \
