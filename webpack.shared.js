@@ -52,7 +52,7 @@ module.exports = {
 		'devdocs/components-usage-stats.json'
 	],
 	resolve: {
-		extensions: [ '', '.js', '.jsx' ],
+		extensions: [ '', '.js', '.jsx', '.json' ],
 		modulesDirectories: [ 'node_modules', path.join( __dirname, 'calypso', 'server' ), path.join( __dirname, 'calypso', 'client' ), 'desktop' ]
 	},
 	plugins: [
