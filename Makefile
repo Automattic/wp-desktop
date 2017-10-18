@@ -54,6 +54,7 @@ run-release: config-release package
 build: install
 	@echo "Building Calypso (Desktop on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
 	@cd calypso && CALYPSO_ENV=desktop npm run build
+	@cd calypso && CALYPSO_ENV=desktop npm run minify
 	@rm -f $(THIS_DIR)/calypso/public/devmodules.*
 
 build-if-not-exists:
