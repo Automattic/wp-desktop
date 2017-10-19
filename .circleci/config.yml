@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  macos-beta-release:
+  build:
     working_directory: /wp-desktop
     macos:
       xcode: "8.3.3"
