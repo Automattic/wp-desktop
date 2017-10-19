@@ -6,11 +6,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install CocoaPods
-          command: |
-            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-            pod install
-      - run:
           name: Install nvm / node
           command: |
             curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
@@ -26,7 +21,6 @@ jobs:
       - run: brew cask install xquartz
       - run: brew install wine makensis mono gnu-tar
       - run: gem install fpm
-      - run: nvm use v7.4.0
       - run: make distclean
       - run: echo make package-osx
       - run: echo make package-win32
