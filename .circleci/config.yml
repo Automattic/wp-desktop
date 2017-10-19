@@ -10,8 +10,8 @@ jobs:
           command: |
             echo "curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash"
       - run: echo "source $HOME/.nvm/nvm.sh && nvm install 7.4.0"
-      - run: submodule init
-      - run: submodule update --remote --force
+      - run: git submodule init
+      - run: git submodule update --remote --force
       - run: openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
       - run: openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
       - run: tar -C resource/ -zxvf resource/win32-secrets-tar.gz
