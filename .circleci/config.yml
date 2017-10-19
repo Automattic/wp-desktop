@@ -1,0 +1,38 @@
+version: 2
+jobs:
+  macos-beta-release:
+    working_directory: /wp-desktop
+    macos:
+      xcode: "8.3.3"
+    steps:
+      - checkout
+      - run:
+          name: Install CocoaPods
+          command: |
+            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+            pod install
+      - run:
+          name: Install nvm / node
+          command: |
+            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+            nvm install v7.4.0
+            nvm use v7.4.0
+      - run: openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
+      - run: openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
+      - run: tar -C resource/ -zxvf resource/win32-secrets-tar.gz
+      - run: openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
+      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
+      - run: security find-identity -p codesigning
+      - run: brew update
+      - run: brew cask install xquartz
+      - run: brew install wine makensis mono gnu-tar
+      - run: gem install fpm
+      - run: nvm use v7.4.0
+      - run: make distclean
+      - run: echo make package-osx
+      - run: echo make package-win32
+      - run: echo make package-linux
+      - run: brew tap tcnksm/ghr
+      - run: brew install ghr
+      - run: echo ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release/
+
