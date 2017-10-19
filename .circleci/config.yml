@@ -1,7 +1,6 @@
 version: 2
 jobs:
   build:
-    working_directory: $HOME/project
     macos:
       xcode: "8.3.3"
     steps:
@@ -10,12 +9,12 @@ jobs:
           name: Install nvm / node
           command: |
             curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-      - run: source $HOME/.nvm/nvm.sh && nvm
-      - run: openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
-      - run: openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
-      - run: tar -C resource/ -zxvf resource/win32-secrets-tar.gz
-      - run: openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
-      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
+      - run: source $HOME/.nvm/nvm.sh && nvm install 7.4.0
+      - run: openssl aes-256-cbc -d -in project/desktop-config/calypso-secrets.enc -out project/calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
+      - run: openssl aes-256-cbc -d -in project/resource/win32-secrets-tar.gz.enc -out project/resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
+      - run: tar -C project/resource/ -zxvf project/resource/win32-secrets-tar.gz
+      - run: openssl aes-256-cbc -d -in project/resource/developer-id.p12.enc -out project/resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
+      - run: security import project/resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
       - run: security find-identity -p codesigning
       - run: brew update
       - run: brew cask install xquartz
