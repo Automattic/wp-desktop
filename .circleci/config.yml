@@ -9,7 +9,8 @@ jobs:
           name: Install nvm / node
           command: |
             curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-      - run: source $HOME/.nvm/nvm.sh && nvm install v7.4.0
+      - run: cat $HOME/.nvm/nvm.sh
+      - run: source $HOME/.nvm/nvm.sh && echo "SUCCESS?"
       - run: openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
       - run: openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
       - run: tar -C resource/ -zxvf resource/win32-secrets-tar.gz
