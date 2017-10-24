@@ -24,7 +24,7 @@ jobs:
       xcode: "8.3.3"
     steps:
       - attach_workspace:
-          at: /wp-desktop
+          at: $HOME/wp-desktop
       - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
       - run: security find-identity -p codesigning
       - run: brew update
