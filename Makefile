@@ -85,7 +85,7 @@ updater: config-updater package
 verify-makensis:
 ifneq "$(MAKENSIS_VERSION)" "v08-Feb-2016.cvs"
 ifneq "$(MAKENSIS_VERSION)" "v12-Dec-2016.cvs"
-ifneq "$(MAKENSIS_VERSION)" "v2.51-1+b1"
+ifneq "$(MAKENSIS_VERSION)" "v2.46-10"
 	echo "$(RED)Please upgrade NSIS installer requires >= v2.5.0.";
 	echo "> If new version installed, Makefile needs updating (verify-makensis)";
 	echo "> brew update; brew upgrade makensis$(RESET)";

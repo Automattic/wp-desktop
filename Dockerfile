@@ -1,4 +1,4 @@
-FROM	debian:stretch
+FROM	debian:jessie
 
 MAINTAINER Automattic
 
@@ -10,7 +10,7 @@ ENV NVM_VERSION 0.33.2
 # Install dependencies
 RUN	apt-get -y update && apt-get -y install gnupg && \
 	  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-RUN	echo "deb http://download.mono-project.com/repo/debian stretch main" | tee /etc/apt/sources.list.d/mono-official.list
+RUN	echo "deb http://download.mono-project.com/repo/debian jessie main" | tee /etc/apt/sources.list.d/mono-official.list
 RUN	dpkg --add-architecture i386 
 RUN     apt-get -y update && apt-get -y install \
           wget \

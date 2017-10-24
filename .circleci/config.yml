@@ -6,8 +6,8 @@ jobs:
       - image: automattic/wp-desktop:0.0.1
     steps:
       - checkout
-      - run: git submodule init
-      - run: git submodule update --remote --force
+#      - run: git submodule init
+#      - run: git submodule update --remote --force
       - run: openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
       - run: openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
       - run: tar -C resource/ -zxvf resource/win32-secrets-tar.gz
@@ -17,9 +17,10 @@ jobs:
 #      - run: brew update
 #      - run: brew cask install xquartz
 #      - run: brew install wine makensis mono gnu-tar
-      - run: make distclean
-      - run: make package-linux
-      - run: source $HOME/.nvm/nvm.sh && echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
+      - run: source $HOME/.nvm/nvm.sh && make distclean
+      - run: source $HOME/.nvm/nvm.sh && make package-linux
+      - run: source $HOME/.nvm/nvm.sh && make win32
+#      - run: source $HOME/.nvm/nvm.sh && echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
 #      - run: make package-osx
 #      - run: brew tap tcnksm/ghr
 #      - run: brew install ghr
