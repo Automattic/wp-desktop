@@ -12,16 +12,34 @@ jobs:
       - run: openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
       - run: tar -C resource/ -zxvf resource/win32-secrets-tar.gz
       - run: openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
-#      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
-#      - run: security find-identity -p codesigning
-#      - run: brew update
-#      - run: brew cask install xquartz
-#      - run: brew install wine makensis mono gnu-tar
       - run: source $HOME/.nvm/nvm.sh && make distclean
       - run: source $HOME/.nvm/nvm.sh && make package-linux
       - run: source $HOME/.nvm/nvm.sh && make win32
+      - persist_to_workspace:
+          root: /wp-desktop
+          paths:
+            - .
+  package:
+    macos:
+      xcode: "8.3.3"
+    steps:
+      - attach_workspace:
+          at: /wp-desktop
+      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
+      - run: security find-identity -p codesigning
+      - run: brew update
+      - run: brew cask install xquartz
+      - run: brew install wine makensis mono gnu-tar
 #      - run: source $HOME/.nvm/nvm.sh && echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
 #      - run: make package-osx
 #      - run: brew tap tcnksm/ghr
 #      - run: brew install ghr
 #      - run: ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release/
+workflows:
+  version: 2
+  build_and_package:
+    jobs:
+      - build
+      - package:
+          requires:
+            - build
