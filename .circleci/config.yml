@@ -25,10 +25,6 @@ jobs:
       environment:
         - NVM_DIR: "/Users/distiller/.nvm"
     steps:
-      - attach_workspace:
-          at: /Users/distiller/project
-#      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
-#      - run: security find-identity -p codesigning
       - run:
           name: Install and configure nvm / node
           command: |
@@ -41,6 +37,10 @@ jobs:
                   brew tap tcnksm/ghr
                   brew cask install xquartz
                   brew install wine makensis mono gnu-tar ghr
+      - attach_workspace:
+          at: /Users/distiller/project
+#      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
+#      - run: security find-identity -p codesigning
 #      - run: source $HOME/.nvm/nvm.sh && echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
 #      - run: make package-osx
 #      - run: ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release
