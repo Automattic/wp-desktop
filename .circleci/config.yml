@@ -25,12 +25,10 @@ jobs:
     steps:
       - attach_workspace:
           at: /Users/distiller/project
-      - run: pwd
-      - run: ls
 #      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
 #      - run: security find-identity -p codesigning
       - run: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-      - run: source $HOME/.nvm/nvm.sh && nvm install 6.11.2
+      - run: cd $HOME && source $HOME/.nvm/nvm.sh && nvm install 6.11.2
       - run: brew update
       - run: brew cask install xquartz
       - run: brew install wine makensis mono gnu-tar
