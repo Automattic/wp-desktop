@@ -22,10 +22,10 @@ jobs:
   package:
     macos:
       xcode: "8.3.3"
-      working_directory: $HOME/wp-desktop
+      working_directory: /Users/distiller/wp-desktop
     steps:
       - attach_workspace:
-          at: $HOME/wp-desktop
+          at: /Users/distiller/wp-desktop
       - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
       - run: security find-identity -p codesigning
       - run: brew update
