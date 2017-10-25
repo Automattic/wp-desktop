@@ -12,9 +12,9 @@ jobs:
       - run: openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
       - run: tar -C resource/ -zxvf resource/win32-secrets-tar.gz
       - run: openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
-      - run: source $HOME/.nvm/nvm.sh && make distclean
-      - run: source $HOME/.nvm/nvm.sh && make package-linux
-      - run: source $HOME/.nvm/nvm.sh && make win32
+#      - run: source $HOME/.nvm/nvm.sh && make distclean
+#      - run: source $HOME/.nvm/nvm.sh && make package-linux
+#      - run: source $HOME/.nvm/nvm.sh && make win32
       - persist_to_workspace:
           root: /wp-desktop
           paths:
@@ -28,11 +28,11 @@ jobs:
 #      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
 #      - run: security find-identity -p codesigning
       - run: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-      - run: cd $HOME && source $HOME/.nvm/nvm.sh && nvm install 6.11.2
+      - run: source /Users/distiller/.nvm/nvm.sh && nvm install 6.11.2
       - run: brew update
       - run: brew cask install xquartz
       - run: brew install wine makensis mono gnu-tar
-      - run: source $HOME/.nvm/nvm.sh && echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
+#      - run: source $HOME/.nvm/nvm.sh && echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
 #      - run: make package-osx
 #      - run: brew tap tcnksm/ghr
 #      - run: brew install ghr
