@@ -26,6 +26,8 @@ jobs:
     steps:
       - attach_workspace:
           at: /Users/distiller/wp-desktop
+      - run: ls /Users/distiller
+      - run: ls /Users/distiller/wp-desktop
       - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
       - run: security find-identity -p codesigning
       - run: brew update
