@@ -29,7 +29,11 @@ jobs:
           name: Install and configure nvm / node
           command: |
               curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-              source /Users/distiller/.nvm/nvm.sh && nvm install 6.11.2
+              echo "Running nvm"
+              nvm
+              echo "nvm install"
+              nvm install 6.11.2
+#              source /Users/distiller/.nvm/nvm.sh && nvm install 6.11.2
       - run:
           name: Install brew dependencies
           command: |
