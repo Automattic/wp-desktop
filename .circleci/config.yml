@@ -29,10 +29,6 @@ jobs:
           name: Install and configure nvm / node
           command: |
               curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-              echo "Running source"
-              source /Users/distiller/.nvm/nvm.sh
-              echo "Running nvm install"
-              nvm install 6.11.2 || echo true
       - run:
           name: Install brew dependencies
           command: |
@@ -44,7 +40,8 @@ jobs:
           at: /Users/distiller/project
 #      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
 #      - run: security find-identity -p codesigning
-#      - run: source $HOME/.nvm/nvm.sh && echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
+      - run: nvm install
+      - run: echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
 #      - run: make package-osx
 #      - run: ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release
 workflows:
