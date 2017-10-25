@@ -40,8 +40,11 @@ jobs:
           at: /Users/distiller/project
 #      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
 #      - run: security find-identity -p codesigning
-      - run: nvm install
-      - run: echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
+      - run:
+          name: Build win32 package
+          command: |
+                  \. $HOME/.nvm/nvm.sh
+                  echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
 #      - run: make package-osx
 #      - run: ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release
 workflows:
