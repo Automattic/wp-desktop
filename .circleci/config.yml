@@ -32,7 +32,7 @@ jobs:
               echo "Running source"
               source /Users/distiller/.nvm/nvm.sh
               echo "Running nvm install"
-              nvm install 6.11.2
+              nvm install 6.11.2 || echo true
       - run:
           name: Install brew dependencies
           command: |
