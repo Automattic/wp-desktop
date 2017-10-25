@@ -54,7 +54,6 @@ run-release: config-release package
 build: install
 	@echo "Building Calypso (Desktop on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
 	@cd calypso && CALYPSO_ENV=desktop npm run build
-	@cd calypso && CALYPSO_ENV=desktop npm run minify
 	@rm -f $(THIS_DIR)/calypso/public/devmodules.*
 
 build-if-not-exists:
@@ -102,10 +101,11 @@ package: build-if-changed
 	@NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client $(WEBPACK_BIN) --config $(THIS_DIR)/webpack.config.js
 	@echo "Copying Calypso client and public files"
 	@sed -e 's/build\///' $(THIS_DIR)/package.json >$(BUILD_DIR)/package.json
-	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/config $(BUILD_DIR)/calypso/server
+	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/config $(BUILD_DIR)/calypso/server $(BUILD_DIR)/calypso/server/bundler
 	@cp -R $(THIS_DIR)/public_desktop $(BUILD_DIR)
 	@cp -R $(CALYPSO_DIR)/public $(BUILD_DIR)/calypso/public
 	@cp -R $(CALYPSO_DIR)/server/pages $(BUILD_DIR)/calypso/server/pages
+	@cp $(CALYPSO_DIR)/server/bundler/assets.json $(BUILD_DIR)/calypso/server/bundler/assets.json
 	@if [ -f $(CALYPSO_DIR)/config/secrets.json ]; then cp $(CALYPSO_DIR)/config/secrets.json $(BUILD_DIR)/calypso/config/secrets.json; else cp $(CALYPSO_DIR)/config/empty-secrets.json $(BUILD_DIR)/calypso/config/secrets.json; fi;
 	@cp $(CALYPSO_DIR)/config/_shared.json $(BUILD_DIR)/calypso/config/
 	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
