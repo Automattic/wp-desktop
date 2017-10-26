@@ -24,8 +24,8 @@ jobs:
       xcode: "8.3.3"
     steps:
       - checkout
-#      - attach_workspace:
-#          at: /Users/distiller/project
+      - attach_workspace:
+          at: /Users/distiller/project
 #      - run:
 #          name: Install brew dependencies
 #          command: |
@@ -60,7 +60,7 @@ workflows:
   version: 2
   build_and_package:
     jobs:
-#      - build
-      - package
-#          requires:
-#            - build
+      - build
+      - package:
+          requires:
+            - build
