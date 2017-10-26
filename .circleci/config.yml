@@ -14,7 +14,13 @@ jobs:
       - run: openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
       - run: source $HOME/.nvm/nvm.sh && make distclean
 #      - run: source $HOME/.nvm/nvm.sh && make package-linux
-      - run: source $HOME/.nvm/nvm.sh && echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
+      - run:
+          name: Build win32 package
+          command: |
+                  source $HOME/.nvm/nvm.sh
+                  echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} > developer_id_certificate_password
+                  make package-win32 < developer_id_certificate_password
+                  rm developer_id_certificate_password
       - persist_to_workspace:
           root: /wp-desktop
           paths:
