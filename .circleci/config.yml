@@ -22,8 +22,6 @@ jobs:
   package:
     macos:
       xcode: "8.3.3"
-      environment:
-        - NVM_DIR: "/Users/distiller/.nvm"
     steps:
 #      - run:
 #          name: Install brew dependencies
@@ -44,7 +42,7 @@ jobs:
           name: Build win32 package
           command: |
                   set +e
-                  ls $NVM_DIR
+                  export NVM_DIR=/Users/distiller/.nvm
                   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
                   nvm install
                   echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
