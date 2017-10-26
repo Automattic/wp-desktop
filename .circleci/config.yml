@@ -53,6 +53,6 @@ workflows:
   build_and_package:
     jobs:
 #      - build
-      - package:
+      - package
 #          requires:
 #            - build
