@@ -25,17 +25,17 @@ jobs:
       environment:
         - NVM_DIR: "/Users/distiller/.nvm"
     steps:
+#      - run:
+#          name: Install brew dependencies
+#          command: |
+#                  brew update
+#                  brew tap tcnksm/ghr
+#                  brew cask install xquartz
+#                  brew install wine makensis mono gnu-tar ghr
       - run:
           name: Install and configure nvm / node
           command: |
               curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-      - run:
-          name: Install brew dependencies
-          command: |
-                  brew update
-                  brew tap tcnksm/ghr
-                  brew cask install xquartz
-                  brew install wine makensis mono gnu-tar ghr
       - attach_workspace:
           at: /Users/distiller/project
 #      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
@@ -43,6 +43,7 @@ jobs:
       - run:
           name: Build win32 package
           command: |
+                  set +e
                   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
                   nvm install
                   echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
