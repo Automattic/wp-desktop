@@ -23,16 +23,15 @@ jobs:
     macos:
       xcode: "8.3.3"
     steps:
-      - checkout
       - attach_workspace:
           at: /Users/distiller/project
-#      - run:
-#          name: Install brew dependencies
-#          command: |
-#                  brew update
-#                  brew tap tcnksm/ghr
-#                  brew cask install xquartz
-#                  brew install wine makensis mono gnu-tar ghr
+      - run:
+          name: Install brew dependencies
+          command: |
+                  brew update
+                  brew tap tcnksm/ghr
+                  brew cask install xquartz
+                  brew install wine makensis mono gnu-tar ghr
       - run:
           name: Install and configure nvm / node
           command: |
