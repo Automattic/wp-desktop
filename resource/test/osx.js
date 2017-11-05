@@ -11,18 +11,20 @@ const expect = require( 'chai' ).expect;
  */
 const boot = require( '../../release/WordPress.com-darwin-x64-unpacked/desktop/app' );
 
-describe( 'check app loads', function() {
-	it( 'should have calypso in DOM', function( done ) {
-		boot( function( mainWindow ) {
+describe( 'check app loads', () => {
+
+	it( 'should have calypso in DOM', done => {
+		boot( mainWindow => {
 			// We need to wait for the page to load before sending the request
-			mainWindow.webContents.on( 'did-finish-load', function() {
+			mainWindow.webContents.on( 'did-finish-load', () => {
 				mainWindow.webContents.send( 'is-calypso' );
 			} );
 
-			ipcMain.on( 'is-calypso-response', function( ev, value ) {
+			ipcMain.on( 'is-calypso-response', (ev, value) => {
 				expect( value ).to.be.true;
 				done();
-			} );
-		} );
-	} );
-} );
+			});
+		});
+	});
+
+});
