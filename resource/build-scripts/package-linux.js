@@ -3,21 +3,21 @@
 /**
  * External Dependencies
  */
-var path = require( 'path' );
-var fs = require( 'fs' );
+const path = require( 'path' );
+const fs = require( 'fs' );
 
 /**
  * Internal dependencies
  */
-var config = require( '../lib/config' );
-var cp = require('child_process');
+const config = require( '../lib/config' );
+const cp = require('child_process');
 
 /**
  * Module variables
  */
 console.log('Building Linux package...');
 
-var onErrorBail = function( error ) {
+const onErrorBail = function( error ) {
 	if (error) {
 		console.log("Error: " + error);
 		process.exit(1);
@@ -33,7 +33,7 @@ cp.execSync( "mv release/tmp/usr/share/wpcom/WordPress.com release/tmp/usr/share
 cp.execSync( "cp resource/linux/wpcom.desktop release/tmp/usr/share/applications/", onErrorBail );
 cp.execSync( "cp resource/app-icon/icon_256x256.png release/tmp/usr/share/pixmaps/wpcom.png", onErrorBail );
 
-var cmd = [
+const cmd = [
 	'fpm',
 	'--version '  + config.version,
 	'--license "GPLv2"',

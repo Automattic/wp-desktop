@@ -74,6 +74,6 @@ function unzip_path( dir, str ) {
 	} )
 }
 
-module.exports = function( url, dir, opts, fn ) {
+module.exports = ( url, dir, opts, fn ) => {
 	extract( url, dir, fn )
 }
