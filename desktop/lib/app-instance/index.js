@@ -31,7 +31,7 @@ AppInstance.prototype.isSingleInstance = function() {
 
 	if ( shouldQuit ) {
 		debug( 'App is already running, quitting' );
-		app.quit();
+		app.exit();
 		return false;
 	}
 

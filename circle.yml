@@ -1,6 +1,8 @@
 machine:
-    node:
-        version: 6.10.3
+    environment:
+        GYM_CODE_SIGNING_IDENTITY: "Developer ID Application: Automattic, Inc. (PZYM8XX95Q)"
+    xcode:
+        version: 8.3
 
 # checkout
 checkout:
@@ -13,8 +15,30 @@ checkout:
                 git fetch;
                 git checkout ${CALYPSO_HASH};
             fi
+        - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+        - nvm install v6.11.2
+        - nvm use v6.11.2
 
-# pre-test
-dependencies:
-    cache_directories:
-        - "calypso/node_modules"
+deployment:
+    beta-release:
+        tag: /v[0-9]+(\.[0-9]+)*-beta[0-9]*/
+        commands:
+            - openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
+            - openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
+            - tar -C resource/ -zxvf resource/win32-secrets-tar.gz
+            - openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
+            - security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
+            - security find-identity -p codesigning
+            - brew update
+            - brew cask install xquartz
+            - brew install wine makensis mono gnu-tar
+            - gem install fpm
+            - nvm use v7.4.0
+            - make distclean
+            - make package-osx
+            - make package-win32
+            - make package-linux
+            - brew tap tcnksm/ghr
+            - brew install ghr
+            - ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release/
+

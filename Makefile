@@ -53,7 +53,7 @@ run-release: config-release package
 # Builds Calypso (desktop)
 build: install
 	@echo "Building Calypso (Desktop on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
-	@CALYPSO_ENV=desktop make build -C $(THIS_DIR)/calypso/
+	@cd calypso && CALYPSO_ENV=desktop npm run build
 	@rm -f $(THIS_DIR)/calypso/public/devmodules.*
 
 build-if-not-exists:
@@ -85,10 +85,12 @@ updater: config-updater package
 verify-makensis:
 ifneq "$(MAKENSIS_VERSION)" "v08-Feb-2016.cvs"
 ifneq "$(MAKENSIS_VERSION)" "v12-Dec-2016.cvs"
+ifneq "$(MAKENSIS_VERSION)" "v3.02.1"
 	echo "$(RED)Please upgrade NSIS installer requires >= v2.5.0.";
 	echo "> If new version installed, Makefile needs updating (verify-makensis)";
 	echo "> brew update; brew upgrade makensis$(RESET)";
 	exit 1;
+endif
 endif
 endif
 
@@ -99,10 +101,11 @@ package: build-if-changed
 	@NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client $(WEBPACK_BIN) --config $(THIS_DIR)/webpack.config.js
 	@echo "Copying Calypso client and public files"
 	@sed -e 's/build\///' $(THIS_DIR)/package.json >$(BUILD_DIR)/package.json
-	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/config $(BUILD_DIR)/calypso/server
+	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/config $(BUILD_DIR)/calypso/server $(BUILD_DIR)/calypso/server/bundler
 	@cp -R $(THIS_DIR)/public_desktop $(BUILD_DIR)
 	@cp -R $(CALYPSO_DIR)/public $(BUILD_DIR)/calypso/public
 	@cp -R $(CALYPSO_DIR)/server/pages $(BUILD_DIR)/calypso/server/pages
+	@cp $(CALYPSO_DIR)/server/bundler/assets.json $(BUILD_DIR)/calypso/server/bundler/assets.json
 	@if [ -f $(CALYPSO_DIR)/config/secrets.json ]; then cp $(CALYPSO_DIR)/config/secrets.json $(BUILD_DIR)/calypso/config/secrets.json; else cp $(CALYPSO_DIR)/config/empty-secrets.json $(BUILD_DIR)/calypso/config/secrets.json; fi;
 	@cp $(CALYPSO_DIR)/config/_shared.json $(BUILD_DIR)/calypso/config/
 	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
@@ -125,11 +128,11 @@ package-linux: linux
 	@node $(THIS_DIR)/resource/build-scripts/package-linux.js
 
 distclean: clean
-	@cd calypso; make distclean
+	@cd calypso; npm run distclean
 	@rm -rf ./node_modules
 
 clean:
-	@cd calypso; make clean
+	@cd calypso; npm run clean
 	@rm -rf ./release
 	@rm -rf ./build
 
