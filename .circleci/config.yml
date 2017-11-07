@@ -51,20 +51,20 @@ jobs:
               export NVM_DIR=/Users/distiller/.nvm
               [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
               echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
-      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
-      - run: security find-identity -p codesigning
-      - run:
-           name: Build MacOS package
-           command: |
-              export NVM_DIR=/Users/distiller/.nvm
-              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-              make package-osx
+#      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
+#      - run: security find-identity -p codesigning
+#      - run:
+#           name: Build MacOS package
+#           command: |
+#              export NVM_DIR=/Users/distiller/.nvm
+#              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#              make package-osx
 #      - run: ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release
 workflows:
   version: 2
   build_and_package:
     jobs:
       - build
-      - package:
-          requires:
-            - build
+#      - package:
+#          requires:
+#            - build
