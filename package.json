@@ -20,7 +20,7 @@
     "wordpress.com"
   ],
   "engines": {
-    "node": "6.11.2",
+    "node": "6.11.5",
     "npm": "3.10.10"
   },
   "optionalDependencies": {

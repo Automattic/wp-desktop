@@ -16,8 +16,8 @@ checkout:
                 git checkout ${CALYPSO_HASH};
             fi
         - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-        - nvm install v6.11.2
-        - nvm use v6.11.2
+        - nvm install v6.11.5
+        - nvm use v6.11.5
 
 deployment:
     beta-release:
