@@ -20,6 +20,7 @@ const cookieAuth = require( 'lib/cookie-auth' );
 const appInstance = require( 'lib/app-instance' );
 const platform = require( 'lib/platform' );
 const System = require( 'lib/system' );
+const state = require( 'lib/state' );
 
 /**
  * Module variables
@@ -27,7 +28,7 @@ const System = require( 'lib/system' );
 var mainWindow = null;
 
 function showAppWindow() {
-	let appUrl = Config.server_url + ':' + Config.server_port;
+	let appUrl = Config.server_url + ':' + state.serverPort;
 	let lastLocation = Settings.getSetting( settingConstants.LAST_LOCATION );
 	if ( lastLocation && isValidLastLocation( lastLocation ) ) {
 		appUrl += lastLocation;
@@ -52,7 +53,7 @@ function showAppWindow() {
 	} );
 
 	mainWindow.webContents.session.webRequest.onBeforeRequest( function( details, callback ) {
-		if ( details.resourceType === 'script' && details.url.startsWith( 'http://' ) && ! details.url.startsWith( Config.server_url + ':' + Config.server_port + '/' ) ) {
+		if ( details.resourceType === 'script' && details.url.startsWith( 'http://' ) && ! details.url.startsWith( Config.server_url + ':' + state.serverPort + '/' ) ) {
 			debug( 'Redirecting http request ' + details.url + ' to ' + details.url.replace( 'http', 'https' ) );
 			callback( { redirectURL: details.url.replace( 'http', 'https' ) } );
 		} else {
