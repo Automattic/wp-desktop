@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build-linux-win32:
     working_directory: /wp-desktop
     docker:
       - image: automattic/wp-desktop:0.0.1
@@ -24,7 +24,7 @@ jobs:
           root: /wp-desktop
           paths:
             - .
-  package:
+  build-macos-and-release:
     macos:
       xcode: "8.3.3"
     steps:
@@ -58,7 +58,7 @@ workflows:
   version: 2
   build_and_package:
     jobs:
-      - build
-      - package:
+      - build-linux-win32
+      - build-macos-and-release:
           requires:
-            - build
+            - build-linux-win32
