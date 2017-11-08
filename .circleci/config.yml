@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build-linux-win32:
+  build:
     working_directory: /wp-desktop
     docker:
       - image: automattic/wp-desktop:0.0.1
@@ -58,7 +58,7 @@ workflows:
   version: 2
   build_and_package:
     jobs:
-      - build-linux-win32
+      - build
       - build-macos-and-release:
           requires:
-            - build-linux-win32
+            - build
