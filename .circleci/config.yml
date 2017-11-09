@@ -24,7 +24,7 @@ jobs:
           root: /wp-desktop
           paths:
             - .
-  build_macos_and_release:
+  package:
     macos:
       xcode: "8.3.3"
     steps:
@@ -59,6 +59,6 @@ workflows:
   build_and_package:
     jobs:
       - build
-      - build_macos_and_release:
+      - package:
           requires:
             - build
