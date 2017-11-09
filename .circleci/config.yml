@@ -1,0 +1,64 @@
+version: 2
+jobs:
+  build:
+    working_directory: /wp-desktop
+    docker:
+      - image: automattic/wp-desktop:0.0.1
+    steps:
+      - checkout
+      - run: git submodule init
+      - run: git submodule update --remote --force
+      - run: openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
+      - run: openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
+      - run: tar -C resource/ -zxvf resource/win32-secrets-tar.gz
+      - run: openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
+      - run: source $HOME/.nvm/nvm.sh && make distclean
+      - run: source $HOME/.nvm/nvm.sh && make package-linux
+      - run:
+          name: Build win32 package
+          command: |
+                  set +eo pipefail
+                  source $HOME/.nvm/nvm.sh
+                  echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
+      - persist_to_workspace:
+          root: /wp-desktop
+          paths:
+            - .
+  package:
+    macos:
+      xcode: "8.3.3"
+    steps:
+      - attach_workspace:
+          at: /Users/distiller/project
+      - run:
+          name: Install brew dependencies
+          command: |
+                  brew update
+                  brew tap tcnksm/ghr
+                  brew cask install xquartz
+                  brew install wine makensis mono gnu-tar ghr
+      - run:
+          name: Install and configure nvm / node
+          command: |
+              set +e
+              curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+              export NVM_DIR=/Users/distiller/.nvm
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              nvm install
+#      - run: security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
+#      - run: security find-identity -p codesigning
+#      - run:
+#           name: Build MacOS package
+#           command: |
+#              export NVM_DIR=/Users/distiller/.nvm
+#              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#              make package-osx
+#      - run: ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release
+workflows:
+  version: 2
+  build_and_package:
+    jobs:
+      - build
+      - package:
+          requires:
+            - build
