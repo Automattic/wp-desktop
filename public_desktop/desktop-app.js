@@ -1,30 +1,17 @@
 'use strict';
+/* global electron */
 
-var startApp = function() {
+let startApp = function() {
 	document.location.replace( '/desktop/hey.html' );
 };
 
-var electron;
-var ipc;
-var gGebug;
-var desktop;
-var debug;
-var booted = false;
-var spellchecker;
-var selection;
-var webFrame;
-var loadContextMenu = true;
+let booted = false;
+let debug;
+const loadContextMenu = true;
 
 function startDesktopApp() {
-	if ( desktop.settings.isDebug() ) {
-		// Enable debug
-		gGebug.enable( desktop.config.debug.namespace );
-
-		// Link the debug function so it outputs to the console and sends it back to our main process for logging
-		gGebug.log = function() {
-			ipc.send( 'debug', arguments );
-			console.log.apply( console, arguments );
-		}
+	if ( electron.isDebug() ) {
+		electron.enableDebug();
 	}
 
 	function showWarning( message ) {
@@ -32,7 +19,7 @@ function startDesktopApp() {
 		var warning = container.querySelector( '.warning' );
 
 		if ( ! warning ) {
-			var node = document.createElement( 'div' );
+			const node = document.createElement( 'div' );
 
 			node.className = 'warning';
 			container.appendChild( node );
@@ -58,7 +45,7 @@ function startDesktopApp() {
 
 		if ( notIcon ) {
 			notIcon.addEventListener( 'click', function() {
-				ipc.send( 'unread-notices-count', 0 );
+				electron.ipcRenderer.send( 'unread-notices-count', 0 );
 			} );
 		}
 	}
@@ -82,7 +69,7 @@ function startDesktopApp() {
 		if ( ev.keyCode === 8 && document.location.pathname.indexOf( '/read' ) === 0 && ev.target.tagName !== 'INPUT' && ev.target.tagName !== 'TEXTAREA' ) {
 			window.history.back()
 		} else if ( ev.keyCode === 73 && ev.shiftKey === true && ev.ctrlKey === true ) {
-			ipc.send( 'toggle-dev-tools' );
+			electron.ipcRenderer.send( 'toggle-dev-tools' );
 		}
 	}
 
@@ -97,39 +84,29 @@ function startDesktopApp() {
 		var showEditorMenu = false;
 
 		// check if in visual editor, ipc sends an EventEmitter
-		if ( typeof ev.sender !== 'undefined' )  {
+		if ( typeof ev.sender !== 'undefined' ) {
 			showEditorMenu = true;
-		}
-		// check if in textarea or similar
-		else if ( ( typeof ev.target !== 'undefined' ) && ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
+		} else if ( ( typeof ev.target !== 'undefined' ) && ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
+			// check if in textarea or similar
 			showEditorMenu = true;
 		}
 
 		if ( showEditorMenu ) {
-			menu = desktop.contextMenus.editor(selection);
-		}
-		else {
-			var selectedText = window.getSelection().toString();
-			menu = desktop.contextMenus.general(selectedText);
+			menu = electron.showEditorMenu();
+		} else {
+			const selectedText = window.getSelection().toString();
+			menu = electron.showGeneralMenu( selectedText );
 		}
 
 		// The 'contextmenu' event is emitted after 'selectionchange' has fired but possibly before the
 		// visible selection has changed. Try to wait to show the menu until after that, otherwise the
 		// visible selection will update after the menu dismisses and look weird.
-		setTimeout(function() {
-			menu.popup(electron.remote.getCurrentWindow());
-		}, 30);
+		setTimeout( function() {
+			menu.popup( electron.getCurrentWindow() );
+		}, 30 );
 	}
 
-	function resetSelection() {
-		selection = {
-			isMisspelled: false,
-			spellingSuggestions: []
-		};
-	}
-
-
-	debug = gGebug( 'desktop:browser' );
+	debug = electron.debug( 'desktop:browser' );
 
 	// Everything is ready, start Calypso
 	debug( 'Received app configuration, starting in browser' );
@@ -145,14 +122,14 @@ function startDesktopApp() {
 		if ( loadContextMenu ) {
 			debug( 'Setting up Context Menus' );
 
-			resetSelection();
+			electron.resetSelection();
 
-			document.addEventListener( 'mousedown', resetSelection );
+			document.addEventListener( 'mousedown', electron.resetSelection );
 			document.addEventListener( 'contextmenu', contextMenu );
 
 			// listen for tinymce IPC event for context menu
 			// required for visual editor since within iframe
-			ipc.on( 'mce-contextmenu', contextMenu );
+			electron.ipcRenderer.on( 'mce-contextmenu', contextMenu );
 		}
 	}
 
@@ -164,7 +141,7 @@ function startDesktopApp() {
 			}
 		} );
 
-		document.documentElement.classList.add( 'build-' + desktop.config.build );
+		document.documentElement.classList.add( 'build-' + electron.getBuild() );
 
 		if ( navigator.onLine ) {
 			startCalypso();
@@ -180,74 +157,14 @@ function startDesktopApp() {
 	}
 }
 
-// hard code wrongly interpreted words in spellchecker
-// electron has a bug with parsing of contractions
-// Ref: https://github.com/atom/electron/issues/1005
-var wordsToSpellSkip = {
-	'en-us': ['ain', 'couldn', 'didn', 'doesn', 'hadn', 'hasn', 'mightn', 'mustn', 'needn', 'oughtn', 'shan', 'shouldn', 'wasn', 'weren', 'wouldn']
-};
-
-function shouldNotSpellCheckWord( locale, text ) {
-	return ( wordsToSpellSkip[locale.toLowerCase()].indexOf(text) > 0 );
-}
-
-function setupSpellchecker( locale ) {
-	if ( !desktop.settings.getSetting( 'spellcheck-enabled' ) ) {
-		debug( 'Spellchecker not enabled; skipping setup' );
-		return;
-	}
-
-	if ( locale.toLowerCase() !== 'en-us' ) {
-		debug( 'Disabling spellcheck, temporary only en-us support' );
-		return;
-	}
-
-	if ( process.platform === 'win32' ) {
-		debug( 'Disabling spellcheck, Windows support not working' );
-		return;
-	}
-
-	try {
-		spellchecker = electron.remote.require( 'spellchecker' );
-
-		webFrame.setSpellCheckProvider( locale, false, {
-			spellCheck: function(text) {
-				if ( shouldNotSpellCheckWord( locale, text ) ) {
-					return true;
-				}
-
-				if ( spellchecker.isMisspelled(text) ) {
-					var suggestions = spellchecker.getCorrectionsForMisspelling(text);
-					selection.isMisspelled = true;
-					selection.spellingSuggestions = suggestions.slice(0, 3);
-					return false;
-				} else {
-					return true;
-				}
-			} } );
-	} catch ( e ) {
-		debug( 'Failed to initialize spellchecker', e.message );
-	}
-}
-
-
 // Wrap this in an exception handler. If it fails then it means Electron is not present, and we are in a browser
 // This will then cause the browser to redirect to hey.html
 try {
-	electron = require( 'electron' );
-	ipc = electron.ipcRenderer;
-	gGebug = electron.remote.require( 'debug' );
-	desktop = electron.remote.getGlobal( 'desktop' );
-	webFrame = electron.webFrame;
-
-	ipc.on( 'is-calypso', function() {
-		ipc.send( 'is-calypso-response', document.getElementById( 'wpcom' ) !== null );
-
+	electron.ipcRenderer.on( 'is-calypso', function() {
+		electron.ipcRenderer.send( 'is-calypso-response', document.getElementById( 'wpcom' ) !== null );
 	} );
 
-
-	ipc.on( 'app-config', function( event, config, debug, details ) {
-
+	electron.ipcRenderer.on( 'app-config', function( event, config, debug, details ) {
 		// if this is the first run, and on the login page, show Windows and Mac users a pin app reminder
 		if ( details.firstRun && document.querySelectorAll('.logged-out-auth').length > 0 ) {
 			if ( details.platform === "windows" || details.platform === "darwin" ) {
@@ -284,12 +201,9 @@ try {
 				};
 			}
 		}
-
 	} );
-
 } catch ( e ) {
-	debug( 'Failed to initialize calypso', e.message );
+	console.log( 'Failed to initialize calypso', e.message );
 }
 
 startDesktopApp();
-setupSpellchecker( window.navigator.language );

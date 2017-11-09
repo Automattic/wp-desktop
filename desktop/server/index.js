@@ -36,7 +36,10 @@ function showAppWindow() {
 
 	debug( 'Loading app (' + appUrl + ') in mainWindow' );
 
-	mainWindow = new BrowserWindow( Settings.getSettingGroup( Config.mainWindow, 'window', [ 'x', 'y', 'width', 'height' ] ) );
+	let config = Settings.getSettingGroup( Config.mainWindow, 'window', [ 'x', 'y', 'width', 'height' ] );
+	config.webPreferences.preload = app.getAppPath() + '/desktop/preload.js';
+
+	mainWindow = new BrowserWindow( config );
 
 	cookieAuth( mainWindow, function() {
 		mainWindow.webContents.send( 'cookie-auth-complete' );
