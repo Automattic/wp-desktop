@@ -5,6 +5,7 @@
  */
 const shell = require( 'electron' ).shell;
 const debug = require( 'debug' )( 'desktop:external-links' );
+const { URL } = require( 'url' );
 
 /**
  * Internal dependencies
@@ -17,17 +18,20 @@ const Config = require( 'lib/config' );
 const SCALE_NEW_WINDOW_FACTOR = 0.9;
 const OFFSET_NEW_WINDOW = 50;
 
-const DONT_INTERCEPT = [
-	'^http:\/\/' + Config.server_host,
-	'^http:\/\/localhost',
-	'^https:\/\/public-api',
-	'wordpress\.com\/wp-login\.php'
+// Protocol doesn't matter - only the domain + path is checked
+const ALWAYS_OPEN_IN_APP = [
+	'http://' + Config.server_host,
+	'http://localhost',
+	'https:/public-api.wordpress.com',
+	'https://wordpress\.com\/wp-login\.php'
 ];
 
 const DONT_OPEN_IN_BROWSER = [
-	'^' + Config.server_url,
-	'^https://public-api.wordpress.com/connect/'
+	Config.server_url,
+	'https://public-api.wordpress.com/connect/'
 ];
+
+const domainAndPathSame = ( first, second ) => first.hostname === second.hostname && first.pathname === second.pathname;
 
 function openInBrowser( event, url ) {
 	shell.openExternal( url );
@@ -36,8 +40,12 @@ function openInBrowser( event, url ) {
 
 module.exports = function( webContents ) {
 	webContents.on( 'will-navigate', function( event, url ) {
-		for ( let x = 0; x < DONT_INTERCEPT.length; x++ ) {
-			if ( url.match( DONT_INTERCEPT[x] ) ) {
+		const parsedUrl = new URL( url );
+
+		for ( let x = 0; x < ALWAYS_OPEN_IN_APP.length; x++ ) {
+			const alwaysOpenUrl = new URL( ALWAYS_OPEN_IN_APP[ x ] );
+
+			if ( domainAndPathSame( parsedUrl, alwaysOpenUrl ) ) {
 				return;
 			}
 		}
@@ -47,8 +55,12 @@ module.exports = function( webContents ) {
 	} );
 
 	webContents.on( 'new-window', function( event, url, frameName, disposition, options ) {
+		const parsedUrl = new URL( url );
+
 		for ( let x = 0; x < DONT_OPEN_IN_BROWSER.length; x++ ) {
-			if ( url.match( DONT_OPEN_IN_BROWSER[x] ) ) {
+			const dontOpenUrl = new URL( DONT_OPEN_IN_BROWSER[ x ] );
+
+			if ( domainAndPathSame( parsedUrl, dontOpenUrl ) ) {
 				debug( 'Open in new window for ' + url );
 
 				// When we do open another Electron window make it a bit smaller so we know it's there
