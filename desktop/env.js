@@ -15,7 +15,6 @@ const config = require( './lib/config' );
 const Settings = require( './lib/settings' );
 const EditorContextMenu = require( './lib/menu/editor-context-menu' );
 const GeneralContextMenu = require( './lib/menu/general-context-menu' );
-const state = require( './lib/state' );
 
 // Catch-all error handler
 // We hook in very early to catch issues during the startup process
@@ -58,7 +57,7 @@ const debug = require( 'debug' )( 'desktop:boot' );
 debug( '========================================================================================================' );
 debug( config.name + ' v' + config.version );
 debug( 'Path:', app.getAppPath() );
-debug( 'Server: ' + config.server_url + ':' + state.serverPort );
+debug( 'Server: ' + config.server_url + ':' + config.server_port );
 debug( 'Settings:', Settings._getAll() );
 
 if ( Settings.getSetting( 'proxy-type' ) === '' ) {

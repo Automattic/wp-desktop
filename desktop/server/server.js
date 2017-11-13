@@ -10,7 +10,6 @@ const debug = require( 'debug' )( 'desktop:server' );
  * Internal dependencies
  */
 const Config = require( 'lib/config' );
-const state = require( 'lib/state' );
 
 function showFailure( app ) {
 	const dialog = require( 'electron' ).dialog;
@@ -26,17 +25,15 @@ function showFailure( app ) {
 	} );
 }
 
-function startServer( port, running_cb ) {
+function startServer( running_cb ) {
 	var boot = require( 'boot' );
 	var http = require( 'http' );
 	var server = http.createServer( boot() );
 
-	state.serverPort = port;
-
-	debug( 'Server created, binding to ' + state.serverPort );
+	debug( 'Server created, binding to ' + Config.server_port );
 
 	server.listen( {
-		port: state.serverPort,
+		port: Config.server_port,
 		host: Config.server_host
 	}, function() {
 		debug( 'Server started, passing back to app' );
@@ -46,17 +43,17 @@ function startServer( port, running_cb ) {
 
 module.exports = {
 	start: function( app, running_cb ) {
-		debug( 'Checking server port: ' + state.serverPort + ' on host ' + Config.server_host );
+		debug( 'Checking server port: ' + Config.server_port + ' on host ' + Config.server_host );
 
-		portscanner.findAPortNotInUse( Config.server_port.min, Config.server_port.max, Config.server_host, function( error, port ) {
-			if ( error ) {
-				debug( 'Port check failed - ' + error );
+		portscanner.checkPortStatus( Config.server_port, Config.server_host, function( error, status ) {
+			if ( error || status === 'open' ) {
+				debug( 'Port check failed - ' + status, error );
 				showFailure( app );
 				return;
 			}
 
 			debug( 'Starting server' );
-			startServer( port, running_cb );
+			startServer( running_cb );
 		} );
 	}
 };
