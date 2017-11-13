@@ -23,7 +23,6 @@ app.on( 'ready', ( ) => {
  * Internal dependencies
  */
 const Config = require( 'lib/config' );
-const state = require( 'lib/state' );
 
 /**
  * Module variables
@@ -74,7 +73,7 @@ function openWindow( windowName ) {
 			windows[windowName].handle = new BrowserWindow( Config[settings.config] );
 			windows[windowName].handle.setMenuBarVisibility( false );
 			windows[windowName].handle.webContents.session.setProxy( 'direct://', function() {
-				windows[windowName].handle.loadURL( Config.server_url + ':' + state.serverPort + '/desktop/' + settings.file );
+				windows[windowName].handle.loadURL( Config.server_url + ':' + Config.server_port + '/desktop/' + settings.file );
 			} );
 
 			windows[windowName].handle.on( 'closed', function() {
