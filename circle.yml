@@ -33,7 +33,7 @@ deployment:
             - brew cask install xquartz
             - brew install wine makensis mono gnu-tar
             - gem install fpm
-            - nvm use v7.4.0
+            - nvm use v6.11.5
             - make distclean
             - make package-osx
             - make package-win32
