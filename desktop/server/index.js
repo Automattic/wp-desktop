@@ -8,6 +8,7 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const url = require( 'url' );
 const debug = require( 'debug' )( 'desktop:runapp' );
+const path = require( 'path' );
 
 /**
  * Internal dependencies
@@ -28,8 +29,10 @@ const state = require( 'lib/state' );
 var mainWindow = null;
 
 function showAppWindow() {
+	const preloadFile = path.resolve( path.join( __dirname, '..', '..', 'public_desktop', 'preload.js' ) );
 	let appUrl = Config.server_url + ':' + state.serverPort;
 	let lastLocation = Settings.getSetting( settingConstants.LAST_LOCATION );
+
 	if ( lastLocation && isValidLastLocation( lastLocation ) ) {
 		appUrl += lastLocation;
 	}
@@ -37,7 +40,7 @@ function showAppWindow() {
 	debug( 'Loading app (' + appUrl + ') in mainWindow' );
 
 	let config = Settings.getSettingGroup( Config.mainWindow, 'window', [ 'x', 'y', 'width', 'height' ] );
-	config.webPreferences.preload = app.getAppPath() + '/desktop/preload.js';
+	config.webPreferences.preload = preloadFile;
 
 	mainWindow = new BrowserWindow( config );
 
