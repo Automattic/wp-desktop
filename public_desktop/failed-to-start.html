@@ -20,7 +20,7 @@
 <body>
 
 <div class="welcome">
-	<p><img class="sadface" src="https://s0.wp.com/wp-content/mu-plugins/emoji/twemoji/svg/1f615.svg" /></p>
+	<p><img class="sadface" src="https://s0.wp.com/wp-content/mu-plugins/wpcom-smileys/twemoji/2/svg/1f615.svg" /></p>
 
 	<h3>Uh oh!</h3>
 	<p>WordPress.com ran into an error! (code <code></code>)<br /><span id="hideme"><a href="#" onclick="return showme()">Using a proxy?</a></span></p>
@@ -47,7 +47,7 @@
 <script>
 	var code = parseInt( document.location.hash.substring( 2 ), 10 );
 
-	document.querySelector( 'code' ).innerHTML = code;
+	document.querySelector( 'code' ).innerHTML = isNaN( code ) ? encodeURIComponent( document.location.hash.substring( 1 ) ) : code;
 </script>
 </body>
 </html>

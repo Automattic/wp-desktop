@@ -13,7 +13,9 @@
 		"useContentSize": true,
 		"width": 900,
 		"webPreferences": {
-			"overlayScrollbars": false
+			"overlayScrollbars": false,
+			"nodeIntegration": false,
+			"contextIsolation": false
 		}
 	},
 	"preferencesWindow": {
