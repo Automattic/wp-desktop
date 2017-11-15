@@ -135,6 +135,18 @@ function startDesktopApp() {
 
 	// This is called by Calypso
 	startApp = function() {
+		document.addEventListener( 'dragover', ev => {
+			if ( [ ... event.dataTransfer.types ].includes( 'text/uri-list' ) ) {
+				ev.preventDefault();
+			}
+		} );
+
+		document.addEventListener( 'drop', ev => {
+			if ( ev.dataTransfer.dropEffect === 'none' ) {
+				ev.preventDefault();
+			}
+		} );
+
 		window.addEventListener( 'online', function() {
 			if ( booted === false ) {
 				document.location.reload();
