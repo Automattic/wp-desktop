@@ -23,7 +23,8 @@ const ALWAYS_OPEN_IN_APP = [
 	'http://' + Config.server_host,
 	'http://localhost',
 	'https:/public-api.wordpress.com',
-	'https://wordpress\.com\/wp-login\.php'
+	'https://wordpress\.com\/wp-login\.php',
+	'http://127.0.0.1:41050/*',
 ];
 
 const DONT_OPEN_IN_BROWSER = [
@@ -31,7 +32,7 @@ const DONT_OPEN_IN_BROWSER = [
 	'https://public-api.wordpress.com/connect/'
 ];
 
-const domainAndPathSame = ( first, second ) => first.hostname === second.hostname && first.pathname === second.pathname;
+const domainAndPathSame = ( first, second ) => first.hostname === second.hostname && ( first.pathname === second.pathname || second.pathname === '/*' );
 
 function openInBrowser( event, url ) {
 	shell.openExternal( url );
