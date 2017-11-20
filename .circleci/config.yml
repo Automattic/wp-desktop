@@ -12,13 +12,13 @@ jobs:
       - run: openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
       - run: tar -C resource/ -zxvf resource/win32-secrets-tar.gz
       - run: openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
-      - run: source $HOME/.nvm/nvm.sh && make distclean
-      - run: source $HOME/.nvm/nvm.sh && make package-linux
       - run:
-          name: Build win32 package
+          name: Build Linux / win32 packages
           command: |
                   set +eo pipefail
                   source $HOME/.nvm/nvm.sh
+                  make distclean
+                  make package-linux
                   echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
       - persist_to_workspace:
           root: /wp-desktop
