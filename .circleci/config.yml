@@ -19,6 +19,7 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   make distclean
                   make package-linux
+                  [ -z $DEVELOPER_ID_CERTIFICATE_PASSWORD ] && echo "state not set"
                   echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
       - persist_to_workspace:
           root: /wp-desktop
