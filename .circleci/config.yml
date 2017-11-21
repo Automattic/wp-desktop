@@ -20,17 +20,21 @@ jobs:
                   make distclean
                   make package-linux
       - run:
-          name: Build win32 package
+          name: Build win32
           command: |
                   set +eo pipefail
                   source $HOME/.nvm/nvm.sh
                   make win32
+      - run:
+          name: Package win32
+          command: |
+                  set +eo pipefail
+                  source $HOME/.nvm/nvm.sh
                   echo "START DEBUG OUTPUT"
-                  [ -z $DEVELOPER_ID_CERTIFICATE_PASSWORD ] && echo "state not set"
-                  echo "ls /wp-desktop/resource/secrets"
-                  ls /wp-desktop/resource/secrets
                   echo "ls /wp-desktop/release"
                   ls /wp-desktop/release
+                  echo "ls /wp-desktop/release/WordPress.com-win32-ia32"
+                  ls /wp-desktop/release/WordPress.com-win32-ia32
                   echo "END DEBUG OUTPUT"
                   echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
       - persist_to_workspace:
