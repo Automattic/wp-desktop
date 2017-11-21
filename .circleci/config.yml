@@ -13,12 +13,18 @@ jobs:
       - run: tar -C resource/ -zxvf resource/win32-secrets-tar.gz
       - run: openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
       - run:
-          name: Build Linux / win32 packages
+          name: Build Linux package
           command: |
                   set +eo pipefail
                   source $HOME/.nvm/nvm.sh
                   make distclean
                   make package-linux
+      - run:
+          name: Build win32 package
+          command: |
+                  set +eo pipefail
+                  source $HOME/.nvm/nvm.sh
+                  make win32
                   echo "START DEBUG OUTPUT"
                   [ -z $DEVELOPER_ID_CERTIFICATE_PASSWORD ] && echo "state not set"
                   echo "ls /wp-desktop/resource/secrets"
