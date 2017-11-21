@@ -19,7 +19,13 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   make distclean
                   make package-linux
+                  echo "START DEBUG OUTPUT"
                   [ -z $DEVELOPER_ID_CERTIFICATE_PASSWORD ] && echo "state not set"
+                  echo "ls /wp-desktop/resource/secrets"
+                  ls /wp-desktop/resource/secrets
+                  echo "ls /wp-desktop/release"
+                  ls /wp-desktop/release
+                  echo "END DEBUG OUTPUT"
                   echo ${DEVELOPER_ID_CERTIFICATE_PASSWORD} | make package-win32
       - persist_to_workspace:
           root: /wp-desktop
