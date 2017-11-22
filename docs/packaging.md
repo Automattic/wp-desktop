@@ -5,6 +5,7 @@ Some builds require further packaging before they can be released:
 * `make package-win32` - Produces a signed `Setup.exe` install wizard
 * `make package-osx` - Produces a `DMG` file
 * `make package-linux` - Produces a `.deb` file
+* `make package-flatpak` - Produces a `.flatpak` file
 
 ## Requirements
 
@@ -18,3 +19,4 @@ The Linux package is build using [FPM][1] which is a tool that makes it easy to 
 
 [1]: https://github.com/jordansissel/fpm
 [2]: https://mkaz.tech/code-signing-a-windows-application.html
+

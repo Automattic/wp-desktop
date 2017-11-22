@@ -152,6 +152,10 @@ package-osx: osx
 package-linux: linux
 	@node $(THIS_DIR)/resource/build-scripts/package-linux.js
 
+package-flatpak: config-release-flatpak package
+	@node $(BUILDER) linux
+	@node $(THIS_DIR)/resource/build-scripts/package-flatpak.js
+
 distclean: clean
 	@cd calypso; npm run distclean
 	@rm -rf ./node_modules
@@ -176,6 +180,9 @@ config-test: install secret
 
 config-updater: install secret
 	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-updater.json > $(CONFIG)
+
+config-release-flatpak: install secret secret-clientid
+	@node $(BUILD_CONFIG) $(DESKTOP_CONFIG)/config-release.json linux flatpak > $(CONFIG)
 
 # NPM
 install: node_modules

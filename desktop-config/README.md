@@ -19,6 +19,8 @@ The build process is:
 
 `debug` - `false` to disable, or a set of debug config
 
+`disable_updates` - `true` to disable updates
+
 `mainWindow` - main app window config
 
 `preferencesWindow` - preference window config

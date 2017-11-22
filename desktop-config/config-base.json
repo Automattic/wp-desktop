@@ -3,6 +3,7 @@
 	"server_url": "http://127.0.0.1",
 	"server_host": "127.0.0.1",
 	"debug": false,
+	"disable_updates": false,
 	"mainWindow": {
 		"acceptFirstMouse": false,
 		"frame": true,
