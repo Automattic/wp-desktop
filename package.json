@@ -1,7 +1,7 @@
 {
   "name": "WordPressDesktop",
   "productName": "WordPress.com",
-  "version": "3.1.0-beta2",
+  "version": "3.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
@@ -20,8 +20,8 @@
     "wordpress.com"
   ],
   "engines": {
-    "node": "6.11.5",
-    "npm": "3.10.10"
+    "node": "8.9.1",
+    "npm": "5.5.1"
   },
   "optionalDependencies": {
     "appdmg": "^0.4.5"
