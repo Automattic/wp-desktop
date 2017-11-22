@@ -51,10 +51,10 @@
   "dependencies": {
     "debug": "2.6.8",
     "express": "4.15.3",
-    "jade": "1.11.0",
     "lodash.clonedeep": "4.5.0",
     "lodash.debounce": "4.0.8",
     "portscanner": "1.2.0",
+    "pug": "2.0.0-rc.4",
     "spellchecker": "3.4.3",
     "superagent": "1.8.5"
   }

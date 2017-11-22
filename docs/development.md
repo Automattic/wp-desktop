@@ -24,7 +24,7 @@ So what happens when you `make run`? It's a fairly complicated process so buckle
   - `/desktop` - mapped to `public_desktop`
 - *(main)* An Electron `BrowserWindow` is opened and loads the 'index' page from the Calypso server
 - *(main)* Once the window has opened the [window handlers](../desktop/window-handlers/README.md) load to provide interaction between Calypso and Electron
-- *(renderer)* Calypso provides the 'index' page from `calypso/server/pages/desktop.jade`, which is a standard Calypso start page plus:
+- *(renderer)* Calypso provides the 'index' page from `calypso/server/pages/desktop.pug`, which is a standard Calypso start page plus:
   - `public_desktop/wordpress-desktop.css` - any CSS specific to the desktop app
   - `public_desktop/desktop-app.js` - desktop app specific JS and also the Calypso boot code
   - `calypso/public/build.js` - a prebuilt Calypso
