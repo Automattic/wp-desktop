@@ -44,4 +44,4 @@ deployment:
 
 notify:
   webhooks:
-    - url: https://9f8517f0.ngrok.io/circleciwebhook
+    - url: https://a8cghdesktopcirclebridge.herokuapp.com/circleciwebhook
