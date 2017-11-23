@@ -42,3 +42,6 @@ deployment:
             - brew install ghr
             - ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release/
 
+notify:
+  webhooks:
+    - url: https://9f8517f0.ngrok.io/circleciwebhook
