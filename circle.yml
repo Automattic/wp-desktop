@@ -44,4 +44,4 @@ deployment:
 
 notify:
   webhooks:
-    - url: https://a8cghdesktopcirclebridge.herokuapp.com/circleciwebhook
+    - url: https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook
