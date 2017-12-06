@@ -1,10 +1,14 @@
-machine:
-    environment:
-        GYM_CODE_SIGNING_IDENTITY: "Developer ID Application: Automattic, Inc. (PZYM8XX95Q)"
-    xcode:
-        version: 8.3
+# Commenting out macOS configuration for now
+#machine:
+#    environment:
+#        GYM_CODE_SIGNING_IDENTITY: "Developer ID Application: Automattic, Inc. (PZYM8XX95Q)"
+#    xcode:
+#        version: 8.3
 
-# checkout
+machine:
+  node:
+    version: $(cat calypso/.nvmrc)
+
 checkout:
     post:
         - git submodule init
@@ -15,32 +19,35 @@ checkout:
                 git fetch;
                 git checkout ${CALYPSO_HASH};
             fi
-        - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-        - nvm install $(cat calypso/.nvmrc)
-        - nvm use $(cat calypso/.nvmrc)
+# Commented out for removal of macOS install
+#        - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+#        - nvm install $(cat calypso/.nvmrc)
+#        - nvm use $(cat calypso/.nvmrc)
 
-deployment:
-    beta-release:
-        tag: /v[0-9]+(\.[0-9]+)*-beta[0-9]*/
-        commands:
-            - openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
-            - openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
-            - tar -C resource/ -zxvf resource/win32-secrets-tar.gz
-            - openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
-            - security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
-            - security find-identity -p codesigning
-            - brew update
-            - brew cask install xquartz
-            - brew install wine makensis mono gnu-tar
-            - gem install fpm
-            - nvm use $(cat calypso/.nvmrc)
-            - make distclean
-            - make package-osx
-            - make package-win32
-            - make package-linux
-            - brew tap tcnksm/ghr
-            - brew install ghr
-            - ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release/
+# Commented out for removal of macOS install
+# macOS is required for building macOS binaries so disabling deployment entirely
+#deployment:
+#    beta-release:
+#        tag: /v[0-9]+(\.[0-9]+)*-beta[0-9]*/
+#        commands:
+#            - openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
+#            - openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
+#            - tar -C resource/ -zxvf resource/win32-secrets-tar.gz
+#            - openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
+#            - security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
+#            - security find-identity -p codesigning
+#            - brew update
+#            - brew cask install xquartz
+#            - brew install wine makensis mono gnu-tar
+#            - gem install fpm
+#            - nvm use $(cat calypso/.nvmrc)
+#            - make distclean
+#            - make package-osx
+#            - make package-win32
+#            - make package-linux
+#            - brew tap tcnksm/ghr
+#            - brew install ghr
+#            - ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release/
 
 notify:
   webhooks:
