@@ -7,7 +7,7 @@
 
 machine:
   node:
-    version: $(cat calypso/.nvmrc)
+    version: 8.9.1
 
 checkout:
     post:
