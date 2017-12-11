@@ -78,7 +78,7 @@ check-node-and-npm-version-parity:
 # Builds Calypso (desktop)
 build: check-node-and-npm-version-parity install
 	@echo "Building Calypso (Desktop on branch $(RED)$(CALYPSO_BRANCH)$(RESET))"
-	@cd calypso && CALYPSO_ENV=desktop npm run build
+	@cd calypso && CALYPSO_ENV=desktop MINIFY_JS=false npm run build
 	@rm -f $(THIS_DIR)/calypso/public/devmodules.*
 
 build-if-not-exists:
@@ -135,7 +135,7 @@ package: build-if-changed
 	@cp $(CALYPSO_DIR)/config/_shared.json $(BUILD_DIR)/calypso/config/
 	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
 	@rm $(BUILD_DIR)/calypso/public/style-debug.css*
-	@mv $(BUILD_DIR)/calypso/public/build.min.js $(BUILD_DIR)/calypso/public/build.js
+	@mv $(BUILD_DIR)/calypso/public/build.js $(BUILD_DIR)/calypso/public/build.js
 	@rm -rf $(BUILD_DIR)/calypso/server/pages/test $(BUILD_DIR)/calypso/server/pages/Makefile $(BUILD_DIR)/calypso/server/pages/README.md
 	@cd $(BUILD_DIR); $(NPM) install --production --no-optional; $(NPM) prune
 
