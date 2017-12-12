@@ -135,7 +135,6 @@ package: build-if-changed
 	@cp $(CALYPSO_DIR)/config/_shared.json $(BUILD_DIR)/calypso/config/
 	@cp $(CALYPSO_DIR)/config/desktop.json $(BUILD_DIR)/calypso/config/
 	@rm $(BUILD_DIR)/calypso/public/style-debug.css*
-	@mv $(BUILD_DIR)/calypso/public/build.js $(BUILD_DIR)/calypso/public/build.js
 	@rm -rf $(BUILD_DIR)/calypso/server/pages/test $(BUILD_DIR)/calypso/server/pages/Makefile $(BUILD_DIR)/calypso/server/pages/README.md
 	@cd $(BUILD_DIR); $(NPM) install --production --no-optional; $(NPM) prune
 
