@@ -2,7 +2,7 @@ machine:
    environment:
        GYM_CODE_SIGNING_IDENTITY: "Developer ID Application: Automattic, Inc. (PZYM8XX95Q)"
    xcode:
-       version: 9.2
+       version: 8.3
 
 checkout:
     post:
