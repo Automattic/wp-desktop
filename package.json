@@ -1,7 +1,7 @@
 {
   "name": "WordPressDesktop",
   "productName": "WordPress.com",
-  "version": "3.1.0",
+  "version": "3.2.0-beta1",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
