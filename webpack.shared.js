@@ -9,22 +9,20 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /extensions\/index/,
+				test: /extensions[\/\\]index/,
 				exclude: path.join( __dirname, 'calypso', 'node_modules' ),
 				loader: path.join( __dirname, 'calypso', 'server', 'bundler', 'extensions-loader' )
 			},
 			{
-				test: /sections.js$/,
-				exclude: path.join( __dirname, 'calypso', 'node_modules' ),
-				loader: path.join( __dirname, 'calypso', 'server', 'isomorphic-routing', 'loader' )
+				include: path.join( __dirname, 'calypso', 'client/sections.js' ),
+				use: {
+					loader: path.join( __dirname, 'calypso', 'server', 'bundler', 'sections-loader' ),
+					options: { forceRequire: true, onlyIsomorphic: true },
+				},
 			},
 			{
 				test: /\.html$/,
 				loader: 'html-loader'
-			},
-			{
-				test: /\.json$/,
-				loader: 'json-loader'
 			},
 			{
 				test: /\.jsx?$/,
@@ -62,7 +60,6 @@ module.exports = {
 		]
 	},
 	plugins: [
-		// new webpack.optimize.DedupePlugin(),
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]abtest$/, 'lodash/noop' ), // Depends on BOM
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]analytics$/, 'lodash/noop' ), // Depends on BOM
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]sites-list$/, 'lodash/noop' ), // Depends on BOM
