@@ -7,15 +7,15 @@ var webpack = require( 'webpack' );
 module.exports = {
 	target: 'node',
 	module: {
-		loaders: [
+		rules: [
 			{
 				test: /extensions\/index/,
-				exclude: 'node_modules',
+				exclude: path.join( __dirname, 'calypso', 'node_modules' ),
 				loader: path.join( __dirname, 'calypso', 'server', 'bundler', 'extensions-loader' )
 			},
 			{
 				test: /sections.js$/,
-				exclude: 'node_modules',
+				exclude: path.join( __dirname, 'calypso', 'node_modules' ),
 				loader: path.join( __dirname, 'calypso', 'server', 'isomorphic-routing', 'loader' )
 			},
 			{
@@ -52,12 +52,17 @@ module.exports = {
 		'devdocs/components-usage-stats.json'
 	],
 	resolve: {
-		extensions: [ '', '.js', '.jsx', '.json' ],
-		modulesDirectories: [ 'node_modules', path.join( __dirname, 'calypso', 'server' ), path.join( __dirname, 'calypso', 'client' ), 'desktop' ]
+		extensions: [ '.js', '.jsx', '.json' ],
+		modules: [
+			path.join( __dirname, 'calypso', 'node_modules' ),
+			path.join( __dirname, 'node_modules' ),
+			path.join( __dirname, 'calypso', 'server' ),
+			path.join( __dirname, 'calypso', 'client' ),
+			path.join( __dirname, 'desktop' ),
+		]
 	},
 	plugins: [
 		// new webpack.optimize.DedupePlugin(),
-		new webpack.optimize.OccurenceOrderPlugin(),
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]abtest$/, 'lodash/noop' ), // Depends on BOM
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]analytics$/, 'lodash/noop' ), // Depends on BOM
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]sites-list$/, 'lodash/noop' ), // Depends on BOM
