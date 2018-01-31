@@ -34,7 +34,7 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-react": "^6.3.13",
     "chai": "^3.4.1",
-    "electron": "1.6.11",
+    "electron": "1.6.16",
     "electron-builder": "2.8.4",
     "electron-mocha": "^2.1.0",
     "electron-packager": "^7.0.2",
