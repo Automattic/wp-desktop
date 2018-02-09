@@ -6,6 +6,7 @@
 const shell = require( 'electron' ).shell;
 const debug = require( 'debug' )( 'desktop:external-links' );
 const { URL } = require( 'url' );
+const path = require( 'path' );
 
 /**
  * Internal dependencies
@@ -71,6 +72,10 @@ module.exports = function( webContents ) {
 				options.y = options.y + OFFSET_NEW_WINDOW;
 				options.width = options.width * SCALE_NEW_WINDOW_FACTOR;
 				options.height = options.height * SCALE_NEW_WINDOW_FACTOR;
+
+				const preloadFile = path.resolve( path.join( __dirname, '..', '..', '..', 'public_desktop', 'preload.js' ) );
+				options.webPreferences.preload = preloadFile;
+				console.log(options);
 				return;
 			}
 		}
