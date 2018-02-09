@@ -28,7 +28,7 @@ const ALWAYS_OPEN_IN_APP = [
 ];
 
 const DONT_OPEN_IN_BROWSER = [
-	Config.server_url,
+	'http://127.0.0.1:41050/*',
 	'https://public-api.wordpress.com/connect/'
 ];
 
