@@ -32,6 +32,7 @@ const DONT_OPEN_IN_BROWSER = [
 	'https://public-api.wordpress.com/connect/'
 ];
 
+const samePort = ( first, second ) => second.port ? first.port === second.port : ! first.port;
 const domainAndPathSame = ( first, second ) => first.hostname === second.hostname && ( first.pathname === second.pathname || second.pathname === '/*' );
 
 function openInBrowser( event, url ) {
@@ -46,7 +47,7 @@ module.exports = function( webContents ) {
 		for ( let x = 0; x < ALWAYS_OPEN_IN_APP.length; x++ ) {
 			const alwaysOpenUrl = new URL( ALWAYS_OPEN_IN_APP[ x ] );
 
-			if ( domainAndPathSame( parsedUrl, alwaysOpenUrl ) ) {
+			if ( domainAndPathSame( parsedUrl, alwaysOpenUrl ) && samePort( parsedUrl, alwaysOpenUrl ) ) {
 				return;
 			}
 		}
@@ -61,7 +62,7 @@ module.exports = function( webContents ) {
 		for ( let x = 0; x < DONT_OPEN_IN_BROWSER.length; x++ ) {
 			const dontOpenUrl = new URL( DONT_OPEN_IN_BROWSER[ x ] );
 
-			if ( domainAndPathSame( parsedUrl, dontOpenUrl ) ) {
+			if ( domainAndPathSame( parsedUrl, dontOpenUrl ) && samePort( parsedUrl, dontOpenUrl ) ) {
 				debug( 'Open in new window for ' + url );
 
 				// When we do open another Electron window make it a bit smaller so we know it's there
