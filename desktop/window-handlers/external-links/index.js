@@ -89,7 +89,6 @@ module.exports = function( webContents ) {
 
 				const preloadFile = path.resolve( path.join( __dirname, '..', '..', '..', 'public_desktop', 'preload.js' ) );
 				options.webPreferences.preload = preloadFile;
-				console.log(options);
 				return;
 			}
 		}
