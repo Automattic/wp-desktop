@@ -8,6 +8,10 @@
   },
   "private": true,
   "description": "Desktop version of WordPress.com",
+  "author": {
+    "name": "Automattic Inc.",
+    "email": "wp-desktop@automattic.com"
+  },
   "main": "build/desktop.js",
   "scripts": {
     "setup": "npm run install-if-deps-outdated && ( check-node-version --package || exit 0 ) && cd ./calypso && node ./bin/install-if-deps-outdated.js && cd .. && npm run build:config",
@@ -17,9 +21,10 @@
     "start:calypso": "cd calypso; npm run poststart",
     "start:electron": "npx electron .",
     "build": "npm run build:calypso && npm run build:desktop",
-    "build:desktop": "NODE_PATH=calypso/server:calypso/client npx webpack --config ./webpack.config.js",
+    "build:desktop": "npm run build:config && NODE_PATH=calypso/server:calypso/client npx webpack --config ./webpack.config.js",
     "build:calypso": "cd calypso && npm run build",
     "build:config": "node ./resource/build-scripts/build-config-file.js",
+    "build:electron": "npx electron-builder build",
     "install-if-deps-outdated": "node calypso/bin/install-if-deps-outdated.js"
   },
   "keywords": [
@@ -46,10 +51,9 @@
     "check-node-version": "3.2.0",
     "concurrently": "3.5.1",
     "electron": "1.6.16",
-    "electron-builder": "2.8.4",
+    "electron-builder": "20.3.1",
     "electron-mocha": "^2.1.0",
     "electron-packager": "^7.0.2",
-    "electron-rebuild": "^1.2.1",
     "eslint": "^2.10.2",
     "eslint-plugin-react": "^5.1.1",
     "json-loader": "^0.5.4",
@@ -70,5 +74,67 @@
     "pug": "2.0.0-rc.4",
     "spellchecker": "3.4.3",
     "superagent": "1.8.5"
+  },
+  "build": {
+    "productName": "WordPress.com for Desktop",
+    "appId": "com.automattic.wordpress",
+    "directories": {
+      "output": "./release"
+    },
+    "asar": false,
+    "files": [
+      "./build/desktop.js",
+      {
+        "from": "./public_desktop",
+        "to": "./build/public_desktop"
+      },
+      {
+        "from": "./calypso",
+        "to": "./build/calypso",
+        "filter": [
+          "public/**/*",
+          "!public/**/*.css.map",
+          "server/pages/**/*",
+          "!server/pages/test",
+          "!server/pages/README.md",
+          "server/bundler/assets.json",
+          "config/*(secrets|_shared|desktop).json"
+        ]
+      }
+    ],
+    "dmg": {
+      "title": "WordPress.com Installer",
+      "icon": "./resource/image/dmg-icon.icns",
+      "iconSize": 150,
+      "background": "./resource/image/dmg-background/background.png",
+      "contents": [
+        {
+          "x": 486,
+          "y": 176,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 156,
+          "y": 179,
+          "type": "file"
+        }
+      ]
+    },
+    "mac": {
+      "icon": "./resource/image/app-icon.icns"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ],
+      "category": "Development"
+    }
   }
 }
