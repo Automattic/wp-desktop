@@ -84,13 +84,10 @@
     "asar": false,
     "files": [
       "./build/desktop.js",
-      {
-        "from": "./public_desktop",
-        "to": "./build/public_desktop"
-      },
+      "./public_desktop",
       {
         "from": "./calypso",
-        "to": "./build/calypso",
+        "to": "./calypso",
         "filter": [
           "public/**/*",
           "!public/**/*.css.map",
