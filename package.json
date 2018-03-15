@@ -100,6 +100,10 @@
         ]
       }
     ],
+    "mac": {
+      "icon": "./resource/image/app-icon.icns",
+      "category": "public.app-category.social-networking"
+    },
     "dmg": {
       "title": "WordPress.com Installer",
       "icon": "./resource/image/dmg-icon.icns",
@@ -119,20 +123,29 @@
         }
       ]
     },
-    "mac": {
-      "icon": "./resource/image/app-icon.icns"
-    },
     "win": {
-      "target": [
-        "nsis"
-      ]
+      "target": {
+        "target": "nsis",
+        "arch": [
+          "x64",
+          "ia32"
+        ]
+      },
+      "icon": "./resource/image/wordpress.ico"
+    },
+    "nsis": {
+      "oneClick": false
     },
     "linux": {
       "target": [
         "deb",
-        "AppImage"
+        "tar.gz"
       ],
-      "category": "Development"
+      "icon": "./resource/image/app-icon/icon/512x512.png",
+      "executableName": "wpcom",
+      "category": "Development",
+      "description": "A desktop app that gives WordPress a permanent home in your dock.\n\nWrite and design with no other browser tabs to distract you. Switch easily between managing your WordPress sites and your favorite desktop apps.\n\nThe WordPress.com desktop app will scale to any size. Do you need a small window on the side to keep your eye on notifications, or do want to expand to a truly full screen for a zen writing experience? Take your pick.",
+      "synopsis": "WordPress.com Desktop client"
     }
   }
 }
