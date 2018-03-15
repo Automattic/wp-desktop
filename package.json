@@ -82,7 +82,6 @@
     "directories": {
       "output": "./release"
     },
-    "asar": false,
     "files": [
       "./build/desktop.js",
       "./public_desktop",
