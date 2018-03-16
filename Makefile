@@ -123,7 +123,7 @@ endif
 package: build-if-changed
 	@echo "Bundling app and server"
 	@rm -rf $(BUILD_DIR)/public_desktop $(BUILD_DIR)/calypso
-	@NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client $(WEBPACK_BIN) --config $(THIS_DIR)/webpack.config.js
+	@NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client CALYPSO_SERVER=true $(WEBPACK_BIN) --config $(THIS_DIR)/webpack.config.js
 	@echo "Copying Calypso client and public files"
 	@sed -e 's/build\///' $(THIS_DIR)/package.json >$(BUILD_DIR)/package.json
 	@mkdir $(BUILD_DIR)/calypso $(BUILD_DIR)/calypso/config $(BUILD_DIR)/calypso/server $(BUILD_DIR)/calypso/server/bundler
@@ -201,7 +201,7 @@ eslint: lint
 
 # Testing
 test: config-test package
-	@NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client $(WEBPACK_BIN) --config ./webpack.config.test.js
+	@NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client CALYPSO_SERVER=true $(WEBPACK_BIN) --config ./webpack.config.test.js
 	@CALYPSO_PATH=`pwd`/build $(ELECTRON_TEST) --inline-diffs --timeout 15000 build/desktop-test.js
 
 test-osx: osx
