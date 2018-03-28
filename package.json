@@ -1,17 +1,18 @@
 {
   "name": "WordPressDesktop",
-  "productName": "WordPress.com",
   "version": "3.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
   },
+  "license": "GPLv2",
   "private": true,
   "description": "Desktop version of WordPress.com",
   "author": {
     "name": "Automattic Inc.",
     "email": "wp-desktop@automattic.com"
   },
+  "homepage": "https://desktop.wordpress.com/",
   "main": "build/desktop.js",
   "scripts": {
     "setup": "npm run install-if-deps-outdated && ( check-node-version --package || exit 0 ) && cd ./calypso && node ./bin/install-if-deps-outdated.js && cd .. && npm run build:config",
@@ -51,7 +52,7 @@
     "check-node-version": "3.2.0",
     "concurrently": "3.5.1",
     "electron": "1.6.16",
-    "electron-builder": "20.3.1",
+    "electron-builder": "20.5.1",
     "electron-mocha": "^2.1.0",
     "electron-packager": "^7.0.2",
     "eslint": "^2.10.2",
@@ -76,21 +77,17 @@
     "superagent": "1.8.5"
   },
   "build": {
-    "productName": "WordPress.com for Desktop",
+    "productName": "WordPress.com",
     "appId": "com.automattic.wordpress",
     "directories": {
       "output": "./release"
     },
-    "asar": false,
     "files": [
       "./build/desktop.js",
-      {
-        "from": "./public_desktop",
-        "to": "./build/public_desktop"
-      },
+      "./public_desktop",
       {
         "from": "./calypso",
-        "to": "./build/calypso",
+        "to": "./calypso",
         "filter": [
           "public/**/*",
           "!public/**/*.css.map",
@@ -102,6 +99,10 @@
         ]
       }
     ],
+    "mac": {
+      "icon": "./resource/image/app-icon.icns",
+      "category": "public.app-category.social-networking"
+    },
     "dmg": {
       "title": "WordPress.com Installer",
       "icon": "./resource/image/dmg-icon.icns",
@@ -121,19 +122,28 @@
         }
       ]
     },
-    "mac": {
-      "icon": "./resource/image/app-icon.icns"
-    },
     "win": {
-      "target": [
-        "nsis"
-      ]
+      "target": {
+        "target": "nsis",
+        "arch": [
+          "x64",
+          "ia32"
+        ]
+      },
+      "icon": "./resource/image/wordpress.ico"
+    },
+    "nsis": {
+      "oneClick": false
     },
     "linux": {
       "target": [
         "deb",
         "AppImage"
       ],
+      "icon": "./resource/image/app-icon/icon/512x512.png",
+      "executableName": "wpcom",
+      "description": "A desktop app that gives WordPress a permanent home in your dock.\n\nWrite and design with no other browser tabs to distract you. Switch easily between managing your WordPress sites and your favorite desktop apps.\n\nThe WordPress.com desktop app will scale to any size. Do you need a small window on the side to keep your eye on notifications, or do want to expand to a truly full screen for a zen writing experience? Take your pick.",
+      "synopsis": "WordPress.com Desktop client",
       "category": "Development"
     }
   }
