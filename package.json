@@ -15,18 +15,10 @@
   "homepage": "https://desktop.wordpress.com/",
   "main": "build/desktop.js",
   "scripts": {
-    "setup": "npm run install-if-deps-outdated && ( check-node-version --package || exit 0 ) && cd ./calypso && node ./bin/install-if-deps-outdated.js && cd .. && npm run build:config",
-    "start": "npm run start:desktop",
-    "start:desktop": "npm run setup && npm run build && npm run start:electron",
-    "start:dev": "npm run setup && npx concurrently `npm run build:desktop` `npm run start:calypso` `npx wait-on http://calypso.localhost:3000 && npm run start:electron`",
-    "start:calypso": "cd calypso; npm run poststart",
-    "start:electron": "npx electron .",
-    "build": "npm run build:calypso && npm run build:desktop",
-    "build:desktop": "npm run build:config && NODE_PATH=calypso/server:calypso/client npx webpack --config ./webpack.config.js",
-    "build:calypso": "cd calypso && npm run build",
-    "build:config": "node ./resource/build-scripts/build-config-file.js",
-    "build:electron": "npx electron-builder build",
-    "install-if-deps-outdated": "node calypso/bin/install-if-deps-outdated.js"
+    "setup": "npm run install-if-deps-outdated && ( check-node-version --package || exit 0 ) && cd ./calypso && node ./bin/install-if-deps-outdated.js",
+    "build:app": "make build-app CONFIG_ENV=release NODE_ENV=production CALYPSO_ENV=desktop",
+    "install-if-deps-outdated": "node calypso/bin/install-if-deps-outdated.js",
+    "dev": "make start CONFIG_ENV=development NODE_ENV=development CALYPSO_ENV=desktop-development"
   },
   "keywords": [
     "desktop",
