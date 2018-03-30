@@ -87,12 +87,13 @@ jobs:
         - run: 
             name: Install dependencies
             command: |
-                    source $HOME/.nvm/nvm.sh
-                    nvm --version
+                    # source $HOME/.nvm/nvm.sh
+                    # nvm --version
                     pwd
                     nvm 
-                    nvm install $(cat calypso/.nvmrc)
-                    npm install
+                    $HOME/.nvm/nvm.sh
+                    # nvm install $(cat calypso/.nvmrc)
+                    # npm install
         - run: 
             name: Build Mac
             command: |
