@@ -58,7 +58,7 @@ jobs:
   #                 rm -rf test
   #                 rm -rf build/.babel-server-cache/
   #     - persist_to_workspace:
-  #         root: /wp-desktop
+  #         root: /wp-desktop/release
   #         paths:
   #           - .
   build:
@@ -67,7 +67,7 @@ jobs:
       working_directory: /Users/distiller/wp-desktop
       steps:
         # - attach_workspace:
-        #     at: /Users/distiller/wp-desktop
+        #     at: /Users/distiller/wp-desktop/release
         - checkout
         - run:  
             name: Setup calypso
@@ -88,6 +88,9 @@ jobs:
             name: Install dependencies
             command: |
                     source $HOME/.nvm/nvm.sh
+                    nvm --version
+                    pwd
+                    nvm 
                     nvm install $(cat calypso/.nvmrc)
                     npm install
         - run: 
