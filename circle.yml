@@ -66,7 +66,7 @@ jobs:
         xcode: "8.3.3"
       steps:
         - attach_workspace:
-            at: /wp-desktop
+            at: /Users/distiller/wp-desktop
         - run:  
             name: Install nvm and calypso node version
             command: |
