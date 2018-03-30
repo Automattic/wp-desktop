@@ -87,9 +87,10 @@ jobs:
         - run: 
             name: Install dependencies
             command: |
-                    # source $HOME/.nvm/nvm.sh
                     # nvm --version
                     pwd
+                    ls -al $HOME/.nvm
+                    source $HOME/.nvm/nvm.sh
                     nvm 
                     $HOME/.nvm/nvm.sh
                     # nvm install $(cat calypso/.nvmrc)
