@@ -29,7 +29,6 @@ jobs:
                   openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
       - run: 
           name: Build sources
-          no_output_timeout: 60m
           command: |
                   source $HOME/.nvm/nvm.sh
                   npm install
@@ -42,6 +41,19 @@ jobs:
           command: |
                   source $HOME/.nvm/nvm.sh
                   make package BUILD_PLATFORM=wl
+      - run: 
+          name: Cleanup # we don't need to share all files with other jobs
+          command: |
+                  rm -rf desktop
+                  rm -rf desktop-config
+                  rm -rf docs
+
+                  cd calypso
+                  rm -rf bin
+                  rm -rf client
+                  rm -rf docs
+                  rm -rf node_modules
+                  rm -rf test
       - persist_to_workspace:
           root: /wp-desktop
           paths:
