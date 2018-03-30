@@ -41,6 +41,8 @@ jobs:
           command: |
                   source $HOME/.nvm/nvm.sh
                   make package BUILD_PLATFORM=wl
+      - store_artifacts:
+            path: release
       - run: 
           name: Cleanup # we don't need to share all files with other jobs
           command: |
@@ -54,6 +56,7 @@ jobs:
                   rm -rf docs
                   rm -rf node_modules
                   rm -rf test
+                  rm -rf build/.babel-server-cache/
       - persist_to_workspace:
           root: /wp-desktop
           paths:
@@ -79,15 +82,8 @@ jobs:
             command: |
                     source $HOME/.nvm/nvm.sh
                     make package BUILD_PLATFORM=m
-  artifacts:
-      docker:
-        - image: electronuserland/builder:wine-mono
-      steps:
-        - attach_workspace:
-            at: /wp-desktop
         - store_artifacts:
             path: release
-
 workflows:
   version: 2
   build_and_package:
@@ -96,7 +92,3 @@ workflows:
       - mac:
           requires:
             - build
-      - artifacts:
-          requires: 
-            - build
-            - mac
