@@ -63,7 +63,7 @@ jobs:
             - .
   mac:
       macos:
-        xcode: "8.3.3"
+        xcode: "9.0"
       working_directory: /Users/distiller/wp-desktop
       steps:
         - attach_workspace:
