@@ -71,6 +71,7 @@
   "build": {
     "productName": "WordPress.com",
     "appId": "com.automattic.wordpress",
+    "asar": false,
     "directories": {
       "output": "./release"
     },
