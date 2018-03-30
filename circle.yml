@@ -46,7 +46,7 @@ jobs:
           root: /wp-desktop
           paths:
             - .
-  package:
+  mac:
       macos:
         xcode: "8.3.3"
       steps:
