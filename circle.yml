@@ -1,47 +1,48 @@
-machine:
-    environment:
-        GYM_CODE_SIGNING_IDENTITY: "Developer ID Application: Automattic, Inc. (PZYM8XX95Q)"
-    xcode:
-        version: 8.3
-
-# checkout
-checkout:
-    post:
-        - git submodule init
-        - git submodule update
-        - >
-            cd calypso;
-            if [ -n "${CALYPSO_HASH}" ]; then
-                git fetch;
-                git checkout ${CALYPSO_HASH};
-            fi
-        - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-        - nvm install $(cat calypso/.nvmrc)
-        - nvm use $(cat calypso/.nvmrc)
-
-deployment:
-    beta-release:
-        tag: /v[0-9]+(\.[0-9]+)*-beta[0-9]*/
-        commands:
-            - openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
-            - openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
-            - tar -C resource/ -zxvf resource/win32-secrets-tar.gz
-            - openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
-            - security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
-            - security find-identity -p codesigning
-            - brew update
-            - brew cask install xquartz
-            - brew install wine makensis mono gnu-tar
-            - gem install fpm
-            - nvm use $(cat calypso/.nvmrc)
-            - make distclean
-            - make package-osx
-            - make package-win32
-            - make package-linux
-            - brew tap tcnksm/ghr
-            - brew install ghr
-            - ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release/
-
-notify:
-  webhooks:
-    - url: https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook
+version: 2
+jobs:
+  build:
+    docker:
+      - image: electronuserland/builder:wine-mono
+    working_directory: /wp-desktop
+    steps:
+      - checkout
+      - run:  
+          name: Setup calypso
+          command: |
+                  git submodule init
+                  git submodule update
+      - run:  
+          name: Install nvm and calypso node version
+          command: |
+                  set +e  
+                  NODE_VERSION=$(cat calypso/.nvmrc)       
+                  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+                  
+                  export NVM_DIR="$HOME/.nvm"
+                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+      - run:  
+          name: Decrypt assets
+          command: |
+                  openssl aes-256-cbc -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+                  openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+                  openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+      - run: 
+          name: Build sources
+          no_output_timeout: 60m
+          command: |
+                  source $HOME/.nvm/nvm.sh
+                  npm install
+                  cd calypso
+                  npm install
+                  cd ..
+                  make build-source CONFIG_ENV=release
+      - run: 
+          name: Build Windows & Linux
+          command: |
+                  source $HOME/.nvm/nvm.sh
+                  make package BUILD_PLATFORM=wl
+      - persist_to_workspace:
+          root: /wp-desktop
+          paths:
+            - .
