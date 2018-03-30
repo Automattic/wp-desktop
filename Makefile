@@ -50,11 +50,14 @@ build-desktop:
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
-# Build app for win mac and linux
-build-app: build-source
+# Package App
+package:
 	@npx electron-builder build -$(BUILD_PLATFORM)
 
 	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
+
+# Combined steps for building app 
+build: build-source package
 
 # Perform checks
 checks: check-node-and-npm-version-parity secret secret-clientid
