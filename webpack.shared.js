@@ -5,13 +5,6 @@ var path = require( 'path' );
 var webpack = require( 'webpack' );
 var fs = require('fs');
 
-// disable add-module-exports from the sub-repo calypso's babelrc by modifying the file
-// @TODO ASAP: remove these lines when add-module-exports is removed from the babelrc
-const pathToBabelConfig = path.join( __dirname, 'calypso', '.babelrc' );
-const babelConfig = JSON.parse( fs.readFileSync( pathToBabelConfig, {encoding: 'utf8'} ) );
-babelConfig.plugins = babelConfig.plugins.filter( elem => elem !== 'add-module-exports' );
-fs.writeFileSync( pathToBabelConfig, JSON.stringify( babelConfig ), 'utf-8' );
-
 module.exports = {
 	target: 'node',
 	module: {
