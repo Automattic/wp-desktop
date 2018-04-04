@@ -90,16 +90,15 @@ jobs:
             command: |
                     # nvm --version
                     pwd
-                    ls -al $HOME/.nvm
-                    source $HOME/.nvm/nvm.sh
+                    ls -al /Users/distiller/.nvm
+                    source /Users/distiller/.nvm/nvm.sh
                     nvm 
-                    $HOME/.nvm/nvm.sh
                     # nvm install $(cat calypso/.nvmrc)
                     # npm install
         - run: 
             name: Build Mac
             command: |
-                    source $HOME/.nvm/nvm.sh
+                    source /Users/distiller/.nvm/nvm.sh
                     make package BUILD_PLATFORM=m
         - store_artifacts:
             path: release
