@@ -45,8 +45,8 @@ jobs:
           paths:
             - node_modules
             - calypso/node_modules
-      - save_cache:
-          key: v1-build-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - persist_to_workspace:
+          root: /wp-desktop
           paths:
             - build 
             - calypso/public
@@ -60,8 +60,8 @@ jobs:
     working_directory: /wp-desktop
     steps:
       - checkout
-      - restore_cache:
-          key: v1-build-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - attach_workspace:
+          at: /wp-desktop
       - run:  
           name: Install nvm and calypso node version
           command: |
@@ -76,11 +76,13 @@ jobs:
           name: Install dependencies
           command: |
                   source $HOME/.nvm/nvm.sh
+                  nvm use
                   npm install
       - run: 
           name: Build Windows & Linux
           command: |
                   source $HOME/.nvm/nvm.sh
+                  nvm use
                   make package BUILD_PLATFORM=wl
       - store_artifacts:
             path: release
@@ -96,8 +98,8 @@ jobs:
     working_directory: /Users/distiller/wp-desktop
     steps:
       - checkout
-      - restore_cache:
-          key: v1-build-cache-{{ .Environment.CIRCLE_SHA1 }}
+     - attach_workspace:
+          at: /Users/distiller/wp-desktop
       - run:  
           name: Install nvm and calypso node version
           command: |
