@@ -18,8 +18,9 @@ jobs:
                   curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
                   
                   export NVM_DIR="$HOME/.nvm"
-                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
                   nvm install $(cat calypso/.nvmrc)
       - run:  
           name: Decrypt assets
@@ -52,6 +53,7 @@ jobs:
             - calypso/public
             - calypso/server
             - calypso/config
+            - calypso/package.json
             - calypso/.nvmrc
 
   win-and-linux:
@@ -70,8 +72,8 @@ jobs:
                   curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
                   
                   export NVM_DIR="$HOME/.nvm"
-                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
       - run:  
           name: Install dependencies
           command: |
@@ -84,10 +86,8 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=wl
-      - store_artifacts:
-            path: release
       - persist_to_workspace:
-          root: /wp-desktop/release
+          root: /wp-desktop
           paths:
             - release
 
@@ -107,23 +107,26 @@ jobs:
                   curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
                   
                   export NVM_DIR="$HOME/.nvm"
-                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+                  nvm install $(cat calypso/.nvmrc)
       - run: 
           name: Install dependencies
           command: |
                   set +e    
                   source $HOME/.nvm/nvm.sh
-                  nvm install $(cat calypso/.nvmrc)
+                  nvm use
                   npm install
       - run: 
           name: Build Mac
           command: |
                   set +e
                   source $HOME/.nvm/nvm.sh
+                  nvm use
                   make package BUILD_PLATFORM=m
       - persist_to_workspace:
-          root: /wp-desktop/release
+          root: /Users/distiller/wp-desktop
           paths:
             - release
 
