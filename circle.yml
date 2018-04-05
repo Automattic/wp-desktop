@@ -74,12 +74,18 @@ jobs:
                   export NVM_DIR="$HOME/.nvm"
                   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
                   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+      - restore_cache:
+          key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
       - run:  
           name: Install dependencies
           command: |
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   npm install
+      - save_cache:
+          key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
       - run: 
           name: Build Windows & Linux
           command: |
@@ -111,6 +117,8 @@ jobs:
                   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
                   nvm install $(cat calypso/.nvmrc)
+      - restore_cache:
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
       - run: 
           name: Install dependencies
           command: |
@@ -118,6 +126,10 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   npm install
+      - save_cache:
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
       - run: 
           name: Build Mac
           command: |
