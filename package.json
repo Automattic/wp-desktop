@@ -30,7 +30,7 @@
     "asar": "^0.11.0",
     "babel-core": "6.26.0",
     "babel-eslint": "^6.0.4",
-    "babel-loader": "7.1.2",
+    "babel-loader": "7.1.4",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-react": "^6.3.13",
     "chai": "^3.4.1",
@@ -46,7 +46,8 @@
     "mkdirp": "^0.5.1",
     "mv": "^2.1.1",
     "unzip": "^0.1.11",
-    "webpack": "3.10.0"
+    "webpack": "4.5.0",
+    "webpack-cli": "2.0.14"
   },
   "dependencies": {
     "debug": "2.6.8",
