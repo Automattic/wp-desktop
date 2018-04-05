@@ -43,109 +43,109 @@ jobs:
           paths:
             - ./**/!(node_modules)
 
-#   win-and-linux:
-#     docker:
-#       - image: electronuserland/builder:wine-mono
-#     working_directory: /wp-desktop
-#     steps:
-#       - checkout
-#       - attach_workspace:
-#             at: /wp-desktop
-#       - run:  
-#           name: Install nvm and calypso node version
-#           command: |
-#                   set +e  
-#                   NODE_VERSION=$(cat calypso/.nvmrc)
-#                   curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+  win-and-linux:
+    docker:
+      - image: electronuserland/builder:wine-mono
+    working_directory: /wp-desktop
+    steps:
+      - checkout
+      - attach_workspace:
+            at: /wp-desktop
+      - run:  
+          name: Install nvm and calypso node version
+          command: |
+                  set +e  
+                  NODE_VERSION=$(cat calypso/.nvmrc)
+                  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
                   
-#                   export NVM_DIR="$HOME/.nvm"
-#                   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-#                   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-#       - run:  
-#           name: Install dependencies
-#           command: |
-#                   source $HOME/.nvm/nvm.sh
-#                   npm install
-#       - run: 
-#           name: Build Windows & Linux
-#           command: |
-#                   source $HOME/.nvm/nvm.sh
-#                   make package BUILD_PLATFORM=wl
-#       - store_artifacts:
-#             path: release
-#       - persist_to_workspace:
-#           root: /wp-desktop/release
-#           paths:
-#             - ./release/**!(-unpacked)
+                  export NVM_DIR="$HOME/.nvm"
+                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+      - run:  
+          name: Install dependencies
+          command: |
+                  source $HOME/.nvm/nvm.sh
+                  npm install
+      - run: 
+          name: Build Windows & Linux
+          command: |
+                  source $HOME/.nvm/nvm.sh
+                  make package BUILD_PLATFORM=wl
+      - store_artifacts:
+            path: release
+      - persist_to_workspace:
+          root: /wp-desktop/release
+          paths:
+            - ./release/**!(-unpacked)
 
-#   mac:
-#     macos:
-#       xcode: "9.0"
-#     shell: /bin/bash --login
-#     working_directory: /Users/distiller/wp-desktop
-#     steps:
-#       - attach_workspace:
-#           at: /Users/distiller/wp-desktop
-#       - checkout
-#       - run:  
-#           name: Setup calypso
-#           command: |
-#                   git submodule init
-#                   git submodule update
-#       - run:  
-#           name: Install nvm and calypso node version
-#           command: |
-#                   set +e    
-#                   curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+  mac:
+    macos:
+      xcode: "9.0"
+    shell: /bin/bash --login
+    working_directory: /Users/distiller/wp-desktop
+    steps:
+      - attach_workspace:
+          at: /Users/distiller/wp-desktop
+      - checkout
+      - run:  
+          name: Setup calypso
+          command: |
+                  git submodule init
+                  git submodule update
+      - run:  
+          name: Install nvm and calypso node version
+          command: |
+                  set +e    
+                  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
                   
-#                   export NVM_DIR="$HOME/.nvm"
-#                   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-#                   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-#       - run: 
-#           name: Install dependencies
-#           command: |
-#                   set +e    
-#                   source $HOME/.nvm/nvm.sh
-#                   nvm install $(cat calypso/.nvmrc)
-#                   npm install
-#                   cd calypso
-#                   npm install
-#                   cd ..
-#                   make build-source CONFIG_ENV=release
-#       - run: 
-#           name: Build Mac
-#           command: |
-#                   set +e
-#                   source $HOME/.nvm/nvm.sh
-#                   make package BUILD_PLATFORM=m
-#       - persist_to_workspace:
-#           root: /Users/distiller/wp-desktop/release
-#           paths:
-#             - ./release/**!(-unpacked)
+                  export NVM_DIR="$HOME/.nvm"
+                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+      - run: 
+          name: Install dependencies
+          command: |
+                  set +e    
+                  source $HOME/.nvm/nvm.sh
+                  nvm install $(cat calypso/.nvmrc)
+                  npm install
+                  cd calypso
+                  npm install
+                  cd ..
+                  make build-source CONFIG_ENV=release
+      - run: 
+          name: Build Mac
+          command: |
+                  set +e
+                  source $HOME/.nvm/nvm.sh
+                  make package BUILD_PLATFORM=m
+      - persist_to_workspace:
+          root: /Users/distiller/wp-desktop/release
+          paths:
+            - ./release/**!(-unpacked)
 
-#   artifacts:
-#     docker:
-#       - image: buildpack-deps:trusty
-#     working_directory: /wp-desktop
-#     steps:
-#       - attach_workspace:
-#           at: /wp-desktop
-#       - store_artifacts:
-#           path: release
+  artifacts:
+    docker:
+      - image: buildpack-deps:trusty
+    working_directory: /wp-desktop
+    steps:
+      - attach_workspace:
+          at: /wp-desktop
+      - store_artifacts:
+          path: release
       
 
-# workflows:
-#   version: 2
-#   build-and-package:
-#     jobs:
-#       - build
-#       - win-and-linux:
-#           requires: 
-#           - build
-#       - mac:
-#           requires:
-#             - build
-#       - artifacts:
-#           requires: 
-#             - win-and-linux
-#             - mac
+workflows:
+  version: 2
+  build-and-package:
+    jobs:
+      - build
+      - win-and-linux:
+          requires: 
+          - build
+      - mac:
+          requires:
+            - build
+      - artifacts:
+          requires: 
+            - win-and-linux
+            - mac
