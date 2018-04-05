@@ -98,7 +98,7 @@ jobs:
     working_directory: /Users/distiller/wp-desktop
     steps:
       - checkout
-     - attach_workspace:
+      - attach_workspace:
           at: /Users/distiller/wp-desktop
       - run:  
           name: Install nvm and calypso node version
