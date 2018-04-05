@@ -52,7 +52,7 @@ jobs:
             - calypso/public
             - calypso/server
             - calypso/config
-            - .nvmrc
+            - calypso/.nvmrc
 
   win-and-linux:
     docker:
