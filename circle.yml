@@ -50,6 +50,7 @@ jobs:
           root: /wp-desktop
           paths:
             - build 
+            - resource/certificates
             - calypso/public
             - calypso/server
             - calypso/config
@@ -88,6 +89,8 @@ jobs:
             - node_modules
       - run: 
           name: Build Windows & Linux
+          environment: 
+            CSC_LINK: resource/certificates/win.p12
           command: |
                   source $HOME/.nvm/nvm.sh
                   nvm use
@@ -132,6 +135,8 @@ jobs:
             - node_modules
       - run: 
           name: Build Mac
+          environment: 
+            CSC_LINK: resource/certificates/mac.p12
           command: |
                   set +e
                   source $HOME/.nvm/nvm.sh
