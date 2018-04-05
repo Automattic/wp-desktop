@@ -64,7 +64,7 @@ jobs:
   build:
       macos:
         xcode: "9.0"
-      shell: /bin/bash --login -eo pipefail
+      shell: /bin/bash --login
       working_directory: /Users/distiller/wp-desktop
       steps:
         # - attach_workspace:
@@ -78,8 +78,7 @@ jobs:
         - run:  
             name: Install nvm and calypso node version
             command: |
-                    set +e  
-                    NODE_VERSION=$(cat calypso/.nvmrc)       
+                    set +e    
                     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
                     
                     export NVM_DIR="$HOME/.nvm"
@@ -88,14 +87,12 @@ jobs:
         - run: 
             name: Install dependencies
             command: |
-                    # nvm --version
-                    pwd
-                    ls -al $HOME/.nvm
-                    source $HOME/.nvm/nvm.sh
-                    nvm 
-                    $HOME/.nvm/nvm.sh
-                    # nvm install $(cat calypso/.nvmrc)
-                    # npm install
+                    nvm install $(cat calypso/.nvmrc)
+                    npm install
+                    cd calypso
+                    npm install
+                    cd ..
+                    make build-source CONFIG_ENV=release
         - run: 
             name: Build Mac
             command: |
