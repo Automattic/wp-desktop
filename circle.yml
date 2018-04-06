@@ -42,12 +42,12 @@ jobs:
                   cd ..
 
                   # only use the updater 
-                  if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
-                  then 
-                    CONFIG_ENV=release
-                  fi
+                  # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
+                  # then 
+                  #   CONFIG_ENV=release
+                  # fi
 
-                  make build-source CONFIG_ENV=$CONFIG_ENV
+                  make build-source CONFIG_ENV=release
       - save_cache:
           key: v1-build-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
           paths:
