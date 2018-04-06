@@ -40,7 +40,14 @@ jobs:
                   cd calypso
                   npm install
                   cd ..
-                  make build-source CONFIG_ENV=release
+
+                  # only use the updater 
+                  if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
+                  then 
+                    CONFIG_ENV=release
+                  fi
+
+                  make build-source CONFIG_ENV=$CONFIG_ENV
       - save_cache:
           key: v1-build-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
           paths:
