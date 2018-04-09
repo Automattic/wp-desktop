@@ -1,6 +1,5 @@
 {
 	"build": "updater",
-	"calypso_config": "desktop",
 	"debug": {
 		"enabled_by_default": false,
 		"namespace": "desktop:*",

@@ -22,6 +22,7 @@ const OFFSET_NEW_WINDOW = 50;
 const ALWAYS_OPEN_IN_APP = [
 	'http://' + Config.server_host,
 	'http://localhost',
+	'http://calypso.localhost:3000/*',
 	'https:/public-api.wordpress.com',
 	'https://wordpress\.com\/wp-login\.php',
 	'http://127.0.0.1:41050/*',
