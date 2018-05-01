@@ -105,7 +105,7 @@ function showAppWindow() {
 	return mainWindow;
 }
 
-function startApp( started_cb ) {
+function startServer( started_cb ) {
 	debug( 'App is ready, starting server' );
 
 	server.start( app, function() {
@@ -134,11 +134,16 @@ function isValidLastLocation( loc ) {
 
 module.exports = function( started_cb ) {
 	debug( 'Checking for other instances' );
+	let boot;
 
 	if ( appInstance.isSingleInstance() ) {
-		const boot = function() {
-			startApp( started_cb );
-		};
+		if ( 'development' === process.env.NODE_ENV ) {
+			debug( 'Skipping server initialization in dev mode' );
+
+			boot = () => started_cb( showAppWindow() );
+		} else {
+			boot = () => startServer( started_cb );
+		}
 
 		debug( 'No other instances, waiting for app ready' );
 
