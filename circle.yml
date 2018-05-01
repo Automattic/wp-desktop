@@ -41,7 +41,7 @@ jobs:
                   npm install
                   cd ..
 
-                  # only use the updater 
+                  # only use the updater when we are building from master or a release branch
                   # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
                   # then 
                   #   CONFIG_ENV=release
