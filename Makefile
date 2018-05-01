@@ -42,7 +42,7 @@ build-config:
 build-calypso: 
 	@cd $(CALYPSO_DIR) && NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV) npm run -s build
 
-	echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
+	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
 # Build desktop bundle
 build-desktop:
