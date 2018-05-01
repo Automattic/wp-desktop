@@ -18,7 +18,8 @@ var options = {
 		libraryTarget: 'commonjs2'
 	},
 	watch: isDevelopment,
-	target: 'electron',
+	target: 'electron-main',
+	mode: process.env.NODE_ENV,
 };
 
 module.exports = Object.assign( shared, options );
