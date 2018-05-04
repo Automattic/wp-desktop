@@ -110,3 +110,12 @@ check-node-and-npm-version-parity:
 			exit 1; \
 		} \
 	fi;
+
+distclean: clean
+	@cd calypso; npm run distclean
+	# @rm -rf ./node_modules
+
+clean:
+	@cd calypso; npm run clean
+	@rm -rf ./release
+	@rm -rf ./build
