@@ -111,6 +111,9 @@ check-node-and-npm-version-parity:
 		} \
 	fi;
 
+test:
+	@npx xvfb-maybe mocha --compilers js:babel-core/register ./test
+
 distclean: clean
 	@cd calypso; npm run distclean
 	# @rm -rf ./node_modules
@@ -119,3 +122,5 @@ clean:
 	@cd calypso; npm run clean
 	@rm -rf ./release
 	@rm -rf ./build
+
+.PHONY: test
