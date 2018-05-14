@@ -124,8 +124,7 @@
       "icon": "./resource/image/wordpress.ico"
     },
     "nsis": {
-      "oneClick": true,
-      "perMachine": true
+      "oneClick": false
     },
     "linux": {
       "target": [
