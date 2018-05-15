@@ -135,7 +135,15 @@
       "executableName": "wpcom",
       "description": "A desktop app that gives WordPress a permanent home in your dock.\n\nWrite and design with no other browser tabs to distract you. Switch easily between managing your WordPress sites and your favorite desktop apps.\n\nThe WordPress.com desktop app will scale to any size. Do you need a small window on the side to keep your eye on notifications, or do want to expand to a truly full screen for a zen writing experience? Take your pick.",
       "synopsis": "WordPress.com Desktop client",
-      "category": "Development"
+      "category": "Development",
+      "desktop": {
+        "StartupNotify": true
+      }
+    },
+    "deb": {
+      "fpm": [
+      	"--name=wordpress.com"
+      ]
     }
   }
 }
