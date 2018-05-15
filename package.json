@@ -129,7 +129,7 @@
     "linux": {
       "target": [
         "deb",
-        "AppImage"
+        "tar.gz"
       ],
       "icon": "./resource/image/app-icon/icon/512x512.png",
       "executableName": "wpcom",
