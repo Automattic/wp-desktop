@@ -16,6 +16,7 @@ CALYPSO_DIR := $(THIS_DIR)/calypso
 
 CHECKMARK=✓
 
+# Environment Variables
 CONFIG_ENV = 
 CALYPSO_ENV = desktop
 NODE_ENV = production
