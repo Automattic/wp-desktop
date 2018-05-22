@@ -11,6 +11,12 @@ jobs:
           command: |
                   git submodule init
                   git submodule update
+
+                  if [ -n "${CALYPSO_HASH}" ]; then
+                    cd calypso;
+                    git fetch;
+                    git checkout ${CALYPSO_HASH};
+                  fi
       - run:  
           name: Install nvm and calypso node version
           command: |
@@ -179,6 +185,47 @@ jobs:
       - store_artifacts:
           path: release
 
+  canary-test:
+    macos:
+      xcode: "9.0"
+    shell: /bin/bash --login
+    working_directory: /Users/distiller/wp-desktop
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /Users/distiller/wp-desktop
+      - run:  
+          name: Install nvm and calypso node version
+          command: |
+                  set +e    
+                  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+                  
+                  export NVM_DIR="$HOME/.nvm"
+                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+                  nvm install $(cat calypso/.nvmrc)
+      - restore_cache:
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
+      - run: 
+          name: Install dependencies
+          command: |
+                  set +e    
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  npm install
+      - save_cache:
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run: 
+          name: Test
+          command: |
+                  set +e
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  make test
+
 workflows:
   version: 2
   build-and-package:
@@ -187,10 +234,28 @@ workflows:
       - win-and-linux:
           requires: 
           - build
+          filters:
+            branches:
+              ignore: test/*
       - mac:
           requires:
             - build
+            filters:
+            branches:
+              ignore: test/*
       - artifacts:
           requires: 
             - win-and-linux
             - mac
+            filters:
+            branches:
+              ignore: test/*
+  calypso-canary:
+    jobs:
+      - build
+      - canary-test:
+          requires: 
+          - build
+        filters:
+            branches:
+              only: test/*

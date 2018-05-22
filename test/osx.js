@@ -3,14 +3,26 @@ const path = require( 'path' )
 const { Application } = require( 'spectron' );
 const { exec } = require( 'child_process' );
 
+const testProductionBinary = process.env.TEST_PRODUCTION_BINARY;
 const appPath = path.join( __dirname, '..' );
+let electronPath;
+
+if ( process.platform === 'darwin' ) {
+	if ( !testProductionBinary ) {
+		electronPath = 'node_modules/electron/dist/Electron.app/Contents/MacOS/Electron';
+	} else {
+		electronPath = 'release/mac/Wordpress.com.app/Contents/MacOS/Wordpress.com'
+	}
+} else {
+	throw ( 'Non-macOS tests not yet implemented' );
+}
 
 describe( 'Application launch', function() {
 	this.timeout( 10000 );
 
 	beforeEach( function() {
 		this.app = new Application( {
-			path: './release/mac/Wordpress.com.app/Contents/MacOS/Wordpress.com', // TODO: enable multi platform tests
+			path: electronPath, // TODO: enable multi platform tests
 			args: [appPath],
 		} )
 		return this.app.start();
