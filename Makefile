@@ -52,12 +52,6 @@ build-desktop:
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
-# Build desktop bundle for canary test senario
-build-desktop-test:
-	@NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client CALYPSO_SERVER=true npx webpack --config ./webpack.config.test.js
-
-	@echo "$(CYAN)$(CHECKMARK) Desktop-Test built$(RESET)"
-
 # Package App
 package:
 	@npx electron-builder build -$(BUILD_PLATFORM)
@@ -121,7 +115,7 @@ check-node-and-npm-version-parity:
 
 # 
 test: CONFIG_ENV = test  
-test: build-config build-desktop-test
+test: build-config
 	@echo "$(CYAN)$(CHECKMARK) Starting test...$(RESET)"
 
 	@TEST_PRODUCTION_BINARY=$(TEST_PRODUCTION_BINARY) npx xvfb-maybe mocha --compilers js:babel-core/register ./test
