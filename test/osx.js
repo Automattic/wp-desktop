@@ -3,7 +3,7 @@ const path = require( 'path' )
 const { Application } = require( 'spectron' );
 const { exec } = require( 'child_process' );
 
-const testProductionBinary = process.env.TEST_PRODUCTION_BINARY;
+const testProductionBinary = process.env.TEST_PRODUCTION_BINARY === 'true';
 const appPath = path.join( __dirname, '..' );
 let electronPath;
 
