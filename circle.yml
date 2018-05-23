@@ -58,7 +58,8 @@ jobs:
                   #   CONFIG_ENV=release
                   # fi
 
-                  CONFIG_ENV=release # TODO: update accordingly when code from above changes
+                  # CONFIG_ENV=release # TODO: update accordingly when code from above changes
+                  CONFIG_ENV=test # overriding for test
                   
                   if [ -n "${CALYPSO_HASH}" ]; then
                     CONFIG_ENV=test
