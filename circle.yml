@@ -216,12 +216,15 @@ jobs:
 
 workflows:
   version: 2
-  build-and-package:
+  wp-desktop:
     jobs:
-      - build:
+      - build
+      - canary-test:
+          requires: 
+          - build
           filters:
             branches:
-              ignore: test/*
+              only: test/*
       - win-and-linux:
           requires: 
           - build
@@ -241,12 +244,3 @@ workflows:
           filters:
             branches:
               ignore: test/*
-  calypso-canary:
-    jobs:
-      - build
-      - canary-test:
-          requires: 
-          - build
-          filters:
-            branches:
-              only: test/*
