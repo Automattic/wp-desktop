@@ -218,7 +218,10 @@ workflows:
   version: 2
   build-and-package:
     jobs:
-      - build
+      - build:
+        filters:
+            branches:
+              ignore: test/*
       - win-and-linux:
           requires: 
           - build
