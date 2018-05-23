@@ -224,23 +224,23 @@ workflows:
           - build
           filters:
             branches:
-              only: test/*
+              only: tests/*
       - win-and-linux:
           requires: 
           - build
           filters:
             branches:
-              ignore: test/*
+              ignore: tests/*
       - mac:
           requires:
           - build
           filters:
             branches:
-              ignore: test/*
+              ignore: tests/*
       - artifacts:
           requires: 
             - win-and-linux
             - mac
           filters:
             branches:
-              ignore: test/*
+              ignore: tests/*
