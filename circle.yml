@@ -239,15 +239,15 @@ workflows:
               ignore: test/*
       - mac:
           requires:
-            - build
-            filters:
+          - build
+          filters:
             branches:
               ignore: test/*
       - artifacts:
           requires: 
             - win-and-linux
             - mac
-            filters:
+          filters:
             branches:
               ignore: test/*
   calypso-canary:
@@ -256,6 +256,6 @@ workflows:
       - canary-test:
           requires: 
           - build
-        filters:
+          filters:
             branches:
               only: test/*
