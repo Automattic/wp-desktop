@@ -219,7 +219,7 @@ workflows:
   build-and-package:
     jobs:
       - build:
-        filters:
+          filters:
             branches:
               ignore: test/*
       - win-and-linux:
