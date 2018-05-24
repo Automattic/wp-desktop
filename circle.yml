@@ -222,18 +222,15 @@ workflows:
       - canary-test:
           requires: 
           - build
-          filters:
-            branches:
-              only: /tests.*/
       - win-and-linux:
           requires: 
-          - build
+          - canary-test
           filters:
             branches:
               ignore: /tests.*/
       - mac:
           requires:
-          - build
+          - canary-test
           filters:
             branches:
               ignore: /tests.*/
