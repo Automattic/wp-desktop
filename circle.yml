@@ -65,6 +65,19 @@ jobs:
                   fi
 
                   make build-source CONFIG_ENV=$CONFIG_ENV
+      - run: 
+          name: Test
+          command: |
+                  set +e 
+
+                  # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
+                  if [ -n "${CALYPSO_HASH}" ]; then
+                    source $HOME/.nvm/nvm.sh
+                    nvm use
+                    make test
+                  else
+                    echo Skipping canary test
+                  fi
       - save_cache:
           key: v1-build-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
           paths:
@@ -183,48 +196,12 @@ jobs:
       - store_artifacts:
           path: release
 
-  canary-test:
-    macos:
-      xcode: "9.0"
-    shell: /bin/bash --login
-    working_directory: /Users/distiller/wp-desktop
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /Users/distiller/wp-desktop
-      - <<: *nvm
-      - restore_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
-      - run: 
-          name: Install dependencies
-          command: |
-                  set +e    
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  npm install
-      - save_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
-          paths:
-            - node_modules
-      - run: 
-          name: Test
-          command: |
-                  set +e
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  make test
 
 workflows:
   version: 2
   wp-desktop:
     jobs:
       - build
-      - canary-test:
-          requires: 
-          - build
-          filters:
-            branches:
-              only: /tests.*/
       - win-and-linux:
           requires: 
           - build
