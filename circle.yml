@@ -17,7 +17,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: buildpack-deps:trusty
+      - image: buildpack-deps:trusty-curl-browsers
     working_directory: /wp-desktop
     steps:
       - checkout
