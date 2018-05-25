@@ -43,7 +43,7 @@ jobs:
                   openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
                   openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
       - restore_cache:
-          key: v1-build-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
       - run: 
           name: Build sources
           command: |
@@ -80,7 +80,7 @@ jobs:
                     make test
                   # fi
       - save_cache:
-          key: v1-build-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
           paths:
             - node_modules
             - calypso/node_modules
