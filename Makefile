@@ -6,6 +6,7 @@ endif
 
 THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
+NPM_BIN_DIR = $(shell npm bin)
 
 RED=`tput setaf 1`
 GREEN=`tput setaf 2`
@@ -21,6 +22,7 @@ CONFIG_ENV =
 CALYPSO_ENV = desktop
 NODE_ENV = production
 BUILD_PLATFORM = mwl
+TEST_PRODUCTION_BINARY = false
 
 # Build sources
 # TODO: run tasks parallel when in dev mode
@@ -112,11 +114,20 @@ check-node-and-npm-version-parity:
 		} \
 	fi;
 
+# 
+test: CONFIG_ENV = test  
+test: build-config
+	@echo "$(CYAN)$(CHECKMARK) Starting test...$(RESET)"
+
+	@TEST_PRODUCTION_BINARY=$(TEST_PRODUCTION_BINARY) npx xvfb-maybe mocha --compilers js:babel-core/register ./test
+
 distclean: clean
 	@cd calypso; npm run distclean
-	# @rm -rf ./node_modules
+	@rm -rf ./node_modules
 
 clean:
 	@cd calypso; npm run clean
 	@rm -rf ./release
 	@rm -rf ./build
+
+.PHONY: test build-sources
