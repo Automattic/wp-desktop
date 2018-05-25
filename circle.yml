@@ -17,9 +17,11 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/buildpack-deps:trusty-curl-browsers
-    working_directory: /wp-desktop
+      - image: circleci/buildpack-deps:trusty-browsers
+    working_directory: /home/circleci/wp-desktop
     steps:
+      - run: pwd
+      - run: echo $USER
       - checkout
       - run:  
           name: Setup calypso
@@ -84,7 +86,7 @@ jobs:
             - node_modules
             - calypso/node_modules
       - persist_to_workspace:
-          root: /wp-desktop
+          root: /home/circleci/wp-desktop
           paths:
             - build 
             - resource/certificates
@@ -97,11 +99,11 @@ jobs:
   win-and-linux:
     docker:
       - image: electronuserland/builder:wine-mono
-    working_directory: /wp-desktop
+    working_directory: /home/circleci/wp-desktop
     steps:
       - checkout
       - attach_workspace:
-          at: /wp-desktop
+          at: /home/circleci/wp-desktop
       - <<: *nvm
       - restore_cache:
           key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
@@ -132,7 +134,7 @@ jobs:
                   rm -rf release/win-ia32-unpacked/
                   rm -rf release/linux-unpacked
       - persist_to_workspace:
-          root: /wp-desktop
+          root: /home/circleci/wp-desktop
           paths:
             - release
 
@@ -189,10 +191,10 @@ jobs:
   artifacts:
     docker:
       - image: buildpack-deps:trusty
-    working_directory: /wp-desktop
+    working_directory: /home/circleci/wp-desktop
     steps:
       - attach_workspace:
-          at: /wp-desktop
+          at: /home/circleci/wp-desktop
       - store_artifacts:
           path: release
 
