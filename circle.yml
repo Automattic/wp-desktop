@@ -16,9 +16,10 @@ nvm: &nvm
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/buildpack-deps:trusty-browsers
-    working_directory: /home/circleci/wp-desktop
+    macos:
+      xcode: "9.0"
+    shell: /bin/bash --login
+    working_directory: /Users/distiller/wp-desktop
     steps:
       - run: pwd
       - run: echo $USER
@@ -42,7 +43,7 @@ jobs:
                   openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
                   openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
       - restore_cache:
-          key: v1-build-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
       - run: 
           name: Build sources
           command: |
@@ -77,16 +78,14 @@ jobs:
                     source $HOME/.nvm/nvm.sh
                     nvm use
                     make test
-                  else
-                    echo Skipping canary test
                   fi
       - save_cache:
-          key: v1-build-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
           paths:
             - node_modules
             - calypso/node_modules
       - persist_to_workspace:
-          root: /home/circleci/wp-desktop
+          root: /Users/distiller/wp-desktop
           paths:
             - build 
             - resource/certificates
@@ -99,11 +98,11 @@ jobs:
   win-and-linux:
     docker:
       - image: electronuserland/builder:wine-mono
-    working_directory: /home/circleci/wp-desktop
+    working_directory: /wp-desktop
     steps:
       - checkout
       - attach_workspace:
-          at: /home/circleci/wp-desktop
+          at: /wp-desktop
       - <<: *nvm
       - restore_cache:
           key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
@@ -134,7 +133,7 @@ jobs:
                   rm -rf release/win-ia32-unpacked/
                   rm -rf release/linux-unpacked
       - persist_to_workspace:
-          root: /home/circleci/wp-desktop
+          root: /wp-desktop
           paths:
             - release
 
@@ -191,10 +190,10 @@ jobs:
   artifacts:
     docker:
       - image: buildpack-deps:trusty
-    working_directory: /home/circleci/wp-desktop
+    working_directory: /wp-desktop
     steps:
       - attach_workspace:
-          at: /home/circleci/wp-desktop
+          at: /wp-desktop
       - store_artifacts:
           path: release
 
