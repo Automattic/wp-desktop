@@ -21,8 +21,6 @@ jobs:
     shell: /bin/bash --login
     working_directory: /Users/distiller/wp-desktop
     steps:
-      - run: pwd
-      - run: echo $USER
       - checkout
       - run:  
           name: Setup calypso
