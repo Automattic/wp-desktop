@@ -7,20 +7,21 @@ endif
 THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
 
-RED=`tput setaf 1`
-GREEN=`tput setaf 2`
-CYAN=`tput setaf 6`
-RESET=`tput sgr0`
+RED = `tput setaf 1`
+GREEN = `tput setaf 2`
+CYAN = `tput setaf 6`
+RESET = `tput sgr0`
 
 CALYPSO_DIR := $(THIS_DIR)/calypso
 
-CHECKMARK=✓
+CHECKMARK = ✓
 
 # Environment Variables
 CONFIG_ENV = 
 CALYPSO_ENV = desktop
 NODE_ENV = production
 BUILD_PLATFORM = mwl
+DEBUG = 
 
 # Build sources
 # TODO: run tasks parallel when in dev mode
