@@ -1,9 +1,25 @@
+# YAML merge tags
+nvm: &nvm
+  run:  
+    name: Install nvm and calypso node version
+    command: |
+            set +e  
+            NODE_VERSION=$(cat calypso/.nvmrc)
+            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+            
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+          
+            nvm install $(cat calypso/.nvmrc)
+
 version: 2
 jobs:
   build:
-    docker:
-      - image: buildpack-deps:trusty
-    working_directory: /wp-desktop
+    macos:
+      xcode: "9.0"
+    shell: /bin/bash --login
+    working_directory: /Users/distiller/wp-desktop
     steps:
       - checkout
       - run:  
@@ -11,17 +27,13 @@ jobs:
           command: |
                   git submodule init
                   git submodule update
-      - run:  
-          name: Install nvm and calypso node version
-          command: |
-                  set +e     
-                  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
-                  
-                  export NVM_DIR="$HOME/.nvm"
-                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-                  nvm install $(cat calypso/.nvmrc)
+                  if [ -n "${CALYPSO_HASH}" ]; then
+                    cd calypso;
+                    git fetch;
+                    git checkout ${CALYPSO_HASH};
+                  fi
+      - <<: *nvm
       - run:  
           name: Decrypt assets
           command: |
@@ -29,7 +41,7 @@ jobs:
                   openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
                   openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
       - restore_cache:
-          key: v1-build-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
       - run: 
           name: Build sources
           command: |
@@ -47,14 +59,32 @@ jobs:
                   #   CONFIG_ENV=release
                   # fi
 
-                  make build-source CONFIG_ENV=release
+                  CONFIG_ENV=release # TODO: update accordingly when code from above changes
+                  
+                  if [ -n "${CALYPSO_HASH}" ]; then
+                    CONFIG_ENV=test
+                  fi
+
+                  make build-source CONFIG_ENV=$CONFIG_ENV
+      - run: 
+          name: Test
+          command: |
+                  set +e 
+
+                  # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
+                  # TODO: We might be able to ignore this once we switched to electron-builders auto-update
+                  if [ -n "${CALYPSO_HASH}" ]; then
+                    source $HOME/.nvm/nvm.sh
+                    nvm use
+                    make test
+                  fi
       - save_cache:
-          key: v1-build-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
           paths:
             - node_modules
             - calypso/node_modules
       - persist_to_workspace:
-          root: /wp-desktop
+          root: /Users/distiller/wp-desktop
           paths:
             - build 
             - resource/certificates
@@ -72,16 +102,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: /wp-desktop
-      - run:  
-          name: Install nvm and calypso node version
-          command: |
-                  set +e  
-                  NODE_VERSION=$(cat calypso/.nvmrc)
-                  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
-                  
-                  export NVM_DIR="$HOME/.nvm"
-                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+      - <<: *nvm
       - restore_cache:
           key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
       - run:  
@@ -124,17 +145,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: /Users/distiller/wp-desktop
-      - run:  
-          name: Install nvm and calypso node version
-          command: |
-                  set +e    
-                  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
-                  
-                  export NVM_DIR="$HOME/.nvm"
-                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-                  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-                  nvm install $(cat calypso/.nvmrc)
+      - <<: *nvm
       - restore_cache:
           key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
       - run: 
@@ -159,6 +170,12 @@ jobs:
                   nvm use
                   make package BUILD_PLATFORM=m
       - run: 
+          name: Test
+          command: |
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  make test TEST_PRODUCTION_BINARY=true
+      - run: 
           name: Release cleanup
           command: |
                   set +e
@@ -179,18 +196,28 @@ jobs:
       - store_artifacts:
           path: release
 
+
 workflows:
   version: 2
-  build-and-package:
+  wp-desktop:
     jobs:
       - build
       - win-and-linux:
           requires: 
           - build
+          filters:
+            branches:
+              ignore: /tests.*/
       - mac:
           requires:
-            - build
+          - build
+          filters:
+            branches:
+              ignore: /tests.*/
       - artifacts:
           requires: 
             - win-and-linux
             - mac
+          filters:
+            branches:
+              ignore: /tests.*/
