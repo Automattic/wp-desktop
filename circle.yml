@@ -72,6 +72,7 @@ jobs:
                   set +e 
 
                   # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
+                  # TODO: We might be able to ignore this once we switched to electron-builders auto-update
                   if [ -n "${CALYPSO_HASH}" ]; then
                     source $HOME/.nvm/nvm.sh
                     nvm use
