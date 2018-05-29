@@ -172,9 +172,6 @@ function startDesktopApp() {
 // Wrap this in an exception handler. If it fails then it means Electron is not present, and we are in a browser
 // This will then cause the browser to redirect to hey.html
 try {
-	electron.ipcRenderer.on( 'is-calypso', function() {
-		electron.ipcRenderer.send( 'is-calypso-response', document.getElementById( 'wpcom' ) !== null );
-	} );
 
 	electron.ipcRenderer.on( 'app-config', function( event, config, debug, details ) {
 		// if this is the first run, and on the login page, show Windows and Mac users a pin app reminder
