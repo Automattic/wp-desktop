@@ -13,8 +13,6 @@ const dialog = require( 'electron' ).dialog;
  */
 const config = require( './lib/config' );
 const Settings = require( './lib/settings' );
-const EditorContextMenu = require( './lib/menu/editor-context-menu' );
-const GeneralContextMenu = require( './lib/menu/general-context-menu' );
 
 // Catch-all error handler
 // We hook in very early to catch issues during the startup process
@@ -84,8 +82,4 @@ debug( '========================================================================
 global.desktop = {
 	config: config,
 	settings: Settings,
-	contextMenus: {
-		editor: EditorContextMenu,
-		general: GeneralContextMenu
-	}
 };
