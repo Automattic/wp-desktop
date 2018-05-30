@@ -106,6 +106,10 @@ jobs:
       - restore_cache:
           key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
       - run:  
+          name: Install linux dev dependencies
+          command: |
+                  sudo apt-get install libxkbfile-dev
+      - run:  
           name: Install dependencies
           command: |
                   source $HOME/.nvm/nvm.sh
