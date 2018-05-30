@@ -66,7 +66,6 @@
     "lodash.debounce": "4.0.8",
     "portscanner": "1.2.0",
     "pug": "2.0.0-rc.4",
-    "spellchecker": "3.4.3",
     "superagent": "1.8.5"
   },
   "build": {
