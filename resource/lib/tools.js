@@ -2,13 +2,13 @@
 /**
  * External Dependencies
  */
-var fs = require( 'fs' );
-var path = require( 'path' );
+const fs = require( 'fs' );
+const path = require( 'path' );
 
 function rmdir( filePath ) {
 	if ( fs.existsSync( filePath ) ) {
-		fs.readdirSync( filePath ).forEach( function( file ) {
-			var curPath = filePath + '/' + file;
+		fs.readdirSync( filePath ).forEach( ( file ) => {
+			const curPath = filePath + '/' + file;
 
 			if ( fs.lstatSync( curPath ).isDirectory() ) {
 				rmdir( curPath );
@@ -22,8 +22,8 @@ function rmdir( filePath ) {
 }
 
 function cleanUp( appPath, buildOpts ) {
-	var myPath = path.join( appPath, buildOpts.name + '-' + buildOpts.platform );
-	var platform = loadPlatform( buildOpts );
+	let myPath = path.join( appPath, buildOpts.name + '-' + buildOpts.platform );
+	const platform = loadPlatform( buildOpts );
 
 	if ( ['darwin', 'mas', 'linux'].indexOf( buildOpts.platform ) !== -1 ) {
 		myPath = myPath + '-x64';
@@ -65,7 +65,7 @@ function getArch( args ) {
 
 function beforeBuild( dirname, options, fn ) {
 	// fn( new Error( 'not implemented' ) )
-	var platform = loadPlatform( options );
+	const platform = loadPlatform( options );
 	if ( platform.beforeBuild ) {
 		platform.beforeBuild( dirname, options, fn )
 	} else {

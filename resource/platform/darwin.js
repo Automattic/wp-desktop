@@ -17,19 +17,19 @@ function DarwinApp( startPath, name ) {
 	this.name = name;
 }
 
-DarwinApp.prototype.getFrameworkPlistPath = function( helper ) {
+DarwinApp.prototype.getFrameworkPlistPath = (helper) => {
 	return path.join( this.path, this.name + '.app', 'Contents', 'Frameworks', this.name + ' Helper ' + helper + '.app', 'Contents', 'Info.plist' );
 };
 
-DarwinApp.prototype.getResourcesPath = function( filename ) {
+DarwinApp.prototype.getResourcesPath = (filename) => {
 	return path.join( this.path, this.name + '.app', 'Contents', 'Resources', filename );
 };
 
-DarwinApp.prototype.getFileList = function( directory ) {
+DarwinApp.prototype.getFileList = (directory) => {
 	return fs.readdirSync( this.getResourcesPath( directory ) );
 };
 
-DarwinApp.prototype.getReleasePath = function() {
+DarwinApp.prototype.getReleasePath = () => {
 	return path.join( this.path, this.name + '.app' );
 };
 

@@ -33,6 +33,6 @@ function cleanBuild( appPath, buildOpts ) {
 }
 
 module.exports = {
-	cleaner: function() { /* noop */ }, // cleanBuild,
+	cleaner () => { /* noop */ }, // cleanBuild,
 	//beforeBuild: spellchecker.bind( null, 'http://automattic.github.io/wp-desktop/deps/spellchecker-win32-v3.2.3-electron-v0.36.8.zip' )
 }
