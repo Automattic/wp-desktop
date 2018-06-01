@@ -109,7 +109,7 @@ jobs:
           name: Install linux dev dependencies
           command: |
                   apt-get update
-                  apt-get install libxkbfile-dev libxkbfile-dev:i386 libxss-dev libx11-dev:i386
+                  apt-get -y install libxkbfile-dev libxkbfile-dev:i386 libxss-dev libx11-dev:i386
       - run:  
           name: Install dependencies
           command: |
