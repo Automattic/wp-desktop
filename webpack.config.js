@@ -18,6 +18,9 @@ var options = {
 		libraryTarget: 'commonjs2'
 	},
 	watch: isDevelopment,
+	watchOptions: {
+		ignored: /node_modules/,
+	},
 	target: 'electron-main',
 	mode: process.env.NODE_ENV,
 };
