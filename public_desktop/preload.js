@@ -25,9 +25,11 @@ if ( desktop.settings.getSetting( 'spellcheck-enabled' ) ) {
 	debug( 'Initialzing spellchecker' );
 
 	window.spellCheckHandler = new SpellCheckHandler();
-	window.spellCheckHandler.attachToInput();
-
 	window.spellCheckHandler.switchLanguage( window.navigator.language );
+
+	window.onload = () => {
+		window.spellCheckHandler.attachToInput();
+	}
 
 	contextMenuBuilder.spellCheckHandler = window.spellCheckHandler;
 } else {
