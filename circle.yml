@@ -221,3 +221,17 @@ workflows:
           filters:
             branches:
               ignore: /tests.*/
+
+              
+experimental:
+  notify:
+    branches:
+      only:
+        - /tests.*/
+
+        
+notify:
+  webhooks:
+    - url: https://a8c-gh-e2e-bridge.go-vip.co/circleciwebhook
+
+    
