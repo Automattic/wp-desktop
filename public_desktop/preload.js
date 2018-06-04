@@ -10,6 +10,17 @@ debug( 'Setting up preload script' );
 
 // TODO: We can enable/disable the spellchecker without a restart by toggling spellcheck="false" in the DOM
 // In this case, we intialize the spellchecker by default
+
+// TODO: Extend ContextMenuBuilder class to get better control of features e.g. limiting spellcheck suggestions to 3
+let contextMenuBuilder = new ContextMenuBuilder( );
+let contextMenuListener = new ContextMenuListener( ( info ) => {
+	// override config to prevent copy image and open link
+	info.hasImageContents = false;
+	info.linkURL = null;
+
+	contextMenuBuilder.showPopupMenu( info );
+} );
+
 if ( desktop.settings.getSetting( 'spellcheck-enabled' ) ) {
 	debug( 'Initialzing spellchecker' );
 
@@ -18,15 +29,7 @@ if ( desktop.settings.getSetting( 'spellcheck-enabled' ) ) {
 
 	window.spellCheckHandler.switchLanguage( window.navigator.language );
 
-	// TODO: Extend ContextMenuBuilder class to get better control of features e.g. limiting spellcheck suggestions to 3
-	let contextMenuBuilder = new ContextMenuBuilder( window.spellCheckHandler );
-	let contextMenuListener = new ContextMenuListener( ( info ) => {
-		// override config to prevent copy image and open link
-		info.hasImageContents = false;
-		info.linkURL = null;
-
-		contextMenuBuilder.showPopupMenu( info );
-	} );
+	contextMenuBuilder.spellCheckHandler = window.spellCheckHandler;
 } else {
 	debug( 'Skipping spellchecker initialization' );
 }
