@@ -1,8 +1,11 @@
 {
+	"build": "local",
+	"calypso_config": "desktop",
 	"server_port": 41050,
 	"server_url": "http://127.0.0.1",
 	"server_host": "127.0.0.1",
 	"debug": false,
+	"appPathName": "WordPress.com",
 	"mainWindow": {
 		"acceptFirstMouse": false,
 		"frame": true,
