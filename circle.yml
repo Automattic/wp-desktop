@@ -1,47 +1,235 @@
-machine:
-    environment:
-        GYM_CODE_SIGNING_IDENTITY: "Developer ID Application: Automattic, Inc. (PZYM8XX95Q)"
-    xcode:
-        version: 8.3
+# YAML merge tags
+nvm: &nvm
+  run:  
+    name: Install nvm and calypso node version
+    command: |
+            set +e  
+            NODE_VERSION=$(cat calypso/.nvmrc)
+            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+            
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+          
+            nvm install $(cat calypso/.nvmrc)
 
-# checkout
-checkout:
-    post:
-        - git submodule init
-        - git submodule update
-        - >
-            cd calypso;
-            if [ -n "${CALYPSO_HASH}" ]; then
-                git fetch;
-                git checkout ${CALYPSO_HASH};
-            fi
-        - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-        - nvm install $(cat calypso/.nvmrc)
-        - nvm use $(cat calypso/.nvmrc)
+version: 2
+jobs:
+  build:
+    macos:
+      xcode: "9.0"
+    shell: /bin/bash --login
+    working_directory: /Users/distiller/wp-desktop
+    steps:
+      - checkout
+      - run:  
+          name: Setup calypso
+          command: |
+                  git submodule init
+                  git submodule update
 
-deployment:
-    beta-release:
-        tag: /v[0-9]+(\.[0-9]+)*-beta[0-9]*/
-        commands:
-            - openssl aes-256-cbc -d -in desktop-config/calypso-secrets.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_KEY}"
-            - openssl aes-256-cbc -d -in resource/win32-secrets-tar.gz.enc -out resource/win32-secrets-tar.gz -k "${CALYPSO_SECRETS_KEY}"
-            - tar -C resource/ -zxvf resource/win32-secrets-tar.gz
-            - openssl aes-256-cbc -d -in resource/developer-id.p12.enc -out resource/secrets/developer-id.p12 -k "${CALYPSO_SECRETS_KEY}"
-            - security import resource/secrets/developer-id.p12 -k ~/Library/Keychains/circle.keychain -P ${DEVELOPER_ID_CERTIFICATE_PASSWORD}
-            - security find-identity -p codesigning
-            - brew update
-            - brew cask install xquartz
-            - brew install wine makensis mono gnu-tar
-            - gem install fpm
-            - nvm use $(cat calypso/.nvmrc)
-            - make distclean
-            - make package-osx
-            - make package-win32
-            - make package-linux
-            - brew tap tcnksm/ghr
-            - brew install ghr
-            - ghr -t ${GITHUB_ACCESS_TOKEN} -u automattic -r wp-desktop ${CIRCLE_TAG} release/
+                  if [ -n "${CALYPSO_HASH}" ]; then
+                    cd calypso;
+                    git fetch;
+                    git checkout ${CALYPSO_HASH};
+                  fi
+      - <<: *nvm
+      - run:  
+          name: Decrypt assets
+          command: |
+                  openssl aes-256-cbc -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+                  openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+                  openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+      - restore_cache:
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
+      - run: 
+          name: Build sources
+          command: |
+                  set +e  
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  npm install
+                  cd calypso
+                  npm install
+                  cd ..
 
+                  # only use the updater when we are building from master or a release branch
+                  # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
+                  # then 
+                  #   CONFIG_ENV=release
+                  # fi
+
+                  CONFIG_ENV=release # TODO: update accordingly when code from above changes
+                  
+                  if [ -n "${CALYPSO_HASH}" ]; then
+                    CONFIG_ENV=test
+                  fi
+
+                  make build-source CONFIG_ENV=$CONFIG_ENV
+      - run: 
+          name: Test
+          command: |
+                  set +e 
+
+                  # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
+                  # TODO: We might be able to ignore this once we switched to electron-builders auto-update
+                  if [ -n "${CALYPSO_HASH}" ]; then
+                    source $HOME/.nvm/nvm.sh
+                    nvm use
+                    make test
+                  fi
+      - save_cache:
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
+          paths:
+            - node_modules
+            - calypso/node_modules
+      - persist_to_workspace:
+          root: /Users/distiller/wp-desktop
+          paths:
+            - build 
+            - resource/certificates
+            - calypso/public
+            - calypso/server
+            - calypso/config
+            - calypso/package.json
+            - calypso/.nvmrc
+
+  win-and-linux:
+    docker:
+      - image: electronuserland/builder:wine-mono
+    working_directory: /wp-desktop
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /wp-desktop
+      - <<: *nvm
+      - restore_cache:
+          key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
+      - run:  
+          name: Install dependencies
+          command: |
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  npm install
+      - save_cache:
+          key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run: 
+          name: Build Windows & Linux
+          environment: 
+            CSC_LINK: resource/certificates/win.p12
+          command: |
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  make package BUILD_PLATFORM=wl
+      - run: 
+          name: Release cleanup
+          command: |
+                  set +e
+                  rm -rf release/github
+                  rm -rf release/win-unpacked
+                  rm -rf release/win-ia32-unpacked/
+                  rm -rf release/linux-unpacked
+      - persist_to_workspace:
+          root: /wp-desktop
+          paths:
+            - release
+
+  mac:
+    macos:
+      xcode: "9.0"
+    shell: /bin/bash --login
+    working_directory: /Users/distiller/wp-desktop
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /Users/distiller/wp-desktop
+      - <<: *nvm
+      - restore_cache:
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
+      - run: 
+          name: Install dependencies
+          command: |
+                  set +e    
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  npm install
+      - save_cache:
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run: 
+          name: Build Mac
+          environment: 
+            CSC_LINK: resource/certificates/mac.p12
+            CSC_FOR_PULL_REQUEST: true # don't do this in production
+          command: |
+                  set +e
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  make package BUILD_PLATFORM=m
+      - run: 
+          name: Test
+          command: |
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  make test TEST_PRODUCTION_BINARY=true
+      - run: 
+          name: Release cleanup
+          command: |
+                  set +e
+                  rm -rf release/github
+                  rm -rf release/mac
+      - persist_to_workspace:
+          root: /Users/distiller/wp-desktop
+          paths:
+            - release
+
+  artifacts:
+    docker:
+      - image: buildpack-deps:trusty
+    working_directory: /wp-desktop
+    steps:
+      - attach_workspace:
+          at: /wp-desktop
+      - store_artifacts:
+          path: release
+
+
+workflows:
+  version: 2
+  wp-desktop:
+    jobs:
+      - build
+      - win-and-linux:
+          requires: 
+          - build
+          filters:
+            branches:
+              ignore: /tests.*/
+      - mac:
+          requires:
+          - build
+          filters:
+            branches:
+              ignore: /tests.*/
+      - artifacts:
+          requires: 
+            - win-and-linux
+            - mac
+          filters:
+            branches:
+              ignore: /tests.*/
+
+         
+experimental:
+  notify:
+    branches:
+      only:
+        - /tests.*/
+
+        
 notify:
   webhooks:
-    - url: https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook
+    - url: https://a8c-gh-e2e-bridge.go-vip.co/circleciwebhook

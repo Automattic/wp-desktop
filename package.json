@@ -1,18 +1,24 @@
 {
   "name": "WordPressDesktop",
-  "productName": "WordPress.com",
-  "version": "3.1.0",
+  "version": "3.3.0-beta1",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
   },
+  "license": "GPLv2",
   "private": true,
   "description": "Desktop version of WordPress.com",
+  "author": {
+    "name": "Automattic Inc.",
+    "email": "wp-desktop@automattic.com"
+  },
+  "homepage": "https://desktop.wordpress.com/",
   "main": "build/desktop.js",
   "scripts": {
-    "start": "make run",
-    "build": "make build",
-    "test": "make test"
+    "setup": "npm run install-if-deps-outdated && ( check-node-version --package || exit 0 ) && cd ./calypso && node ./bin/install-if-deps-outdated.js",
+    "build:app": "make build CONFIG_ENV=release NODE_ENV=production CALYPSO_ENV=desktop",
+    "install-if-deps-outdated": "node calypso/bin/install-if-deps-outdated.js",
+    "dev": "make start CONFIG_ENV=development NODE_ENV=development CALYPSO_ENV=desktop-development"
   },
   "keywords": [
     "desktop",
@@ -32,20 +38,25 @@
     "babel-eslint": "8.2.2",
     "babel-loader": "8.0.0-beta.2",
     "chai": "^3.4.1",
-    "electron": "1.6.17",
-    "electron-builder": "2.8.4",
+    "chalk": "2.3.1",
+    "check-node-version": "3.2.0",
+    "concurrently": "3.5.1",
+    "electron": "1.8.4",
+    "electron-builder": "20.8.2",
     "electron-mocha": "^2.1.0",
     "electron-packager": "^7.0.2",
-    "electron-rebuild": "^1.2.1",
     "eslint": "^2.10.2",
     "eslint-plugin-react": "^5.1.1",
     "json-loader": "^0.5.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "mv": "^2.1.1",
+    "spectron": "3.8.0",
     "unzip": "^0.1.11",
+    "wait-on": "2.1.0",
     "webpack": "4.5.0",
-    "webpack-cli": "2.0.14"
+    "webpack-cli": "2.0.14",
+    "xvfb-maybe": "0.2.1"
   },
   "dependencies": {
     "debug": "2.6.8",
@@ -56,5 +67,92 @@
     "pug": "2.0.0-rc.4",
     "spellchecker": "3.4.3",
     "superagent": "1.8.5"
+  },
+  "build": {
+    "productName": "WordPress.com",
+    "appId": "com.automattic.wordpress",
+    "asar": false,
+    "directories": {
+      "output": "./release"
+    },
+    "files": [
+      "./build/desktop.js",
+      "./public_desktop",
+      {
+        "from": "./calypso",
+        "to": "./calypso",
+        "filter": [
+          "public/**/*",
+          "!public/**/*.css.map",
+          "server/pages/**/*",
+          "!server/pages/test",
+          "!server/pages/README.md",
+          "server/bundler/assets.json",
+          "config/*(secrets|_shared|desktop).json"
+        ]
+      }
+    ],
+    "mac": {
+      "icon": "./resource/image/mac/app-icon.icns",
+      "category": "public.app-category.social-networking"
+    },
+    "dmg": {
+      "title": "WordPress.com Installer",
+      "icon": "./resource/image/mac/dmg-icon.icns",
+      "iconSize": 150,
+      "background": "./resource/image/mac/dmg-background/background.png",
+      "contents": [
+        {
+          "x": 486,
+          "y": 176,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 156,
+          "y": 179,
+          "type": "file"
+        }
+      ]
+    },
+    "win": {
+      "target": {
+        "target": "nsis",
+        "arch": [
+          "x64",
+          "ia32"
+        ]
+      },
+      "icon": "./resource/image/win/wordpress.ico"
+    },
+    "nsis": {
+      "oneClick": false
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "tar.gz"
+      ],
+      "icon": "./resource/image/linux/512x512.png",
+      "executableName": "wpcom",
+      "description": "WordPress.com Desktop Client",
+      "synopsis": "WordPress.com Desktop client",
+      "category": "Development",
+      "desktop": {
+        "StartupNotify": true
+      }
+    },
+    "deb": {
+      "fpm": [
+        "--name=wordpress.com"
+      ],
+      "depends": [
+        "gconf2",
+        "gconf-service",
+        "libnotify4",
+        "libxtst6",
+        "libnss3"
+      ]
+    }
   }
 }

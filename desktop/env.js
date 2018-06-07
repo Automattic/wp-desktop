@@ -33,6 +33,9 @@ process.chdir( apppath );
 
 process.env.CALYPSO_ENV = config.calypso_config;
 
+// Set app config path
+app.setPath( 'userData', path.join( app.getPath( 'appData' ), config.appPathName ) );
+
 // If debug is enabled then setup the debug target
 if ( Settings.isDebug() ) {
 	process.env.DEBUG_COLORS = config.debug.colors;
