@@ -3,28 +3,27 @@
  */
 var path = require( 'path' );
 var webpack = require( 'webpack' );
+var fs = require('fs');
 
 module.exports = {
 	target: 'node',
 	module: {
-		loaders: [
+		rules: [
 			{
-				test: /extensions\/index/,
-				exclude: 'node_modules',
+				test: /extensions[\/\\]index/,
+				exclude: path.join( __dirname, 'calypso', 'node_modules' ),
 				loader: path.join( __dirname, 'calypso', 'server', 'bundler', 'extensions-loader' )
 			},
 			{
-				test: /sections.js$/,
-				exclude: 'node_modules',
-				loader: path.join( __dirname, 'calypso', 'server', 'isomorphic-routing', 'loader' )
+				include: path.join( __dirname, 'calypso', 'client/sections.js' ),
+				use: {
+					loader: path.join( __dirname, 'calypso', 'server', 'bundler', 'sections-loader' ),
+					options: { forceRequire: true, onlyIsomorphic: true },
+				},
 			},
 			{
 				test: /\.html$/,
 				loader: 'html-loader'
-			},
-			{
-				test: /\.json$/,
-				loader: 'json-loader'
 			},
 			{
 				test: /\.jsx?$/,
@@ -52,12 +51,16 @@ module.exports = {
 		'devdocs/components-usage-stats.json'
 	],
 	resolve: {
-		extensions: [ '', '.js', '.jsx', '.json' ],
-		modulesDirectories: [ 'node_modules', path.join( __dirname, 'calypso', 'server' ), path.join( __dirname, 'calypso', 'client' ), 'desktop' ]
+		extensions: [ '.js', '.jsx', '.json' ],
+		modules: [
+			path.join( __dirname, 'calypso', 'node_modules' ),
+			path.join( __dirname, 'node_modules' ),
+			path.join( __dirname, 'calypso', 'server' ),
+			path.join( __dirname, 'calypso', 'client' ),
+			path.join( __dirname, 'desktop' ),
+		]
 	},
 	plugins: [
-		// new webpack.optimize.DedupePlugin(),
-		new webpack.optimize.OccurenceOrderPlugin(),
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]abtest$/, 'lodash/noop' ), // Depends on BOM
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]analytics$/, 'lodash/noop' ), // Depends on BOM
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]sites-list$/, 'lodash/noop' ), // Depends on BOM
