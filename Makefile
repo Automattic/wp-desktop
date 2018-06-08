@@ -102,7 +102,7 @@ package:
 build: build-source package
 
 # Perform checks
-checks: check-node-and-npm-version-parity secret secret-clientid
+checks: check-node-version-parity secret secret-clientid
 
 # Check for secrets.json
 secret:
@@ -129,31 +129,16 @@ secret-clientid:
 	} \
 	fi;
 
-CALYPSO_NODE_VERSION := $(shell node -p "require('$(CALYPSO_DIR)/package.json').engines.node")
-CALYPSO_NPM_VERSION := $(shell node -p "require('$(CALYPSO_DIR)/package.json').engines.npm")
-DESKTOP_NODE_VERSION := $(shell node -p "require('$(THIS_DIR)/package.json').engines.node")
-DESKTOP_NPM_VERSION := $(shell node -p "require('$(THIS_DIR)/package.json').engines.npm")
+
+CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc)
+CURRENT_NODE_VERSION := $(shell node -v)
 
 # Check that the current node & npm versions are the versions Calypso expects to ensure it is built safely.
-check-node-and-npm-version-parity:
-	@if [ ! $(CALYPSO_NODE_VERSION) = $(DESKTOP_NODE_VERSION) ] || \
-		[ ! $(CALYPSO_NPM_VERSION) = $(DESKTOP_NPM_VERSION) ]; \
-		then { \
-			echo "Please ensure that wp-desktop is using the following versions of NPM and Node to match wp-calypso before continuing"; \
-			printf " - Node: $(CALYPSO_NODE_VERSION)"; \
-			if [ ! $(CALYPSO_NODE_VERSION) = $(DESKTOP_NODE_VERSION) ]; \
-				then echo "$(RED) x$(RESET)"; else echo "$(GREEN) ✓$(RESET)"; \
-			fi; \
-			printf " - NPM: $(CALYPSO_NPM_VERSION)"; \
-			if [ ! $(CALYPSO_NPM_VERSION) = $(DESKTOP_NPM_VERSION) ]; \
-				then echo "$(RED) x$(RESET)"; else echo "$(GREEN) ✓$(RESET)"; \
-			fi; \
-			echo ""; \
-			exit 1; \
-		} \
-	fi;
+check-node-version-parity:
+ifneq ($(CALYPSO_NODE_VERSION), $(CURRENT_NODE_VERSION))
+	$(error Please ensure that wp-desktop is using the following versions of NPM and Node to match wp-calypso before continuing)
+endif
 
-# 
 test: CONFIG_ENV = test  
 test: build-config
 	@echo "$(CYAN)$(CHECKMARK) Starting test...$(RESET)"
