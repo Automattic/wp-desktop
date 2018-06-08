@@ -137,6 +137,8 @@ CURRENT_NODE_VERSION := $(shell node -v)
 check-node-version-parity:
 ifneq ($(CALYPSO_NODE_VERSION), $(CURRENT_NODE_VERSION))
 	$(error Please ensure that wp-desktop is using the following versions of NPM and Node to match wp-calypso before continuing)
+else 
+	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
 endif
 
 test: CONFIG_ENV = test  
