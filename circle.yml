@@ -12,6 +12,7 @@ nvm: &nvm
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
             nvm install $(cat calypso/.nvmrc)
+            npm install -g npm@6.1.0
 
 version: 2
 jobs:
