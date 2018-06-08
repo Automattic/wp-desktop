@@ -1,16 +1,16 @@
 # YAML merge tags
 nvm: &nvm
-  run:  
+  run:
     name: Install nvm and calypso node version
     command: |
-            set +e  
+            set +e
             NODE_VERSION=$(cat calypso/.nvmrc)
             curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
-            
+
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-          
+
             nvm install $(cat calypso/.nvmrc)
 
 version: 2
@@ -22,7 +22,7 @@ jobs:
     working_directory: /Users/distiller/wp-desktop
     steps:
       - checkout
-      - run:  
+      - run:
           name: Setup calypso
           command: |
                   git submodule init
@@ -34,7 +34,7 @@ jobs:
                     git checkout ${CALYPSO_HASH};
                   fi
       - <<: *nvm
-      - run:  
+      - run:
           name: Decrypt assets
           command: |
                   openssl aes-256-cbc -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
@@ -42,10 +42,10 @@ jobs:
                   openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
       - restore_cache:
           key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
-      - run: 
+      - run:
           name: Build sources
           command: |
-                  set +e  
+                  set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   npm install
@@ -55,21 +55,21 @@ jobs:
 
                   # only use the updater when we are building from master or a release branch
                   # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
-                  # then 
+                  # then
                   #   CONFIG_ENV=release
                   # fi
 
                   CONFIG_ENV=release # TODO: update accordingly when code from above changes
-                  
+
                   if [ -n "${CALYPSO_HASH}" ]; then
                     CONFIG_ENV=test
                   fi
 
                   make build-source CONFIG_ENV=$CONFIG_ENV
-      - run: 
+      - run:
           name: Test
           command: |
-                  set +e 
+                  set +e
 
                   # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
                   # TODO: We might be able to ignore this once we switched to electron-builders auto-update
@@ -86,7 +86,7 @@ jobs:
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
           paths:
-            - build 
+            - build
             - resource/certificates
             - calypso/public
             - calypso/server
@@ -105,7 +105,7 @@ jobs:
       - <<: *nvm
       - restore_cache:
           key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
-      - run:  
+      - run:
           name: Install dependencies
           command: |
                   source $HOME/.nvm/nvm.sh
@@ -115,15 +115,15 @@ jobs:
           key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
-      - run: 
+      - run:
           name: Build Windows & Linux
-          environment: 
+          environment:
             CSC_LINK: resource/certificates/win.p12
           command: |
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=wl
-      - run: 
+      - run:
           name: Release cleanup
           command: |
                   set +e
@@ -148,10 +148,10 @@ jobs:
       - <<: *nvm
       - restore_cache:
           key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
-      - run: 
+      - run:
           name: Install dependencies
           command: |
-                  set +e    
+                  set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   npm install
@@ -159,9 +159,9 @@ jobs:
           key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
-      - run: 
+      - run:
           name: Build Mac
-          environment: 
+          environment:
             CSC_LINK: resource/certificates/mac.p12
             CSC_FOR_PULL_REQUEST: true # don't do this in production
           command: |
@@ -169,13 +169,13 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=m
-      - run: 
+      - run:
           name: Test
           command: |
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make test TEST_PRODUCTION_BINARY=true
-      - run: 
+      - run:
           name: Release cleanup
           command: |
                   set +e
@@ -203,7 +203,7 @@ workflows:
     jobs:
       - build
       - win-and-linux:
-          requires: 
+          requires:
           - build
           filters:
             branches:
@@ -215,21 +215,21 @@ workflows:
             branches:
               ignore: /tests.*/
       - artifacts:
-          requires: 
+          requires:
             - win-and-linux
             - mac
           filters:
             branches:
               ignore: /tests.*/
 
-         
+
 experimental:
   notify:
     branches:
       only:
         - /tests.*/
 
-        
+
 notify:
   webhooks:
-    - url: https://a8c-gh-e2e-bridge.go-vip.co/circleciwebhook
+    - url: https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook
