@@ -106,7 +106,7 @@ checks: check-node-version-parity secret secret-clientid
 
 # Check for secrets.json
 secret:
-	@if [ $(CONFIG_ENV) = "release" ] && [ ! -f $(CALYPSO_DIR)/config/secrets.json ]; \
+	@if [ "$(CONFIG_ENV)" = "release" ] && [ ! -f $(CALYPSO_DIR)/config/secrets.json ]; \
 	then { \
 		if [ -z "${CIRCLECI}" ]; \
 			then { \
@@ -122,7 +122,7 @@ CLIENT_ID := $(shell node -p "require('$(CALYPSO_DIR)/config/secrets.json').desk
 
 # Confirm proper clientid for production release
 secret-clientid:
-	@if [ $(CONFIG_ENV) = "release" ] && [ ! $(CLIENT_ID) = "43452" ]; \
+	@if [ "$(CONFIG_ENV)" = "release" ] && [ ! $(CLIENT_ID) = "43452" ]; \
 	then { \
 		echo "$(RED)x calypso/config/secrets.json, \"desktop_oauth_client_id\" must be \"43452\" $(RESET)"; \
 		exit 1; \
