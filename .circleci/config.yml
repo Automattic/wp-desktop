@@ -239,3 +239,10 @@ experimental:
 notify:
   webhooks:
     - url: https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook
+
+
+deployment:
+  fake_deploy_for_cci2:
+    tag: /.*/
+    commands:
+      - echo "make tags run in 2.0"
