@@ -201,7 +201,10 @@ workflows:
   version: 2
   wp-desktop:
     jobs:
-      - build
+      - build:
+          filters:
+            tags:
+              only: /.*/
       - win-and-linux:
           requires:
           - build
