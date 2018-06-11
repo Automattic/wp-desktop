@@ -142,13 +142,13 @@
     },
     "deb": {
       "fpm": [
-      	"--name=wordpress.com"
+        "--name=wordpress.com"
       ],
       "depends": [
-        "gconf2", 
-        "gconf-service", 
-        "libnotify4", 
-        "libxtst6", 
+        "gconf2",
+        "gconf-service",
+        "libnotify4",
+        "libxtst6",
         "libnss3"
       ]
     }
