@@ -208,12 +208,16 @@ workflows:
           filters:
             branches:
               ignore: /tests.*/
+            tags:
+              only: /.*/
       - mac:
           requires:
           - build
           filters:
             branches:
               ignore: /tests.*/
+            tags:
+              only: /.*/
       - artifacts:
           requires:
             - win-and-linux
@@ -221,6 +225,8 @@ workflows:
           filters:
             branches:
               ignore: /tests.*/
+            tags:
+              only: /.*/
 
 
 experimental:
