@@ -17,4 +17,4 @@ The Windows package requires installing a valid certificate, [see Code Signing a
 The Linux package is build using [FPM][1] which is a tool that makes it easy to build different package systems. FPM can be installed using `gem install fpm`, you will likely need to install a better ruby and gnu-tar than what ships with OS X. `brew install ruby gnu-tar`
 
 [1]: https://github.com/jordansissel/fpm
-[2]: https://mkaz.tech/code-signing-a-windows-application.html
+[2]: https://mkaz.blog/code/code-signing-a-windows-application/

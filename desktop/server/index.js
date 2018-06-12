@@ -8,6 +8,7 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const url = require( 'url' );
 const debug = require( 'debug' )( 'desktop:runapp' );
+const path = require( 'path' );
 
 /**
  * Internal dependencies
@@ -27,15 +28,20 @@ const System = require( 'lib/system' );
 var mainWindow = null;
 
 function showAppWindow() {
+	const preloadFile = path.resolve( path.join( __dirname, '..', '..', 'public_desktop', 'preload.js' ) );
 	let appUrl = Config.server_url + ':' + Config.server_port;
 	let lastLocation = Settings.getSetting( settingConstants.LAST_LOCATION );
+
 	if ( lastLocation && isValidLastLocation( lastLocation ) ) {
 		appUrl += lastLocation;
 	}
 
 	debug( 'Loading app (' + appUrl + ') in mainWindow' );
 
-	mainWindow = new BrowserWindow( Settings.getSettingGroup( Config.mainWindow, 'window', [ 'x', 'y', 'width', 'height' ] ) );
+	let config = Settings.getSettingGroup( Config.mainWindow, 'window', [ 'x', 'y', 'width', 'height' ] );
+	config.webPreferences.preload = preloadFile;
+
+	mainWindow = new BrowserWindow( config );
 
 	cookieAuth( mainWindow, function() {
 		mainWindow.webContents.send( 'cookie-auth-complete' );
@@ -99,7 +105,7 @@ function showAppWindow() {
 	return mainWindow;
 }
 
-function startApp( started_cb ) {
+function startServer( started_cb ) {
 	debug( 'App is ready, starting server' );
 
 	server.start( app, function() {
@@ -128,11 +134,16 @@ function isValidLastLocation( loc ) {
 
 module.exports = function( started_cb ) {
 	debug( 'Checking for other instances' );
+	let boot;
 
 	if ( appInstance.isSingleInstance() ) {
-		const boot = function() {
-			startApp( started_cb );
-		};
+		if ( 'development' === process.env.NODE_ENV ) {
+			debug( 'Skipping server initialization in dev mode' );
+
+			boot = () => started_cb( showAppWindow() );
+		} else {
+			boot = () => startServer( started_cb );
+		}
 
 		debug( 'No other instances, waiting for app ready' );
 
