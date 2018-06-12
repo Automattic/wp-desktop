@@ -15,6 +15,7 @@
   "homepage": "https://desktop.wordpress.com/",
   "main": "build/desktop.js",
   "scripts": {
+    "preinstall": "make check-node-version-parity",
     "setup": "npm run install-if-deps-outdated && ( check-node-version --package || exit 0 ) && cd ./calypso && node ./bin/install-if-deps-outdated.js",
     "build:app": "make build CONFIG_ENV=release NODE_ENV=production CALYPSO_ENV=desktop",
     "install-if-deps-outdated": "node calypso/bin/install-if-deps-outdated.js",
@@ -25,10 +26,6 @@
     "wordpress",
     "wordpress.com"
   ],
-  "engines": {
-    "node": "8.11.2",
-    "npm": "5.6.0"
-  },
   "optionalDependencies": {
     "appdmg": "^0.4.5"
   },
