@@ -39,15 +39,6 @@ references:
         - v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
         - v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}
         - v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
-  npm_install: &npm_install
-    run:
-      name: Npm install
-      command: |
-        source $HOME/.nvm/nvm.sh
-        nvm use
-        npm ci
-        cd calypso
-        npm ci
   npm_save_cache: &npm_save_cache
     save_cache:
       name: Save npm cache
@@ -84,7 +75,14 @@ jobs:
                   openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
                   openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
       - *npm_restore_cache
-      - *npm_install
+      - run:
+          name: Npm install
+          command: |
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            npm ci
+            cd calypso
+            npm ci
       - *npm_save_cache
       - run:
           name: Build sources
@@ -143,7 +141,12 @@ jobs:
       - *setup_nvm
       - *save_nvm
       - *npm_restore_cache
-      - *npm_install
+      - run:
+          name: Npm install
+          command: |
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            npm ci
       - *npm_save_cache
       - run:
           name: Build Windows & Linux
@@ -179,7 +182,12 @@ jobs:
       - *setup_nvm
       - *save_nvm
       - *npm_restore_cache
-      - *npm_install
+      - run:
+          name: Npm install
+          command: |
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            npm ci
       - *npm_save_cache
       - run:
           name: Build Mac
