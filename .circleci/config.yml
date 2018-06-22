@@ -32,6 +32,28 @@ references:
       key: nvm-0-33-11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
       paths:
         - ~/.nvm
+  npm_restore_cache: &npm_restore_cache
+    restore_cache:
+      name: Restore npm cache
+      keys:
+        - v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/package-lock.json" }}
+        - v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}
+        - v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
+  npm_install: &npm_install
+    run:
+      name: Npm install
+      command: |
+        source $HOME/.nvm/nvm.sh
+        nvm use
+        npm ci
+        cd calypso
+        npm ci
+  npm_save_cache: &npm_save_cache
+    save_cache:
+      name: Save npm cache
+      key: v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/package-lock.json" }}
+      paths:
+        - ~/.npm
 
 jobs:
   build:
@@ -61,18 +83,15 @@ jobs:
                   openssl aes-256-cbc -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
                   openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
                   openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-      - restore_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
+      - *npm_restore_cache
+      - *npm_install
+      - *npm_save_cache
       - run:
           name: Build sources
           command: |
                   set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
-                  npm install
-                  cd calypso
-                  npm install
-                  cd ..
 
                   # only use the updater when we are building from master or a release branch
                   # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
@@ -87,6 +106,7 @@ jobs:
                   fi
 
                   make build-source CONFIG_ENV=$CONFIG_ENV
+
       - run:
           name: Test
           command: |
@@ -99,11 +119,6 @@ jobs:
                     nvm use
                     make test
                   fi
-      - save_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
-          paths:
-            - node_modules
-            - calypso/node_modules
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
           paths:
@@ -126,18 +141,9 @@ jobs:
       - *restore_nvm
       - *setup_nvm
       - *save_nvm
-      - restore_cache:
-          key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
-      - run:
-          name: Install dependencies
-          command: |
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  npm install
-      - save_cache:
-          key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
-          paths:
-            - node_modules
+      - *npm_restore_cache
+      - *npm_install
+      - *npm_save_cache
       - run:
           name: Build Windows & Linux
           environment:
@@ -171,19 +177,9 @@ jobs:
       - *restore_nvm
       - *setup_nvm
       - *save_nvm
-      - restore_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
-      - run:
-          name: Install dependencies
-          command: |
-                  set +e
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  npm install
-      - save_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
-          paths:
-            - node_modules
+      - *npm_restore_cache
+      - *npm_install
+      - *npm_save_cache
       - run:
           name: Build Mac
           environment:
