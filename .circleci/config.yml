@@ -19,6 +19,7 @@ setup_nvm: &nvm
 
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
       nvm install "$NODE_VERSION"
+      nvm alias default "$NODE_VERSION"
       nvm use "$NODE_VERSION"
   save_cache:
     name: Saving NVM cache
