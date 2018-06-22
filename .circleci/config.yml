@@ -50,7 +50,9 @@ jobs:
                     git fetch;
                     git checkout ${CALYPSO_HASH};
                   fi
-      - <<: *nvm
+      - <<: *restore_nvm
+      - <<: *setup_nvm
+      - <<: *save_nvm
       - run:
           name: Decrypt assets
           command: |
@@ -119,7 +121,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: /wp-desktop
-      - <<: *nvm
+      - <<: *restore_nvm
+      - <<: *setup_nvm
+      - <<: *save_nvm
       - restore_cache:
           key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
       - run:
@@ -162,7 +166,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: /Users/distiller/wp-desktop
-      - <<: *nvm
+      - <<: *restore_nvm
+      - <<: *setup_nvm
+      - <<: *save_nvm
       - restore_cache:
           key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
       - run:
