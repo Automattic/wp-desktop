@@ -4,8 +4,9 @@ references:
   restore_nvm: &restore_nvm
     restore_cache:
       name: Restoring NVM cache
-      key: v1-nvm-0.33.11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
-      key: v1-nvm-0.33.11-{{ arch }}
+      keys:
+        - nvm-0-33-11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
+        - nvm-0-33-11-{{ arch }}
   setup_nvm: &setup_nvm
     run:
       name: Install nvm and calypso node version
@@ -27,7 +28,7 @@ references:
   save_nvm: &save_nvm
     save_cache:
       name: Saving NVM cache
-      key: v1-nvm-0.33.11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
+      key: nvm-0-33-11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
       paths:
         - ~/.nvm
 
