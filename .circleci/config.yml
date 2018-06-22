@@ -94,7 +94,7 @@ jobs:
             - calypso/package.json
             - calypso/.nvmrc
 
-  win-and-linux:
+  linux:
     docker:
       - image: electronuserland/builder:wine-mono
     working_directory: /wp-desktop
@@ -138,6 +138,58 @@ jobs:
                   rm -rf release/linux-unpacked
       - persist_to_workspace:
           root: /wp-desktop
+          paths:
+            - release
+
+  windows:
+    macos:
+      xcode: "9.0"
+    shell: /bin/bash --login
+    working_directory: /Users/distiller/wp-desktop
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /Users/distiller/wp-desktop
+      - <<: *nvm
+      - restore_cache:
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install dependencies
+          command: |
+                  set +e
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  npm install
+      - save_cache:
+          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run:
+          name: Build Mac
+          environment:
+            WIN_CSC_LINK: resource/certificates/win.p12
+            CSC_FOR_PULL_REQUEST: true # don't do this in production
+          command: |
+                  set +e
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  make package BUILD_PLATFORM=w
+      # Temporarily disable the test
+      # TODO: Fixme – seems to be an issue with `portscanner`
+      # - run: 
+      #     name: Test
+      #     command: |
+      #             source $HOME/.nvm/nvm.sh
+      #             nvm use
+      #             make test TEST_PRODUCTION_BINARY=true
+      - run: 
+          name: Release cleanup
+          command: |
+                  set +e
+                  # rm -rf release/github
+                  # rm -rf release/mac
+      - persist_to_workspace:
+          root: /Users/distiller/wp-desktop
           paths:
             - release
 
@@ -212,7 +264,15 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - win-and-linux:
+      - windows:
+          requires:
+          - build
+          filters:
+            branches:
+              ignore: /tests.*/
+            tags:
+              only: /.*/
+      - linux:
           requires:
           - build
           filters:
@@ -230,7 +290,8 @@ workflows:
               only: /.*/
       - artifacts:
           requires:
-            - win-and-linux
+            - windows
+            - linux
             - mac
           filters:
             branches:
