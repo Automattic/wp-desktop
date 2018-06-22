@@ -1,12 +1,11 @@
 version: 2
 
 references:
-  restore_nvm: &restore_nvm
+  nvm: &nvm
     restore_cache:
       name: Restoring NVM cache
       key: v1-nvm-0.33.11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
       key: v1-nvm-0.33.11-{{ arch }}
-  setup_nvm: &setup_nvm
     run:
       name: Install nvm and calypso node version
       command: |
@@ -24,7 +23,6 @@ references:
         nvm install "$NODE_VERSION"
         nvm alias default "$NODE_VERSION"
         nvm use "$NODE_VERSION"
-  save_nvm: &save_nvm
     save_cache:
       name: Saving NVM cache
       key: v1-nvm-0.33.11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
@@ -50,9 +48,7 @@ jobs:
                     git fetch;
                     git checkout ${CALYPSO_HASH};
                   fi
-      - <<: *restore_nvm
-      - <<: *setup_nvm
-      - <<: *save_nvm
+      <<: *nvm
       - run:
           name: Decrypt assets
           command: |
@@ -121,9 +117,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: /wp-desktop
-      - <<: *restore_nvm
-      - <<: *setup_nvm
-      - <<: *save_nvm
+      <<: *nvm
       - restore_cache:
           key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
       - run:
@@ -166,9 +160,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: /Users/distiller/wp-desktop
-      - <<: *restore_nvm
-      - <<: *setup_nvm
-      - <<: *save_nvm
+      <<: *nvm
       - restore_cache:
           key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
       - run:
