@@ -79,6 +79,13 @@ function openWindow( windowName ) {
 			windows[windowName].handle.on( 'closed', function() {
 				windows[windowName].handle = null;
 			} );
+
+			if ( Config[settings.config].wpDragAndDropDisabled ) {
+				windows[windowName].handle.webContents.on( 'will-navigate', function( event ) {
+					event.preventDefault();
+					return false;
+				} );
+			}
 		} else {
 			settings.handle.show();
 		}
