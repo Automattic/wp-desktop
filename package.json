@@ -15,6 +15,7 @@
   "homepage": "https://desktop.wordpress.com/",
   "main": "build/desktop.js",
   "scripts": {
+    "preinstall": "make check-node-version-parity",
     "setup": "npm run install-if-deps-outdated && ( check-node-version --package || exit 0 ) && cd ./calypso && node ./bin/install-if-deps-outdated.js",
     "build:app": "make build CONFIG_ENV=release NODE_ENV=production CALYPSO_ENV=desktop",
     "install-if-deps-outdated": "node calypso/bin/install-if-deps-outdated.js",
@@ -25,10 +26,6 @@
     "wordpress",
     "wordpress.com"
   ],
-  "engines": {
-    "node": "8.11.0",
-    "npm": "5.6.0"
-  },
   "optionalDependencies": {
     "appdmg": "^0.4.5"
   },
@@ -51,10 +48,12 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "mv": "^2.1.1",
+    "spectron": "3.8.0",
     "unzip": "^0.1.11",
+    "wait-on": "2.1.0",
     "webpack": "4.5.0",
     "webpack-cli": "2.0.14",
-    "wait-on": "2.1.0"
+    "xvfb-maybe": "0.2.1"
   },
   "dependencies": {
     "debug": "2.6.8",
@@ -91,14 +90,14 @@
       }
     ],
     "mac": {
-      "icon": "./resource/image/app-icon.icns",
+      "icon": "./resource/image/mac/app-icon.icns",
       "category": "public.app-category.social-networking"
     },
     "dmg": {
       "title": "WordPress.com Installer",
-      "icon": "./resource/image/dmg-icon.icns",
+      "icon": "./resource/image/mac/dmg-icon.icns",
       "iconSize": 150,
-      "background": "./resource/image/dmg-background/background.png",
+      "background": "./resource/image/mac/dmg-background/background.png",
       "contents": [
         {
           "x": 486,
@@ -121,7 +120,7 @@
           "ia32"
         ]
       },
-      "icon": "./resource/image/wordpress.ico"
+      "icon": "./resource/image/win/wordpress.ico"
     },
     "nsis": {
       "oneClick": false
@@ -131,7 +130,7 @@
         "deb",
         "tar.gz"
       ],
-      "icon": "./resource/image/app-icon/icon/512x512.png",
+      "icon": "./resource/image/linux/512x512.png",
       "executableName": "wpcom",
       "description": "WordPress.com Desktop Client",
       "synopsis": "WordPress.com Desktop client",
