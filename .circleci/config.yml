@@ -184,8 +184,8 @@ jobs:
           name: Release cleanup
           command: |
                   set +e
-                  tar -zcvf win-unpacked-x64.tar.gz release/win-unpacked
-                  tar -zcvf win-unpacked-ia32.tar.gz win-ia32-unpacked
+                  tar -zcvf release/win-unpacked-x64.tar.gz release/win-unpacked
+                  tar -zcvf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
                   rm -rf release/github
                   rm -rf release/win-unpacked
                   rm -rf release/win-ia32-unpacked/
