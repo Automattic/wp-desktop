@@ -167,6 +167,7 @@ jobs:
           environment:
             WIN_CSC_LINK: resource/certificates/win.p12
             CSC_FOR_PULL_REQUEST: true # don't do this in production
+            USE_HARD_LINKS: false
           command: |
                   set +e
                   source $HOME/.nvm/nvm.sh
