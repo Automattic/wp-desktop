@@ -62,7 +62,7 @@ jobs:
 
                   if [ -n "${CALYPSO_HASH}" ]; then
                     cd calypso;
-                    git fetch;
+                    git fetch --force;
                     git checkout ${CALYPSO_HASH};
                   fi
       - *restore_nvm
