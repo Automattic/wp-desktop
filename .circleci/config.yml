@@ -172,6 +172,7 @@ jobs:
                   set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
+                  echo $USE_HARD_LINKS
                   make package BUILD_PLATFORM=w
       - run: 
           name: Release cleanup
