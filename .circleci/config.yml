@@ -60,6 +60,7 @@ jobs:
                   git submodule update --init --force --no-recommend-shallow --checkout
 
                   if [ -n "${CALYPSO_HASH}" ]; then
+                    git submodule sync
                     cd calypso
                     git checkout ${CALYPSO_HASH};
                   fi
