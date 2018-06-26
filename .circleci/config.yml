@@ -180,7 +180,7 @@ jobs:
                   tar -zcvf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
                   rm -rf release/github
                   # 64 bit binary currently not built due to https://github.com/electron-userland/electron-builder/issues/3038
-                  # rm -rf release/win-unpacked
+                  rm -rf release/win-unpacked
                   rm -rf release/win-ia32-unpacked/
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
