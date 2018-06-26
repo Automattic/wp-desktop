@@ -104,7 +104,6 @@ jobs:
                   fi
 
                   make build-source CONFIG_ENV=$CONFIG_ENV
-
       - run:
           name: Test
           command: |
