@@ -57,10 +57,12 @@ jobs:
       - run:
           name: Setup calypso
           command: |
-                  git submodule update --init --force --no-recommend-shallow --checkout
+                  git submodule init
+                  git submodule update
 
                   if [ -n "${CALYPSO_HASH}" ]; then
-                    cd calypso
+                    cd calypso;
+                    git fetch;
                     git checkout ${CALYPSO_HASH};
                   fi
       - *restore_nvm
