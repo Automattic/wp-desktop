@@ -78,6 +78,7 @@ jobs:
       - run:
           name: Npm install
           command: |
+            set -e
             source $HOME/.nvm/nvm.sh
             nvm use
             npm ci
@@ -210,7 +211,6 @@ jobs:
                   tar -zcvf release/win-unpacked-x64.tar.gz release/win-unpacked
                   tar -zcvf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
                   rm -rf release/github
-                  # 64 bit binary currently not built due to https://github.com/electron-userland/electron-builder/issues/3038
                   rm -rf release/win-unpacked
                   rm -rf release/win-ia32-unpacked/
       - persist_to_workspace:
