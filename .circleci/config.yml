@@ -1,19 +1,51 @@
-# YAML merge tags
-nvm: &nvm
-  run:
-    name: Install nvm and calypso node version
-    command: |
-            set +e
-            NODE_VERSION=$(cat calypso/.nvmrc)
-            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
-
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-            nvm install $(cat calypso/.nvmrc)
-
 version: 2
+
+references:
+  restore_nvm: &restore_nvm
+    restore_cache:
+      name: Restoring NVM cache
+      keys:
+        - nvm-0-33-11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
+        - nvm-0-33-11-{{ arch }}
+  setup_nvm: &setup_nvm
+    run:
+      name: Install nvm and calypso node version
+      command: |
+        set +e
+        set +u
+        set +x
+        NODE_VERSION=$(cat calypso/.nvmrc)
+        export NVM_DIR="${HOME}/.nvm"
+        mkdir -p "$NVM_DIR"
+
+        if [ ! -f "${NVM_DIR}/nvm.sh" ]; then
+          curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+        fi
+
+        [ -s "${NVM_DIR}/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install "$NODE_VERSION"
+        nvm alias default "$NODE_VERSION"
+        nvm use "$NODE_VERSION"
+  save_nvm: &save_nvm
+    save_cache:
+      name: Saving NVM cache
+      key: nvm-0-33-11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
+      paths:
+        - ~/.nvm
+  npm_restore_cache: &npm_restore_cache
+    restore_cache:
+      name: Restore npm cache
+      keys:
+        - v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
+        - v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}
+        - v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
+  npm_save_cache: &npm_save_cache
+    save_cache:
+      name: Save npm cache
+      key: v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
+      paths:
+        - ~/.npm
+
 jobs:
   build:
     macos:
@@ -33,25 +65,31 @@ jobs:
                     git fetch;
                     git checkout ${CALYPSO_HASH};
                   fi
-      - <<: *nvm
+      - *restore_nvm
+      - *setup_nvm
+      - *save_nvm
       - run:
           name: Decrypt assets
           command: |
                   openssl aes-256-cbc -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
                   openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
                   openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-      - restore_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
+      - *npm_restore_cache
+      - run:
+          name: Npm install
+          command: |
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            npm ci
+            cd calypso
+            npm ci
+      - *npm_save_cache
       - run:
           name: Build sources
           command: |
                   set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
-                  npm install
-                  cd calypso
-                  npm install
-                  cd ..
 
                   # only use the updater when we are building from master or a release branch
                   # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
@@ -78,11 +116,6 @@ jobs:
                     nvm use
                     make test
                   fi
-      - save_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}--{{ checksum "calypso/package.json" }}
-          paths:
-            - node_modules
-            - calypso/node_modules
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
           paths:
@@ -92,6 +125,7 @@ jobs:
             - calypso/server
             - calypso/config
             - calypso/package.json
+            - calypso/npm-shrinkwrap.json
             - calypso/.nvmrc
 
   linux:
@@ -102,9 +136,10 @@ jobs:
       - checkout
       - attach_workspace:
           at: /wp-desktop
-      - <<: *nvm
-      - restore_cache:
-          key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
+      - *restore_nvm
+      - *setup_nvm
+      - *save_nvm
+      - *npm_restore_cache
       - run:
           name: Install linux dev dependencies
           command: |
@@ -112,14 +147,12 @@ jobs:
                   apt-get -y install libxkbfile-dev libxkbfile-dev:i386 libxss-dev libx11-dev:i386
       - run:  
           name: Install dependencies
+          name: Npm install
           command: |
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  npm install
-      - save_cache:
-          key: v1-win-linux-dependencies-cache-{{ checksum "package.json" }}
-          paths:
-            - node_modules
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            npm ci
+      - *npm_save_cache
       - run:
           name: Build Linux
           environment:
@@ -148,20 +181,17 @@ jobs:
       - checkout
       - attach_workspace:
           at: /Users/distiller/wp-desktop
-      - <<: *nvm
-      - restore_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
+      - *restore_nvm
+      - *setup_nvm
+      - *save_nvm
+      - *npm_restore_cache
       - run:
-          name: Install dependencies
+          name: Npm install
           command: |
-                  set +e
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  npm install
-      - save_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
-          paths:
-            - node_modules
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            npm ci
+      - *npm_save_cache
       - run:
           name: Build Windows
           environment:
@@ -197,20 +227,17 @@ jobs:
       - checkout
       - attach_workspace:
           at: /Users/distiller/wp-desktop
-      - <<: *nvm
-      - restore_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
+      - *restore_nvm
+      - *setup_nvm
+      - *save_nvm
+      - *npm_restore_cache
       - run:
-          name: Install dependencies
+          name: Npm install
           command: |
-                  set +e
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  npm install
-      - save_cache:
-          key: v1-mac-dependencies-cache-{{ checksum "package.json" }}
-          paths:
-            - node_modules
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            npm ci
+      - *npm_save_cache
       - run:
           name: Build Mac
           environment:
