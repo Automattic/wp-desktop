@@ -13,6 +13,7 @@ const Config = require( 'lib/config' );
 const Settings = require( 'lib/settings' );
 const WindowManager = require( 'lib/window-manager' );
 const platform = require( 'lib/platform' );
+const AppQuit = require( 'lib/app-quit' );
 const debugMenu = require( './debug-menu' );
 
 /**
@@ -49,6 +50,7 @@ module.exports = function( app, mainWindow ) {
 			label: 'Quit',
 			accelerator: 'CmdOrCtrl+Q',
 			click: function() {
+				AppQuit.allowQuit();
 				app.quit();
 			}
 		}
