@@ -147,6 +147,7 @@ jobs:
           command: |
                   rm -rf release/github
                   rm -rf release/win-unpacked
+                  exit 1;
                   rm -rf release/win-ia32-unpacked/
                   rm -rf release/linux-unpacked
       - persist_to_workspace:
