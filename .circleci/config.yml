@@ -11,8 +11,6 @@ references:
     run:
       name: Install nvm and calypso node version
       command: |
-        set -o nounset
-        NODE_VERSION=$(cat calypso/.nvmrc)
         mkdir -p "$NVM_DIR"
 
         if [ ! -f "${NVM_DIR}/nvm.sh" ]; then
@@ -20,6 +18,8 @@ references:
         fi
 
         [ -s "${NVM_DIR}/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+        NODE_VERSION=$(cat calypso/.nvmrc)
         nvm install "$NODE_VERSION"
         nvm alias default "$NODE_VERSION"
         nvm use "$NODE_VERSION"
