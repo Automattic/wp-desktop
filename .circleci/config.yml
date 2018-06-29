@@ -187,6 +187,7 @@ jobs:
           name: Release cleanup
           command: |
                   rm -rf release/github
+                  exit 1;
                   rm -rf release/mac
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
