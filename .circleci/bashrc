@@ -1,5 +1,5 @@
 export NVM_DIR="${HOME}/.nvm"
 [ -s "${NVM_DIR}/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ type "nvm" ] && nvm use
+type nvm > /dev/null && nvm use
 
 set -o errexit
