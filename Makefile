@@ -75,7 +75,7 @@ desktop-config$/config-%.json:
 desktop$/config.json: BASE=$(THIS_DIR)$/desktop-config$/config-base.json
 desktop$/config.json: ENV=$(THIS_DIR)$/desktop-config$/config-$(CONFIG_ENV).json
 desktop$/config.json: $(BASE) $(ENV)
-	@node -e "const base = require('$(BASE)'), env = '$(CONFIG_ENV)' ? require('$(ENV)') : {}; console.log( Object.assign( base, env ) )" > $@
+	@node -e "const base = require('$(BASE)'), env = '$(CONFIG_ENV)' ? require('$(ENV)') : {}; console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
 	
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(CONFIG_ENV),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
