@@ -27,7 +27,7 @@ TEST_PRODUCTION_BINARY = false
 
 # Build sources
 # TODO: run tasks parallel when in dev mode
-build-source: checks build-config build-calypso build-desktop
+build-source: checks desktop/config.json build-calypso build-desktop
 	@echo "$(CYAN)$(CHECKMARK) All parts built$(RESET)"
 
 # Start app
@@ -40,16 +40,15 @@ start:
 dev-server: CONFIG_ENV = development
 dev-server: CALYPSO_ENV = desktop-development
 dev-server: NODE_ENV = development
-dev-server: checks
+dev-server: checks 
 	@echo "\n\n$(GREEN)+------------------------------------------------+"
 	@echo "|                                                |"
 	@echo "|    Wait for calypso to start the dev server    |"
 	@echo "|       and start the app with \`make dev\`        |"
 	@echo "|                                                |"
 	@echo "+------------------------------------------------+$(RESET)\n\n"
-	
-	@$(MAKE) build-config CONFIG_ENV=$(CONFIG_ENV)
 
+	@$(MAKE) desktop/config.json CONFIG_ENV=$(CONFIG_ENV)
 
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
@@ -62,11 +61,16 @@ dev: DEBUG = desktop:*
 dev: 
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
-# Build config
-build-config: 
-	@node $(THIS_DIR)/resource/build-scripts/build-config-file.js $(CONFIG_ENV)
+desktop-config/config-%.json:
+	$(info Config file for environment "$(CONFIG_ENV)" does not exist. Ignoring Environment.)
 
-	@echo "$(CYAN)$(CHECKMARK) Config created$(RESET)"
+.PHONY: desktop/config.json
+desktop/config.json: BASE=$(THIS_DIR)/desktop-config/config-base.json
+desktop/config.json: ENV=$(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
+desktop/config.json: $(BASE) $(ENV)
+	@node -e "const base = require('$(BASE)'), env = '$(CONFIG_ENV)' ? require('$(ENV)') : {}; console.log( Object.assign( base, env ) )" > $@
+	
+	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(CONFIG_ENV),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
 build-calypso: 
@@ -81,13 +85,13 @@ calypso-dev:
 	@cd $(CALYPSO_DIR) && NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
 
 # Build desktop bundle
-build-desktop:
+build-desktop: desktop/config.json
 	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)/webpack.config.js
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
 # Build and watch desktop scripts
-desktop-dev:
+desktop-dev: desktop/config.json
 	@echo "$(CYAN)Starting Desktop Server...$(RESET)"
 
 	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client CALYPSO_SERVER=true npx webpack --watch --config $(THIS_DIR)/webpack.config.js
@@ -144,7 +148,7 @@ else
 endif
 
 test: CONFIG_ENV = test  
-test: build-config
+test:
 	@echo "$(CYAN)$(CHECKMARK) Starting test...$(RESET)"
 
 	@TEST_PRODUCTION_BINARY=$(TEST_PRODUCTION_BINARY) npx xvfb-maybe mocha --compilers js:babel-core/register ./test
