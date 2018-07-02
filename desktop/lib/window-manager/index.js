@@ -80,6 +80,8 @@ function openWindow( windowName ) {
 				windows[windowName].handle = null;
 			} );
 
+			// TODO: add a check to disable navigation events only for drag & drop
+			// https://github.com/Automattic/wp-desktop/pull/464#discussion_r198071749
 			if ( Config[settings.config].wpDragAndDropDisabled ) {
 				windows[windowName].handle.webContents.on( 'will-navigate', function( event ) {
 					event.preventDefault();
