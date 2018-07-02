@@ -55,12 +55,10 @@ dev-server: checks
 	@echo "|                                                |"
 	@echo "+------------------------------------------------+$(RESET)\n\n"
 
-	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
-
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
 	"$(MAKE) calypso-dev NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV)" \
-	"wait-on http://localhost:3000 && $(MAKE) desktop-dev NODE_ENV=$(NODE_ENV)" \
+	"wait-on http://localhost:3000 && $(MAKE) build-desktop NODE_ENV=$(NODE_ENV)" \
 
 # Start app in dev mode
 dev: NODE_ENV = development
@@ -92,16 +90,14 @@ calypso-dev:
 	@cd $(CALYPSO_DIR) && NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
 
 # Build desktop bundle
-build-desktop: desktop$/config.json
-	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)/webpack.config.js
+build-desktop:
+ifeq ($(NODE_ENV),development)
+	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
+endif
+
+	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)$(/)webpack.config.js
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
-
-# Build and watch desktop scripts
-desktop-dev: desktop/config.json
-	@echo "$(CYAN)Starting Desktop Server...$(RESET)"
-
-	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client CALYPSO_SERVER=true npx webpack --watch --config $(THIS_DIR)$/webpack.config.js
 
 # Package App
 package:
