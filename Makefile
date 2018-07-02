@@ -47,7 +47,7 @@ start:
 dev-server: CONFIG_ENV = development
 dev-server: CALYPSO_ENV = desktop-development
 dev-server: NODE_ENV = development
-dev-server: checks 
+dev-server: checks desktop$/config.json
 	@echo "\n\n$(GREEN)+------------------------------------------------+"
 	@echo "|                                                |"
 	@echo "|    Wait for calypso to start the dev server    |"
@@ -109,32 +109,18 @@ package:
 build: build-source package
 
 # Perform checks
-checks: check-node-version-parity secret secret-clientid
+checks: check-node-version-parity secret
 
-# Check for secrets.json
+
+# Check for secret and confirm proper clientid for production release
 secret:
-	@if [ "$(CONFIG_ENV)" = "release" ] && [ ! -f $(CALYPSO_DIR)/config/secrets.json ]; \
-	then { \
-		if [ -z "${CIRCLECI}" ]; \
-			then { \
-				echo "$(RED)x calypso$/config$/secrets.json not found. Required file, see docs$/secrets.md$(RESET)"; \
-				exit 1; \
-			} \
-		fi; \
-	} \
-	fi;
-
-
-CLIENT_ID := $(shell node -p "require('$(CALYPSO_DIR)$(/)config$(/)secrets.json').desktop_oauth_client_id")
-
-# Confirm proper clientid for production release
-secret-clientid:
-	@if [ "$(CONFIG_ENV)" = "release" ] && [ ! $(CLIENT_ID) = "43452" ]; \
-	then { \
-		echo "$(RED)x calypso$/config$/secrets.json, \"desktop_oauth_client_id\" must be \"43452\" $(RESET)"; \
-		exit 1; \
-	} \
-	fi;
+ifneq (,$(wildcard $(CALYPSO_DIR)$/config$/secrets.json))
+ifneq (43452,$(shell node -p "require('$(CALYPSO_DIR)$/config$/secrets.json').desktop_oauth_client_id"))
+	$(error "desktop_oauth_client_id" must be "43452" in $(CALYPSO_DIR)$/config$/secrets.json)
+endif
+else 
+	$(error $(CALYPSO_DIR)$/config$/secrets.json does not exist)
+endif
 
 
 CALYPSO_NODE_VERSION := $(shell cat calypso$/.nvmrc)
