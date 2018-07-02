@@ -25,6 +25,9 @@ BUILD_PLATFORM = mwl
 DEBUG = 
 TEST_PRODUCTION_BINARY = false
 
+# Set default target
+.DEFAULT_GOAL := build
+
 # Build sources
 # TODO: run tasks parallel when in dev mode
 build-source: checks desktop/config.json build-calypso build-desktop
