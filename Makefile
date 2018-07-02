@@ -1,8 +1,12 @@
 ifeq ($(OS),Windows_NT)
-ENV_PATH_SEP := ;
+	FILE_PATH_SEP := \
+	ENV_PATH_SEP := ;
 else
-ENV_PATH_SEP := :
+	FILE_PATH_SEP := /
+	ENV_PATH_SEP := :
 endif
+
+/ = $(FILE_PATH_SEP)
 
 THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
@@ -30,7 +34,7 @@ TEST_PRODUCTION_BINARY = false
 
 # Build sources
 # TODO: run tasks parallel when in dev mode
-build-source: checks desktop/config.json build-calypso build-desktop
+build-source: checks desktop$/config.json build-calypso build-desktop
 	@echo "$(CYAN)$(CHECKMARK) All parts built$(RESET)"
 
 # Start app
@@ -51,7 +55,7 @@ dev-server: checks
 	@echo "|                                                |"
 	@echo "+------------------------------------------------+$(RESET)\n\n"
 
-	@$(MAKE) desktop/config.json CONFIG_ENV=$(CONFIG_ENV)
+	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
 
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
@@ -64,13 +68,13 @@ dev: DEBUG = desktop:*
 dev: 
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
-desktop-config/config-%.json:
+desktop-config$/config-%.json:
 	$(info Config file for environment "$(CONFIG_ENV)" does not exist. Ignoring Environment.)
 
-.PHONY: desktop/config.json
-desktop/config.json: BASE=$(THIS_DIR)/desktop-config/config-base.json
-desktop/config.json: ENV=$(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
-desktop/config.json: $(BASE) $(ENV)
+.PHONY: desktop$/config.json
+desktop$/config.json: BASE=$(THIS_DIR)$/desktop-config$/config-base.json
+desktop$/config.json: ENV=$(THIS_DIR)$/desktop-config$/config-$(CONFIG_ENV).json
+desktop$/config.json: $(BASE) $(ENV)
 	@node -e "const base = require('$(BASE)'), env = '$(CONFIG_ENV)' ? require('$(ENV)') : {}; console.log( Object.assign( base, env ) )" > $@
 	
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(CONFIG_ENV),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
@@ -88,8 +92,8 @@ calypso-dev:
 	@cd $(CALYPSO_DIR) && NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
 
 # Build desktop bundle
-build-desktop: desktop/config.json
-	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)/webpack.config.js
+build-desktop: desktop$/config.json
+	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)/webpack.config.js
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
@@ -97,7 +101,7 @@ build-desktop: desktop/config.json
 desktop-dev: desktop/config.json
 	@echo "$(CYAN)Starting Desktop Server...$(RESET)"
 
-	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client CALYPSO_SERVER=true npx webpack --watch --config $(THIS_DIR)/webpack.config.js
+	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso/server$(ENV_PATH_SEP)calypso/client CALYPSO_SERVER=true npx webpack --watch --config $(THIS_DIR)$/webpack.config.js
 
 # Package App
 package:
@@ -117,7 +121,7 @@ secret:
 	then { \
 		if [ -z "${CIRCLECI}" ]; \
 			then { \
-				echo "$(RED)x calypso/config/secrets.json not found. Required file, see docs/secrets.md$(RESET)"; \
+				echo "$(RED)x calypso$/config$/secrets.json not found. Required file, see docs$/secrets.md$(RESET)"; \
 				exit 1; \
 			} \
 		fi; \
@@ -125,19 +129,19 @@ secret:
 	fi;
 
 
-CLIENT_ID := $(shell node -p "require('$(CALYPSO_DIR)/config/secrets.json').desktop_oauth_client_id")
+CLIENT_ID := $(shell node -p "require('$(CALYPSO_DIR)$(/)config$(/)secrets.json').desktop_oauth_client_id")
 
 # Confirm proper clientid for production release
 secret-clientid:
 	@if [ "$(CONFIG_ENV)" = "release" ] && [ ! $(CLIENT_ID) = "43452" ]; \
 	then { \
-		echo "$(RED)x calypso/config/secrets.json, \"desktop_oauth_client_id\" must be \"43452\" $(RESET)"; \
+		echo "$(RED)x calypso$/config$/secrets.json, \"desktop_oauth_client_id\" must be \"43452\" $(RESET)"; \
 		exit 1; \
 	} \
 	fi;
 
 
-CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc)
+CALYPSO_NODE_VERSION := $(shell cat calypso$/.nvmrc)
 CURRENT_NODE_VERSION := $(shell node -v)
 
 # Check that the current node & npm versions are the versions Calypso expects to ensure it is built safely.
@@ -152,15 +156,15 @@ test: CONFIG_ENV = test
 test:
 	@echo "$(CYAN)$(CHECKMARK) Starting test...$(RESET)"
 
-	@TEST_PRODUCTION_BINARY=$(TEST_PRODUCTION_BINARY) npx xvfb-maybe mocha --compilers js:babel-core/register ./test
+	@TEST_PRODUCTION_BINARY=$(TEST_PRODUCTION_BINARY) npx xvfb-maybe mocha --compilers js:babel-core$/register .$/test
 
 distclean: clean
 	@cd calypso; npm run distclean
-	@rm -rf ./node_modules
+	@rm -rf .$/node_modules
 
 clean:
 	@cd calypso; npm run clean
-	@rm -rf ./release
-	@rm -rf ./build
+	@rm -rf .$/release
+	@rm -rf .$/build
 
 .PHONY: test build-sources
