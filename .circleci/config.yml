@@ -79,16 +79,19 @@ jobs:
     working_directory: /Users/distiller/wp-desktop
     steps:
       - checkout
+      - *calypso_restore_cache
       - run:
           name: Setup calypso
           command: |
-                  git submodule init
-                  git submodule update
+                  if [ ! -f ./calypso-hash ]; then
+                    git submodule init
+                    git submodule update
 
-                  if [ -n "${CALYPSO_HASH}" ]; then
-                    cd calypso;
-                    git fetch;
-                    git checkout ${CALYPSO_HASH};
+                    if [ -n "${CALYPSO_HASH}" ]; then
+                      cd calypso;
+                      git fetch;
+                      git checkout ${CALYPSO_HASH};
+                    fi
                   fi
       - *restore_nvm
       - *setup_nvm
@@ -96,34 +99,38 @@ jobs:
       - run:
           name: Decrypt assets
           command: |
-                  openssl aes-256-cbc -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-                  openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-                  openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+                  if [ ! -f ./calypso-hash ]; then
+                    openssl aes-256-cbc -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+                    openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+                    openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+                  fi
       - *npm_restore_cache
       - run:
           name: Npm install
           command: |
-            source $HOME/.nvm/nvm.sh
-            nvm use
-            npm ci
-            cd calypso
-            npm ci
+                  if [ ! -f ./calypso-hash ]; then
+                    source $HOME/.nvm/nvm.sh
+                    nvm use
+                    npm ci
+                    cd calypso
+                    npm ci
+                  fi
       - *npm_save_cache
       - run:
           name: Build sources
           command: |
-                  set +e
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-
-                  # only use the updater when we are building from master or a release branch
-                  # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
-                  # then
-                  #   CONFIG_ENV=release
-                  # fi
-
-                  # only build calypso when there is no calypso-hash file
                   if [ ! -f ./calypso-hash ]; then
+                    set +e
+                    source $HOME/.nvm/nvm.sh
+                    nvm use
+
+                    # only use the updater when we are building from master or a release branch
+                    # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
+                    # then
+                    #   CONFIG_ENV=release
+                    # fi
+
+                    # only build calypso when there is no calypso-hash file
                     CONFIG_ENV=release # TODO: update accordingly when code from above changes
 
                     if [ -n "${CALYPSO_HASH}" ]; then
