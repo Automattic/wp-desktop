@@ -45,7 +45,7 @@ references:
       key: v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
       paths:
         - ~/.npm
-  calypso_cache_paths: &calypso_cache_paths
+  app_cache_paths: &app_cache_paths
     - calypso-hash
     - build
     - resource/certificates
@@ -81,7 +81,7 @@ references:
     save_cache:
       name: Save calypso cache
       key: v1-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
-      paths: *calypso_cache_paths
+      paths: *app_cache_paths
 
 jobs:
   build:
@@ -119,10 +119,11 @@ jobs:
       - run:
           name: Npm install
           command: |
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  npm ci
+                  
                   if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
-                    source $HOME/.nvm/nvm.sh
-                    nvm use
-                    npm ci
                     cd calypso
                     npm ci
                   fi
@@ -130,25 +131,30 @@ jobs:
       - run:
           name: Build sources
           command: |
-                  # only build calypso when there is no calypso-hash file
+                  # only use the updater when we are building from master or a release branch
+                  # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
+                  # then
+                  #   CONFIG_ENV=release
+                  # fi
+
+                  # TODO: update accordingly when code from above changes
+                  CONFIG_ENV=release
+
+                  # only build the whole bundle when there is no calypso-hash file
                   if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
                     set +e
                     source $HOME/.nvm/nvm.sh
                     nvm use
 
-                    # only use the updater when we are building from master or a release branch
-                    # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
-                    # then
-                    #   CONFIG_ENV=release
-                    # fi
-
-                    CONFIG_ENV=release # TODO: update accordingly when code from above changes
 
                     if [ -n "${CALYPSO_HASH}" ]; then
                       CONFIG_ENV=test
                     fi
 
                     make build-source CONFIG_ENV=$CONFIG_ENV
+                  else
+                    make build-config CONFIG_ENV=$CONFIG_ENV
+                    make build-desktop
                   fi
       - run:
           name: Test
@@ -166,7 +172,7 @@ jobs:
       - *calypso_save_cache
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
-          paths: *calypso_cache_paths
+          paths: *app_cache_paths
 
   win-and-linux:
     docker:
