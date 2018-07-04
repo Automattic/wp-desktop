@@ -45,6 +45,31 @@ references:
       key: v1-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
       paths:
         - ~/.npm
+  calypso_restore_cache: &calypso_restore_cache
+    restore_cache:
+      name: Restore calypso cache
+      keys:
+        - v1-calypso-{{ arch }}-{{ checksum "calypso-hash" }}
+  calypso_cache_paths: &calypso_cache_paths
+    - calypso-hash
+    - build
+    - resource/certificates
+    - calypso/public
+    - calypso/server
+    - calypso/config
+    - calypso/package.json
+    - calypso/npm-shrinkwrap.json
+    - calypso/.nvmrc
+  calypso_prepare_cache: &calypso_prepare_cache
+    run:
+      name: Prepare calypso cache
+      command: |
+              git rev-parse @:./calypso > calypso-hash
+  calypso_save_cache: &calypso_save_cache
+    save_cache:
+      name: Save calypso cache
+      key: v1-calypso-{{ arch }}-{{ checksum "calypso-hash" }}
+      paths: *calypso_cache_paths
 
 jobs:
   build:
@@ -97,13 +122,16 @@ jobs:
                   #   CONFIG_ENV=release
                   # fi
 
-                  CONFIG_ENV=release # TODO: update accordingly when code from above changes
+                  # only build calypso when there is no calypso-hash file
+                  if [ ! -f ./calypso-hash ]; then
+                    CONFIG_ENV=release # TODO: update accordingly when code from above changes
 
-                  if [ -n "${CALYPSO_HASH}" ]; then
-                    CONFIG_ENV=test
+                    if [ -n "${CALYPSO_HASH}" ]; then
+                      CONFIG_ENV=test
+                    fi
+
+                    make build-source CONFIG_ENV=$CONFIG_ENV
                   fi
-
-                  make build-source CONFIG_ENV=$CONFIG_ENV
       - run:
           name: Test
           command: |
@@ -116,17 +144,11 @@ jobs:
                     nvm use
                     make test
                   fi
+      - *calypso_prepare_cache
+      - *calypso_save_cache
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
-          paths:
-            - build
-            - resource/certificates
-            - calypso/public
-            - calypso/server
-            - calypso/config
-            - calypso/package.json
-            - calypso/npm-shrinkwrap.json
-            - calypso/.nvmrc
+          paths: *calypso_cache_paths
 
   win-and-linux:
     docker:
