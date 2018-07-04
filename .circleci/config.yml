@@ -122,11 +122,8 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   npm ci
-                  
-                  if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
-                    cd calypso
-                    npm ci
-                  fi
+                  cd calypso
+                  npm ci
       - *npm_save_cache
       - run:
           name: Build sources
