@@ -139,7 +139,8 @@ jobs:
           name: Build Windows & Linux
           environment:
             CSC_LINK: resource/certificates/win.p12
-          command: make package BUILD_PLATFORM=wl
+          # command: make package BUILD_PLATFORM=wl
+          command: make package BUILD_PLATFORM=l
       - run:
           name: Release cleanup
           command: |
@@ -217,18 +218,18 @@ workflows:
               ignore: /tests.*/
             tags:
               only: /.*/
-      - mac:
-          requires:
-          - build
-          filters:
-            branches:
-              ignore: /tests.*/
-            tags:
-              only: /.*/
+      # - mac:
+      #     requires:
+      #     - build
+      #     filters:
+      #       branches:
+      #         ignore: /tests.*/
+      #       tags:
+      #         only: /.*/
       - artifacts:
           requires:
             - win-and-linux
-            - mac
+            # - mac
           filters:
             branches:
               ignore: /tests.*/
