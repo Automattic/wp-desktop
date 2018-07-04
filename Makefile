@@ -95,7 +95,7 @@ ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
 endif
 
-	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)$(/)webpack.config.js
+	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)$/webpack.config.js
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
