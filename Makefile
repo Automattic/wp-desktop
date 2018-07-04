@@ -123,12 +123,12 @@ else
 endif
 
 
-CALYPSO_NODE_VERSION := $(shell cat calypso$/.nvmrc)
+CALYPSO_NODE_VERSION := $(shell node -p "require('$(CALYPSO_DIR)$/package.json').engines.node")
 CURRENT_NODE_VERSION := $(shell node -v)
 
 # Check that the current node & npm versions are the versions Calypso expects to ensure it is built safely.
 check-node-version-parity:
-ifneq ("$(CALYPSO_NODE_VERSION)", "$(CURRENT_NODE_VERSION)")
+ifneq ("v$(CALYPSO_NODE_VERSION)", "$(CURRENT_NODE_VERSION)")
 	$(error Please ensure that wp-desktop is using NodeJS $(CALYPSO_NODE_VERSION) to match wp-calypso before continuing. 	Current NodeJS version: $(CURRENT_NODE_VERSION))
 else 
 	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
