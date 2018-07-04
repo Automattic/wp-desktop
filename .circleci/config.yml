@@ -119,6 +119,7 @@ jobs:
       - run:
           name: Build sources
           command: |
+                  # only build calypso when there is no calypso-hash file
                   if [ ! -f ./calypso-hash ]; then
                     set +e
                     source $HOME/.nvm/nvm.sh
@@ -130,7 +131,6 @@ jobs:
                     #   CONFIG_ENV=release
                     # fi
 
-                    # only build calypso when there is no calypso-hash file
                     CONFIG_ENV=release # TODO: update accordingly when code from above changes
 
                     if [ -n "${CALYPSO_HASH}" ]; then
