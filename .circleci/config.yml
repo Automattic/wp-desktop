@@ -46,7 +46,7 @@ references:
       paths:
         - ~/.npm
   calypso_cache_paths: &calypso_cache_paths
-    - calypso-cached-hash
+    - calypso-hash
     - build
     - resource/certificates
     - calypso/public
@@ -59,7 +59,6 @@ references:
     run:
       name: Prepare calypso cache
       command: |
-              # touch calypso-cached-hash
               git rev-parse @:./calypso > calypso-current-hash
   calypso_restore_cache: &calypso_restore_cache
     restore_cache:
@@ -70,8 +69,8 @@ references:
     run:
       name: Finalize calypso cache
       command: |
-              if [ "$(cat calypso-current-hash)" != "$(cat calypso-cached-hash)" ]; then
-                cp calypso-current-hash calypso-cached-hash
+              if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
+                cp calypso-current-hash calypso-hash
               fi
   calypso_save_cache: &calypso_save_cache
     save_cache:
@@ -106,7 +105,7 @@ jobs:
       - run:
           name: Decrypt assets
           command: |
-                  if [ "$(cat calypso-current-hash)" != "$(cat calypso-cached-hash)" ]; then
+                  if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
                     openssl aes-256-cbc -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
                     openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
                     openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
@@ -115,7 +114,7 @@ jobs:
       - run:
           name: Npm install
           command: |
-                  if [ "$(cat calypso-current-hash)" != "$(cat calypso-cached-hash)" ]; then
+                  if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
                     source $HOME/.nvm/nvm.sh
                     nvm use
                     npm ci
@@ -127,7 +126,7 @@ jobs:
           name: Build sources
           command: |
                   # only build calypso when there is no calypso-hash file
-                  if [ "$(cat calypso-current-hash)" != "$(cat calypso-cached-hash)" ]; then
+                  if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
                     set +e
                     source $HOME/.nvm/nvm.sh
                     nvm use
