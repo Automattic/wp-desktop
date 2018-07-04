@@ -59,7 +59,12 @@ references:
     run:
       name: Prepare calypso cache
       command: |
-              git rev-parse @:./calypso > calypso-current-hash
+              if [ -n "${CALYPSO_HASH}" ]; then
+                # cache bust e2e tests
+                uuidgen > calypso-current-hash
+              else 
+                git rev-parse @:./calypso > calypso-current-hash
+              fi
   calypso_restore_cache: &calypso_restore_cache
     restore_cache:
       name: Restore calypso cache
