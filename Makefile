@@ -66,16 +66,20 @@ dev: DEBUG = desktop:*
 dev: 
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
-desktop-config$/config-%.json:
-	$(info Config file for environment "$(CONFIG_ENV)" does not exist. Ignoring Environment.)
+
+BASE_CONFIG := $(THIS_DIR)/desktop-config/config-base.json
+ENV_CONFIG := $(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
 
 .PHONY: desktop$/config.json
-desktop$/config.json: BASE=$(THIS_DIR)$/desktop-config$/config-base.json
-desktop$/config.json: ENV=$(THIS_DIR)$/desktop-config$/config-$(CONFIG_ENV).json
-desktop$/config.json: $(BASE) $(ENV)
-	@node -e "const base = require('$(BASE)'), env = '$(CONFIG_ENV)' ? require('$(ENV)') : {}; console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
+desktop$/config.json:
+ifeq (,$(wildcard $(ENV_CONFIG)))
+	$(warning Config file for environment "$(CONFIG_ENV)" does not exist. Ignoring environment.)
+else
+	$(eval EXTENDED = true)
+endif
+	@node -e "const base = require('$(BASE_CONFIG)'); let env; try { env = require('$(ENV_CONFIG)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
 	
-	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(CONFIG_ENV),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
+	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
 build-calypso: 
