@@ -11,9 +11,6 @@ references:
     run:
       name: Install nvm and calypso node version
       command: |
-        set +e
-        set +u
-        set +x
         NODE_VERSION=$(cat calypso/.nvmrc)
         export NVM_DIR="${HOME}/.nvm"
         mkdir -p "$NVM_DIR"
@@ -48,6 +45,8 @@ references:
 
 jobs:
   build:
+    environment:
+      BASH_ENV: ".circleci/bashrc"
     macos:
       xcode: "9.0"
     shell: /bin/bash --login
@@ -87,7 +86,6 @@ jobs:
       - run:
           name: Build sources
           command: |
-                  set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
 
@@ -107,8 +105,6 @@ jobs:
       - run:
           name: Test
           command: |
-                  set +e
-
                   # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
                   # TODO: We might be able to ignore this once we switched to electron-builders auto-update
                   if [ -n "${CALYPSO_HASH}" ]; then
@@ -131,6 +127,8 @@ jobs:
   win-and-linux:
     docker:
       - image: electronuserland/builder:wine-mono
+    environment:
+      BASH_ENV: ".circleci/bashrc"
     working_directory: /wp-desktop
     steps:
       - checkout
@@ -158,7 +156,6 @@ jobs:
       - run:
           name: Release cleanup
           command: |
-                  set +e
                   rm -rf release/github
                   rm -rf release/win-unpacked
                   rm -rf release/win-ia32-unpacked/
@@ -171,6 +168,8 @@ jobs:
   mac:
     macos:
       xcode: "9.0"
+    environment:
+      BASH_ENV: ".circleci/bashrc"
     shell: /bin/bash --login
     working_directory: /Users/distiller/wp-desktop
     steps:
@@ -194,7 +193,6 @@ jobs:
             CSC_LINK: resource/certificates/mac.p12
             CSC_FOR_PULL_REQUEST: true # don't do this in production
           command: |
-                  set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=m
@@ -207,7 +205,6 @@ jobs:
       - run:
           name: Release cleanup
           command: |
-                  set +e
                   rm -rf release/github
                   rm -rf release/mac
       - persist_to_workspace:
