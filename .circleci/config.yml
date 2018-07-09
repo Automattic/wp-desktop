@@ -15,17 +15,20 @@ references:
         set +u
         set +x
         NODE_VERSION=$(cat calypso/.nvmrc)
-        export NVM_DIR="${HOME}/.nvm"
-        mkdir -p "$NVM_DIR"
+
+        # Set-up NVM_DIR and load nvm if available
+        ./.circleci/nvm-boot.sh
 
         if [ ! -f "${NVM_DIR}/nvm.sh" ]; then
           curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+          # Reload if nvm wasn't available
+          ./.circleci/nvm-boot.sh
         fi
 
-        [ -s "${NVM_DIR}/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        # Install and set default Node.js version
         nvm install "$NODE_VERSION"
         nvm alias default "$NODE_VERSION"
-        nvm use "$NODE_VERSION"
+
   save_nvm: &save_nvm
     save_cache:
       name: Saving NVM cache
@@ -78,8 +81,7 @@ jobs:
       - run:
           name: Npm install
           command: |
-            source $HOME/.nvm/nvm.sh
-            nvm use
+            ./.circleci/nvm-boot.sh
             npm ci
             cd calypso
             npm ci
@@ -88,8 +90,7 @@ jobs:
           name: Build sources
           command: |
                   set +e
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
+                  ./.circleci/nvm-boot.sh
 
                   # only use the updater when we are building from master or a release branch
                   # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
@@ -112,8 +113,7 @@ jobs:
                   # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
                   # TODO: We might be able to ignore this once we switched to electron-builders auto-update
                   if [ -n "${CALYPSO_HASH}" ]; then
-                    source $HOME/.nvm/nvm.sh
-                    nvm use
+                    ./.circleci/nvm-boot.sh
                     make test
                   fi
       - persist_to_workspace:
@@ -143,8 +143,7 @@ jobs:
       - run:
           name: Npm install
           command: |
-            source $HOME/.nvm/nvm.sh
-            nvm use
+            ./.circleci/nvm-boot.sh
             npm ci
       - *npm_save_cache
       - run:
@@ -152,8 +151,7 @@ jobs:
           environment:
             CSC_LINK: resource/certificates/win.p12
           command: |
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
+                  ./.circleci/nvm-boot.sh
                   make package BUILD_PLATFORM=wl
       - run:
           name: Release cleanup
@@ -184,8 +182,7 @@ jobs:
       - run:
           name: Npm install
           command: |
-            source $HOME/.nvm/nvm.sh
-            nvm use
+            ./.circleci/nvm-boot.sh
             npm ci
       - *npm_save_cache
       - run:
@@ -195,14 +192,12 @@ jobs:
             CSC_FOR_PULL_REQUEST: true # don't do this in production
           command: |
                   set +e
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
+                  ./.circleci/nvm-boot.sh
                   make package BUILD_PLATFORM=m
       - run:
           name: Test
           command: |
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
+                  ./.circleci/nvm-boot.sh
                   make test TEST_PRODUCTION_BINARY=true
       - run:
           name: Release cleanup
