@@ -17,12 +17,12 @@ references:
         NODE_VERSION=$(cat calypso/.nvmrc)
 
         # Set-up NVM_DIR and load nvm if available
-        ./.circleci/nvm-boot.sh
+        source ./.circleci/nvm-boot.sh
 
         if [ ! -f "${NVM_DIR}/nvm.sh" ]; then
           curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
           # Reload if nvm wasn't available
-          ./.circleci/nvm-boot.sh
+          source ./.circleci/nvm-boot.sh
         fi
 
         # Install and set default Node.js version
@@ -81,7 +81,7 @@ jobs:
       - run:
           name: Npm install
           command: |
-            ./.circleci/nvm-boot.sh
+            source ./.circleci/nvm-boot.sh
             npm ci
             cd calypso
             npm ci
@@ -90,7 +90,7 @@ jobs:
           name: Build sources
           command: |
                   set +e
-                  ./.circleci/nvm-boot.sh
+                  source ./.circleci/nvm-boot.sh
 
                   # only use the updater when we are building from master or a release branch
                   # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
@@ -113,7 +113,7 @@ jobs:
                   # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
                   # TODO: We might be able to ignore this once we switched to electron-builders auto-update
                   if [ -n "${CALYPSO_HASH}" ]; then
-                    ./.circleci/nvm-boot.sh
+                    source ./.circleci/nvm-boot.sh
                     make test
                   fi
       - persist_to_workspace:
@@ -143,7 +143,7 @@ jobs:
       - run:
           name: Npm install
           command: |
-            ./.circleci/nvm-boot.sh
+            source ./.circleci/nvm-boot.sh
             npm ci
       - *npm_save_cache
       - run:
@@ -151,7 +151,7 @@ jobs:
           environment:
             CSC_LINK: resource/certificates/win.p12
           command: |
-                  ./.circleci/nvm-boot.sh
+                  source ./.circleci/nvm-boot.sh
                   make package BUILD_PLATFORM=wl
       - run:
           name: Release cleanup
@@ -182,7 +182,7 @@ jobs:
       - run:
           name: Npm install
           command: |
-            ./.circleci/nvm-boot.sh
+            source ./.circleci/nvm-boot.sh
             npm ci
       - *npm_save_cache
       - run:
@@ -192,12 +192,12 @@ jobs:
             CSC_FOR_PULL_REQUEST: true # don't do this in production
           command: |
                   set +e
-                  ./.circleci/nvm-boot.sh
+                  source ./.circleci/nvm-boot.sh
                   make package BUILD_PLATFORM=m
       - run:
           name: Test
           command: |
-                  ./.circleci/nvm-boot.sh
+                  source ./.circleci/nvm-boot.sh
                   make test TEST_PRODUCTION_BINARY=true
       - run:
           name: Release cleanup
