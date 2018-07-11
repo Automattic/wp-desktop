@@ -130,8 +130,10 @@ secret-clientid:
 	fi;
 
 
-CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc)
-CURRENT_NODE_VERSION := $(shell node -v)
+# Sed to strip leading v to ensure 'v1.2.3' and '1.2.3' can match.
+# The .nvmrc file may contain either, `node --version` prints with 'v' prefix.
+CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1/p')
+CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 
 # Check that the current node & npm versions are the versions Calypso expects to ensure it is built safely.
 check-node-version-parity:
