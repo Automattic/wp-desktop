@@ -16,12 +16,12 @@ When creating your application, you'll need to fill in all the fields:
 * Redirect URLs: The form requires a valid URL. You can use the origin `http://127.0.0.1:41050`.
 * Javascript Origins: `http://127.0.0.1:41050`
 * Answer the bot challenge correctly.
-* Type: `web`
+* Type: Native
 
 When you've filled out the form, click the create button.
 
 In the end, your application details should look similar to:
-![application details](https://cldup.com/Juw-5uEHlR.png)
+![application details](cld.wthms.co/EjNmEl+)
 
 After your application is created, copy your client id and client secret, and add a
 `calypso/config/secrets.json` file:
