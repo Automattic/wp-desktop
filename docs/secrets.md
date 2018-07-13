@@ -21,7 +21,7 @@ When creating your application, you'll need to fill in all the fields:
 When you've filled out the form, click the create button.
 
 In the end, your application details should look similar to:
-![application details](cld.wthms.co/EjNmEl+)
+![application details](https://cld.wthms.co/EjNmEl+)
 
 After your application is created, copy your client id and client secret, and add a
 `calypso/config/secrets.json` file:
