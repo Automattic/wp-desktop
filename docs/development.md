@@ -13,7 +13,38 @@ We use Electron's [IPC](https://github.com/atom/electron/blob/master/docs/api/ip
 
 ## Starting the app
 
-So what happens when you `make run`? It's a fairly complicated process so buckle up. Note that *(main)* and *(renderer)* will be added to show where the code actually runs.
+### Dev mode
+
+You will need to separate terminal sessions
+
+**Terminal 1:**
+
+In `wp-desktop` run the calypso and desktop development server with:
+
+```bash
+make dev-server
+```
+
+`make dev-server` is taking care of automatic re-compilation of your desktop and calypso scripts, styles and so on whenever you save/modify a file.
+
+**Terminal 2:**
+
+Starting the app
+
+```bash
+make dev
+```
+
+#### Skipping the calypso server
+
+
+`make dev` is starting the app with `NODE_ENV=development` and `DEBUG=desktop:*`.
+
+`NODE_ENV=development` is required to skip the server initialization as described below and is instead using the calypso development version served via http://calypso.localhost:3000.
+
+### How does it work?
+
+So what happens when you run `make dev`? It's a fairly complicated process so buckle up. Note that *(main)* and *(renderer)* will be added to show where the code actually runs.
 
 - *(main)* Electron looks at the `main` item in `package.json` - this is the boot file, and refers to `desktop/index.js`
 - *(main)* `desktop/index.js` sets up the environment in `desktop/env.js` - this includes Node paths for Calypso
@@ -35,14 +66,12 @@ Phew!
 
 ## How do I change the main app?
 
-All app code is contained in `desktop`. Any changes you make there will run the next time you do `make run`.
+All app code is contained in `desktop`. Any changes you make there require a restart of the app by running `make dev`.
 
 - [Config](../desktop-config/README.md) - app configuration values
 - [Libraries](../desktop/lib/README.md) - details of the local libraries used
 - [App Handlers](.,/desktop/app-handlers/README.md) - handlers that run before the main window is created
 - [Window Handlers](../desktop/window-handlers/README.md) - handlers that run after the main window is created
-
-Note that currently we do not compile or transpile the app code.
 
 ## How do I change Calypso?
 
@@ -51,7 +80,7 @@ All Calypso code is contained in the `calypso` directory as a submodule. If you 
 - `cd calypso`
 - Create a new branch or change to an existing branch in Calypso as you would normally
 
-When you do a `make run` it will re-compile any changes in Calypso.
+When you have started the app with `make dev` and have a running the dev server via `make dev-server` all your changes will be automatically re-compiled. You will be notified in Calypso when a reload is necessary.
 
 To update the `calypso` directory to the upstream project's latest commit, run `git submodule update --remote`. If you want to commit that change, you need to `git add calypso` to do so.
 
@@ -65,10 +94,10 @@ Instead, during the app's startup process, we fork a child process to load up Ca
 
 ## Debugging
 
-The main process will output debug to the console when debug mode is enabled (found under the app menu). You can also explicitly enable debug mode when running the app:
+The main process will output debug to the console when debug mode is enabled (found under the app menu). You can also customize the debug output when running the app:
 
-```
-$ DEBUG=* make run
+```bash
+make dev DEBUG=desktop:*
 ...
 desktop:index Starting app handlers +0ms
 desktop:index Waiting for app window to load +69ms
