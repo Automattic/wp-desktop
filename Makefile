@@ -127,19 +127,14 @@ else
 endif
 
 
-<<<<<<< HEAD
 # Sed to strip leading v to ensure 'v1.2.3' and '1.2.3' can match.
 # The .nvmrc file may contain either, `node --version` prints with 'v' prefix.
 CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
-=======
-CALYPSO_NODE_VERSION := $(shell node -p "require('$(CALYPSO_DIR)$/package.json').engines.node")
-CURRENT_NODE_VERSION := $(shell node -v)
->>>>>>> Avoid using .nvmrc as a source to get nodejs version
 
 # Check that the current node & npm versions are the versions Calypso expects to ensure it is built safely.
 check-node-version-parity:
-ifneq ("v$(CALYPSO_NODE_VERSION)", "$(CURRENT_NODE_VERSION)")
+ifneq ("$(CALYPSO_NODE_VERSION)", "$(CURRENT_NODE_VERSION)")
 	$(error Please ensure that wp-desktop is using NodeJS $(CALYPSO_NODE_VERSION) to match wp-calypso before continuing. 	Current NodeJS version: $(CURRENT_NODE_VERSION))
 else 
 	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
