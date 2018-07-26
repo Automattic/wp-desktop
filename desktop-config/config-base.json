@@ -30,7 +30,8 @@
 		"skipTaskbar": true,
 		"title": "Preferences",
 		"useContentSize": true,
-		"width": 480
+		"width": 480,
+		"wpDragAndDropDisabled": true
 	},
 	"aboutWindow": {
 		"acceptFirstMouse": true,
@@ -41,7 +42,8 @@
 		"skipTaskbar": true,
 		"title": "About WordPress.com",
 		"useContentSize": true,
-		"width": 300
+		"width": 300,
+		"wpDragAndDropDisabled": true
 	},
 	"secretWindow": {
 		"acceptFirstMouse": true,
@@ -52,7 +54,11 @@
 		"resizable": false,
 		"skipTaskbar": true,
 		"transparent": true,
-		"width": "full"
+		"width": "full",
+		"webPreferences": {
+			"nodeIntegration": false
+		},
+		"wpDragAndDropDisabled": true
 	},
 	"crash_reporter": false,
 	"updater": false,
@@ -65,6 +71,7 @@
 		"proxy-url": "socks5://localhost",
 		"proxy-port": "8080",
 		"proxy-pac": "",
-		"spellcheck-enabled": false
+		"spellcheck-enabled": false,
+		"wpDragAndDropDisabled": true
 	}
 }
