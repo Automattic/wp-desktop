@@ -95,16 +95,36 @@ references:
               fi
               echo 'export ELECTRON_CACHE_DIR=$CACHE_DIR' >> $BASH_ENV
               $(node -p "require("./package.json").devDependencies.electron") > electron-version
-  electron_save_cache: &electron_save_cache
+  electron_save_cache_mac: &electron_save_cache_mac
     save_cache:
-      name: Save electron cache
-      key: v1-electron-{{ arch }}-{{ checksum "electron-version" }}
-      paths: $CACHE_DIR
-  electron_restore_cache: &electron_restore_cache
+      name: Save electron cache (macOS)
+      key: v1-electron-{{ arch }}-mac-{{ checksum "electron-version" }}
+      paths: /Users/distiller/Library/Caches/electron/
+  electron_restore_cache_mac: &electron_restore_cache_mac
     restore_cache:
-      name: Restore electron cache
+      name: Restore electron cache (macOS)
       keys:
-        - v1-calypso-{{ arch }}-{{ checksum "electron-version" }}
+        - v1-electron-{{ arch }}-mac-{{ checksum "electron-version" }}
+  electron_save_cache_windows: &electron_save_cache_windows
+    save_cache:
+      name: Save electron cache (Windows)
+      key: v1-electron-{{ arch }}-win-{{ checksum "electron-version" }}
+      paths: /Users/distiller/Library/Caches/electron/
+  electron_restore_cache_windows: &electron_restore_cache_windows
+    restore_cache:
+      name: Restore electron cache (Windows)
+      keys:
+        - v1-electron-{{ arch }}-win-{{ checksum "electron-version" }}
+  electron_save_cache_linux: &electron_save_cache_linux
+    save_cache:
+      name: Save electron cache (Linux)
+      key: v1-electron-{{ arch }}-linux-{{ checksum "electron-version" }}
+      paths: /root/.cache/electron/
+  electron_restore_cache_linux: &electron_restore_cache_linux
+    restore_cache:
+      name: Restore electron cache (Linux)
+      keys:
+        - v1-electron-{{ arch }}-linux-{{ checksum "electron-version" }}
 
 jobs:
   build:
@@ -207,7 +227,7 @@ jobs:
       - *save_nvm
       - *npm_restore_cache
       - *electron_prepare_cache
-      - *electron_restore_cache
+      - *electron_restore_cache_linux
       - run:
           name: Install linux dev dependencies
           command: |
@@ -229,7 +249,7 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=l
-      - *electron_save_cache
+      - *electron_save_cache_linux
       - run:
           name: Release cleanup
           command: |
@@ -255,7 +275,7 @@ jobs:
       - *save_nvm
       - *npm_restore_cache
       - *electron_prepare_cache
-      - *electron_restore_cache
+      - *electron_restore_cache_windows
       - run:
           name: Npm install
           command: |
@@ -274,7 +294,7 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=w
-      - *electron_save_cache
+      - *electron_save_cache_windows
       - run: 
           name: Release cleanup
           command: |
@@ -303,7 +323,7 @@ jobs:
       - *save_nvm
       - *npm_restore_cache
       - *electron_prepare_cache
-      - *electron_restore_cache
+      - *electron_restore_cache_mac
       - run:
           name: Npm install
           command: |
@@ -321,7 +341,7 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=m
-      - *electron_save_cache
+      - *electron_save_cache_mac
       # Temporarily disable the test
       # TODO: Fixme – seems to be an issue with `portscanner`
       # - run: 
