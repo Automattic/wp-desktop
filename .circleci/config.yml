@@ -94,7 +94,7 @@ references:
                 CACHE_DIR=~/Library/Caches/electron/
               fi
               echo 'export ELECTRON_CACHE_DIR=$CACHE_DIR' >> $BASH_ENV
-              $(node -p "require("./package.json").devDependencies.electron") > electron-version
+              $(node -p "require(\"./package.json\").devDependencies.electron") > electron-version
   electron_save_cache_mac: &electron_save_cache_mac
     save_cache:
       name: Save electron cache (macOS)
