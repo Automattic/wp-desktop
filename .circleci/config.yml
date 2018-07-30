@@ -100,7 +100,7 @@ references:
       name: Save electron cache
       key: v1-electron-{{ arch }}-{{ .Environment.ELECTRON_VERSION }}
       paths: $CACHE_DIR
-  electron_restore_cache: &calypso_restore_cache
+  electron_restore_cache: &electron_restore_cache
     restore_cache:
       name: Restore calypso cache
       keys:
