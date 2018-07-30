@@ -69,7 +69,7 @@ references:
     restore_cache:
       name: Restore calypso cache
       keys:
-        - v1-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
+        - v1-calypso-{{ checksum "calypso-current-hash" }}
   calypso_finalize_cache: &calypso_finalize_cache
     run:
       name: Finalize calypso cache
@@ -80,7 +80,7 @@ references:
   calypso_save_cache: &calypso_save_cache
     save_cache:
       name: Save calypso cache
-      key: v1-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
+      key: v1-calypso-{{ checksum "calypso-current-hash" }}
       paths: *app_cache_paths
 
 jobs:
