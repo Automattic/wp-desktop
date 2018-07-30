@@ -150,7 +150,7 @@ jobs:
 
                     make build-source CONFIG_ENV=$CONFIG_ENV
                   else
-                    make build-config CONFIG_ENV=$CONFIG_ENV
+                    make desktop/config.json CONFIG_ENV=$CONFIG_ENV
                     make build-desktop
                   fi
       - run:
