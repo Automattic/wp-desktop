@@ -99,7 +99,7 @@ references:
     save_cache:
       name: Save electron cache
       key: v1-electron-{{ arch }}-{{ .Environment.ELECTRON_VERSION }}
-      paths: $ELECTRON_VERSION
+      paths: $CACHE_DIR
   electron_restore_cache: &calypso_restore_cache
     restore_cache:
       name: Restore calypso cache
@@ -207,6 +207,7 @@ jobs:
       - *save_nvm
       - *npm_restore_cache
       - *electron_prepare_cache
+      - *electron_restore_cache
       - run:
           name: Install linux dev dependencies
           command: |
@@ -228,6 +229,7 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=l
+      - *electron_save_cache
       - run:
           name: Release cleanup
           command: |
@@ -253,6 +255,7 @@ jobs:
       - *save_nvm
       - *npm_restore_cache
       - *electron_prepare_cache
+      - *electron_restore_cache
       - run:
           name: Npm install
           command: |
@@ -271,6 +274,7 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=w
+      - *electron_save_cache
       - run: 
           name: Release cleanup
           command: |
@@ -299,6 +303,7 @@ jobs:
       - *save_nvm
       - *npm_restore_cache
       - *electron_prepare_cache
+      - *electron_restore_cache
       - run:
           name: Npm install
           command: |
@@ -316,6 +321,7 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=m
+      - *electron_save_cache
       # Temporarily disable the test
       # TODO: Fixme – seems to be an issue with `portscanner`
       # - run: 
