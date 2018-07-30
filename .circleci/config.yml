@@ -94,17 +94,17 @@ references:
                 CACHE_DIR=~/Library/Caches/electron/
               fi
               echo 'export ELECTRON_CACHE_DIR=$CACHE_DIR' >> $BASH_ENV
-              echo 'export ELECTRON_VERSION="$(node -p "require(\"./package.json\").devDependencies.electron")"' >> $BASH_ENV
+              $(node -p "require("./package.json").devDependencies.electron") > electron-version
   electron_save_cache: &electron_save_cache
     save_cache:
       name: Save electron cache
-      key: v1-electron-{{ arch }}-{{ .Environment.ELECTRON_VERSION }}
+      key: v1-electron-{{ arch }}-{{ checksum "electron-version" }}
       paths: $CACHE_DIR
   electron_restore_cache: &electron_restore_cache
     restore_cache:
-      name: Restore calypso cache
+      name: Restore electron cache
       keys:
-        - v1-calypso-{{ arch }}-{{ .Environment.ELECTRON_VERSION }}
+        - v1-calypso-{{ arch }}-{{ checksum "electron-version" }}
 
 jobs:
   build:
