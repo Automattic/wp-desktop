@@ -82,6 +82,33 @@ references:
       name: Save calypso cache
       key: v1-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
       paths: *app_cache_paths
+  electron_prepare_cache: &electron_prepare_cache
+    run:
+      name: Prepare electron cache
+      command: |
+              if [[ "$OSTYPE" == "linux-gnu" ]]; then
+                # linux
+                CACHE_DIR=~/.cache/electron/
+              else
+                # macOS
+                CACHE_DIR=~/Library/Caches/electron/
+              fi
+              echo 'export ELECTRON_CACHE_DIR=$CACHE_DIR' >> $BASH_ENV
+              echo 'export ELECTRON_VERSION="$(node -p "require('./package.json').devDependencies.electron")"' >> $BASH_ENV
+              source $BASH_ENV
+
+              echo $ELECTRON_CACHE_DIR
+              echo $ELECTRON_VERSION
+  electron_save_cache: &electron_save_cache
+    save_cache:
+      name: Save electron cache
+      key: v1-electron-{{ arch }}-{{ .Environment.ELECTRON_VERSION }}
+      paths: $ELECTRON_VERSION
+  electron_restore_cache: &calypso_restore_cache
+    restore_cache:
+      name: Restore calypso cache
+      keys:
+        - v1-calypso-{{ arch }}-{{ .Environment.ELECTRON_VERSION }}
 
 jobs:
   build:
@@ -183,6 +210,7 @@ jobs:
       - *setup_nvm
       - *save_nvm
       - *npm_restore_cache
+      - *electron_prepare_cache
       - run:
           name: Install linux dev dependencies
           command: |
@@ -228,6 +256,7 @@ jobs:
       - *setup_nvm
       - *save_nvm
       - *npm_restore_cache
+      - *electron_prepare_cache
       - run:
           name: Npm install
           command: |
@@ -273,6 +302,7 @@ jobs:
       - *setup_nvm
       - *save_nvm
       - *npm_restore_cache
+      - *electron_prepare_cache
       - run:
           name: Npm install
           command: |
