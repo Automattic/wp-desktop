@@ -94,7 +94,7 @@ references:
                 CACHE_DIR=~/Library/Caches/electron/
               fi
               echo 'export ELECTRON_CACHE_DIR=$CACHE_DIR' >> $BASH_ENV
-              echo 'export ELECTRON_VERSION="$(node -p "require('./package.json').devDependencies.electron")"' >> $BASH_ENV
+              echo 'export ELECTRON_VERSION="$(node -p "require(\"./package.json\").devDependencies.electron")"' >> $BASH_ENV
               source $BASH_ENV
 
               echo $ELECTRON_CACHE_DIR
