@@ -11,7 +11,9 @@ WordPress.com for Desktop is an [Electron](https://github.com/atom/electron) wra
  - `git submodule init`
  - `git submodule update`
 1. Create a `calypso/config/secrets.json` file and fill it with [secrets](docs/secrets.md)
-1. `make run` to build and run the app
+1. `npm install` will download all the required packages
+1. `make build` to create the builds
+1. Find the built apps in the `release` folder
 
 Need more detailed instructions? [We have them.](docs/install.md)
 
@@ -19,13 +21,9 @@ Need more detailed instructions? [We have them.](docs/install.md)
 
 The app is split between Electron code and Calypso code, and so the [development guide](docs/development.md) may help you find where to change stuff.
 
-# Building a Release
+# Building & Packaging a Release
 
 While running the app locally in a development environment is great, you will eventually need to [build a release version](docs/release.md) you can share.
-
-# Packaging a Release
-
-The final stage takes a released version and [packages it in a platform specific way](docs/packaging.md). This is only necessary if you are going to distribute publicly.
 
 # Contributing
 

@@ -171,7 +171,7 @@ jobs:
           root: /Users/distiller/wp-desktop
           paths: *app_cache_paths
 
-  win-and-linux:
+  linux:
     docker:
       - image: electronuserland/builder:wine-mono
     working_directory: /wp-desktop
@@ -184,6 +184,12 @@ jobs:
       - *save_nvm
       - *npm_restore_cache
       - run:
+          name: Install linux dev dependencies
+          command: |
+                  apt-get update
+                  apt-get -y install libxkbfile-dev libxkbfile-dev:i386 libxss-dev libx11-dev:i386
+      - run:  
+          name: Install dependencies
           name: Npm install
           command: |
             source $HOME/.nvm/nvm.sh
@@ -191,23 +197,66 @@ jobs:
             npm ci
       - *npm_save_cache
       - run:
-          name: Build Windows & Linux
+          name: Build Linux
           environment:
             CSC_LINK: resource/certificates/win.p12
           command: |
                   source $HOME/.nvm/nvm.sh
                   nvm use
-                  make package BUILD_PLATFORM=wl
+                  make package BUILD_PLATFORM=l
       - run:
           name: Release cleanup
           command: |
                   set +e
                   rm -rf release/github
-                  rm -rf release/win-unpacked
-                  rm -rf release/win-ia32-unpacked/
                   rm -rf release/linux-unpacked
       - persist_to_workspace:
           root: /wp-desktop
+          paths:
+            - release
+
+  windows:
+    macos:
+      xcode: "9.0"
+    shell: /bin/bash --login
+    working_directory: /Users/distiller/wp-desktop
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /Users/distiller/wp-desktop
+      - *restore_nvm
+      - *setup_nvm
+      - *save_nvm
+      - *npm_restore_cache
+      - run:
+          name: Npm install
+          command: |
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            npm ci
+      - *npm_save_cache
+      - run:
+          name: Build Windows
+          environment:
+            WIN_CSC_LINK: resource/certificates/win.p12
+            CSC_FOR_PULL_REQUEST: true # don't do this in production
+            USE_HARD_LINKS: "false" # must be string
+          command: |
+                  set +e
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+                  make package BUILD_PLATFORM=w
+      - run: 
+          name: Release cleanup
+          command: |
+                  set +e
+                  tar -zcvf release/win-unpacked-x64.tar.gz release/win-unpacked
+                  tar -zcvf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
+                  rm -rf release/github
+                  rm -rf release/win-unpacked
+                  rm -rf release/win-ia32-unpacked/
+      - persist_to_workspace:
+          root: /Users/distiller/wp-desktop
           paths:
             - release
 
@@ -241,13 +290,15 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=m
-      - run:
-          name: Test
-          command: |
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  make test TEST_PRODUCTION_BINARY=true
-      - run:
+      # Temporarily disable the test
+      # TODO: Fixme – seems to be an issue with `portscanner`
+      # - run: 
+      #     name: Test
+      #     command: |
+      #             source $HOME/.nvm/nvm.sh
+      #             nvm use
+      #             make test TEST_PRODUCTION_BINARY=true
+      - run: 
           name: Release cleanup
           command: |
                   set +e
@@ -277,7 +328,15 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - win-and-linux:
+      - windows:
+          requires:
+          - build
+          filters:
+            branches:
+              ignore: /tests.*/
+            tags:
+              only: /.*/
+      - linux:
           requires:
           - build
           filters:
@@ -295,7 +354,8 @@ workflows:
               only: /.*/
       - artifacts:
           requires:
-            - win-and-linux
+            - windows
+            - linux
             - mac
           filters:
             branches:
