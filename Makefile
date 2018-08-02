@@ -140,11 +140,14 @@ else
 	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
 endif
 
-test: CONFIG_ENV = test  
+test: CONFIG_ENV = test
 test:
-	@echo "$(CYAN)$(CHECKMARK) Starting test...$(RESET)"
+	@echo "$(CYAN)Building test...$(RESET)"
 
-	@TEST_PRODUCTION_BINARY=$(TEST_PRODUCTION_BINARY) npx xvfb-maybe mocha --compilers js:babel-core$/register .$/test
+	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
+	@npx electron-builder install-app-deps
+	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --config .$/webpack.config.test.js
+	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
 
 distclean: clean
 	@cd calypso; npm run distclean
