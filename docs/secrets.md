@@ -16,12 +16,12 @@ When creating your application, you'll need to fill in all the fields:
 * **Redirect URLs:** The form requires a valid URL. Please use: 
 	```
 	http://127.0.0.1:41050
-	https://calypso.localhost:3000
+	http://calypso.localhost:3000
 	```
 * **Javascript Origins:** 
 	```
 	http://127.0.0.1:41050
-	https://calypso.localhost:3000
+	http://calypso.localhost:3000
 	```
 * Answer the bot challenge correctly.
 * **Type:** Native
