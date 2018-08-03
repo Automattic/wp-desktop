@@ -9,19 +9,27 @@ You can [create an application here](https://developer.wordpress.com/apps/new/).
 
 When creating your application, you'll need to fill in all the fields:
 
-* Name: Any name of your choosing.
-* Description: A description, e.g. "My wp-desktop testing app".
-* Website URL: A URL. For testing the desktop app, you can use the repo URL
+* **Name:** Any name of your choosing.
+* **Description:** A description, e.g. "My wp-desktop testing app".
+* **Website URL:** A URL. For testing the desktop app, you can use the repo URL
   `https://github.com/Automattic/wp-desktop`.
-* Redirect URLs: The form requires a valid URL. You can use the origin `http://127.0.0.1:41050`.
-* Javascript Origins: `http://127.0.0.1:41050`
+* **Redirect URLs:** The form requires a valid URL. Please use: 
+	```
+	http://127.0.0.1:41050
+	https://calypso.localhost:3000
+	```
+* **Javascript Origins:** 
+	```
+	http://127.0.0.1:41050
+	https://calypso.localhost:3000
+	```
 * Answer the bot challenge correctly.
-* Type: Native
+* **Type:** Native
 
 When you've filled out the form, click the create button.
 
 In the end, your application details should look similar to:
-![application details](https://cld.wthms.co/EjNmEl+)
+![application details](../.github/images/secrets.png)
 
 After your application is created, copy your client id and client secret, and add a
 `calypso/config/secrets.json` file:
