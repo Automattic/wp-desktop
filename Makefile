@@ -47,13 +47,15 @@ start:
 dev-server: CONFIG_ENV = development
 dev-server: CALYPSO_ENV = desktop-development
 dev-server: NODE_ENV = development
-dev-server: checks desktop$/config.json
+dev-server: checks
 	@echo "\n\n$(GREEN)+------------------------------------------------+"
 	@echo "|                                                |"
 	@echo "|    Wait for calypso to start the dev server    |"
 	@echo "|       and start the app with \`make dev\`        |"
 	@echo "|                                                |"
 	@echo "+------------------------------------------------+$(RESET)\n\n"
+
+	$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
 
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
