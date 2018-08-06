@@ -119,8 +119,10 @@ checks: check-node-version-parity secret
 # Check for secret and confirm proper clientid for production release
 secret:
 ifneq (,$(wildcard $(CALYPSO_DIR)$/config$/secrets.json))
+ifeq (release,$(CONFIG_ENV))
 ifneq (43452,$(shell node -p "require('$(CALYPSO_DIR)$/config$/secrets.json').desktop_oauth_client_id"))
 	$(error "desktop_oauth_client_id" must be "43452" in $(CALYPSO_DIR)$/config$/secrets.json)
+endif
 endif
 else 
 	$(error $(CALYPSO_DIR)$/config$/secrets.json does not exist)
