@@ -66,11 +66,9 @@ dev: DEBUG = desktop:*
 dev: 
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
-
-BASE_CONFIG := $(THIS_DIR)/desktop-config/config-base.json
-ENV_CONFIG := $(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
-
 .PHONY: desktop$/config.json
+desktop$/config.json: BASE_CONFIG = $(THIS_DIR)/desktop-config/config-base.json
+desktop$/config.json: ENV_CONFIG = $(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
 desktop$/config.json:
 ifeq (,$(wildcard $(ENV_CONFIG)))
 	$(warning Config file for environment "$(CONFIG_ENV)" does not exist. Ignoring environment.)
