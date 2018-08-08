@@ -34,7 +34,8 @@ TEST_PRODUCTION_BINARY = false
 
 # Build sources
 # TODO: run tasks parallel when in dev mode
-build-source: checks desktop$/config.json build-calypso build-desktop
+build-source: checks desktop-config$/config-base.json build-calypso build-desktop
+	cp desktop-config$/config-base.json desktop$/config.json
 	@echo "$(CYAN)$(CHECKMARK) All parts built$(RESET)"
 
 # Start app
