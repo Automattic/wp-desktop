@@ -47,7 +47,7 @@ start:
 dev-server: CONFIG_ENV = development
 dev-server: CALYPSO_ENV = desktop-development
 dev-server: NODE_ENV = development
-dev-server: checks desktop$/config.json
+dev-server: checks desktop$/merged-config-development.json
 	@echo "\n\n$(GREEN)+------------------------------------------------+"
 	@echo "|                                                |"
 	@echo "|    Wait for calypso to start the dev server    |"
@@ -55,6 +55,7 @@ dev-server: checks desktop$/config.json
 	@echo "|                                                |"
 	@echo "+------------------------------------------------+$(RESET)\n\n"
 
+	cp desktop$/merged-config-$(CONFIG_ENV).json desktop$/config.json
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
 	"$(MAKE) calypso-dev NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV)" \
@@ -66,18 +67,13 @@ dev: DEBUG = desktop:*
 dev: 
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
-.PHONY: desktop$/config.json
-desktop$/config.json: BASE_CONFIG = $(THIS_DIR)/desktop-config/config-base.json
-desktop$/config.json: ENV_CONFIG = $(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
-desktop$/config.json:
-ifeq (,$(wildcard $(ENV_CONFIG)))
-	$(warning Config file for environment "$(CONFIG_ENV)" does not exist. Ignoring environment.)
-else
-	$(eval EXTENDED = true)
-endif
-	@node -e "const base = require('$(BASE_CONFIG)'); let env; try { env = require('$(ENV_CONFIG)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
+desktop$/merged-config-%.json: desktop-config$/config-base.json desktop-config/config-%.json
+	@node -e "const base = require('$(THIS_DIR)/$<'); let env; try { env = require('$(THIS_DIR)/$(word 2,$^)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
 	
-	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
+	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: $(word 2,$^)),)$(RESET)"
+
+.PHONY: desktop$/config.json
+desktop$/config.json: desktop-config/merged-config-$(CONFIG_ENV).json
 
 # Build calypso bundle
 build-calypso: 
