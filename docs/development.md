@@ -35,6 +35,17 @@ Starting the app
 make dev
 ```
 
+**🚨 Note:** 
+In some cases you'll see an error in the apps console that is similar to this:
+```console
+[...]/spellchecker/build/Release/spellchecker.node' was compiled against a different Node.js version using NODE_MODULE_VERSION 48. This version of Node.js requires NODE_MODULE_VERSION 54. [...]
+```
+In this case, you need to rebuild the native dependencies by running:
+```bash
+make rebuild-deps
+```
+After successfully running the command, you can start the app with `make dev`.
+
 #### Skipping the calypso server
 
 
