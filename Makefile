@@ -34,7 +34,8 @@ TEST_PRODUCTION_BINARY = false
 
 # Build sources
 # TODO: run tasks parallel when in dev mode
-build-source: checks desktop$/config.json build-calypso build-desktop
+build-source: checks desktop-config$/config-base.json build-calypso build-desktop
+	cp desktop-config$/config-base.json desktop$/config.json
 	@echo "$(CYAN)$(CHECKMARK) All parts built$(RESET)"
 
 # Start app
@@ -47,7 +48,7 @@ start:
 dev-server: CONFIG_ENV = development
 dev-server: CALYPSO_ENV = desktop-development
 dev-server: NODE_ENV = development
-dev-server: checks desktop$/config.json
+dev-server: checks desktop$/merged-config-development.json
 	@echo "\n\n$(GREEN)+------------------------------------------------+"
 	@echo "|                                                |"
 	@echo "|    Wait for calypso to start the dev server    |"
@@ -55,6 +56,7 @@ dev-server: checks desktop$/config.json
 	@echo "|                                                |"
 	@echo "+------------------------------------------------+$(RESET)\n\n"
 
+	cp desktop$/merged-config-$(CONFIG_ENV).json desktop$/config.json
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
 	"$(MAKE) calypso-dev NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV)" \
@@ -66,20 +68,10 @@ dev: DEBUG = desktop:*
 dev: 
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
-
-BASE_CONFIG := $(THIS_DIR)/desktop-config/config-base.json
-ENV_CONFIG := $(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
-
-.PHONY: desktop$/config.json
-desktop$/config.json:
-ifeq (,$(wildcard $(ENV_CONFIG)))
-	$(warning Config file for environment "$(CONFIG_ENV)" does not exist. Ignoring environment.)
-else
-	$(eval EXTENDED = true)
-endif
-	@node -e "const base = require('$(BASE_CONFIG)'); let env; try { env = require('$(ENV_CONFIG)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
+desktop$/merged-config-%.json: desktop-config$/config-base.json desktop-config/config-%.json
+	@node -e "const base = require('$(THIS_DIR)/$<'); let env; try { env = require('$(THIS_DIR)/$(word 2,$^)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
 	
-	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
+	@echo "$(GREEN)$(CHECKMARK) Config built (extended: $(word 2,$^))$(RESET)"
 
 # Build calypso bundle
 build-calypso: 
@@ -143,10 +135,10 @@ else
 endif
 
 test: CONFIG_ENV = test
-test:
+test: desktop$/merged-config-test.json
 	@echo "$(CYAN)Building test...$(RESET)"
 
-	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
+	cp desktop$/merged-config-$(CONFIG_ENV).json desktop$/config.json
 	@npx electron-builder install-app-deps
 	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --config .$/webpack.config.test.js
 	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
