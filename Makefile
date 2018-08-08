@@ -72,9 +72,6 @@ desktop$/merged-config-%.json: desktop-config$/config-base.json desktop-config/c
 	
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: $(word 2,$^)),)$(RESET)"
 
-.PHONY: desktop$/config.json
-desktop$/config.json: desktop-config/merged-config-$(CONFIG_ENV).json
-
 # Build calypso bundle
 build-calypso: 
 	@cd $(CALYPSO_DIR) && NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV) npm run -s build
