@@ -70,7 +70,7 @@ dev:
 desktop$/merged-config-%.json: desktop-config$/config-base.json desktop-config/config-%.json
 	@node -e "const base = require('$(THIS_DIR)/$<'); let env; try { env = require('$(THIS_DIR)/$(word 2,$^)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
 	
-	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: $(word 2,$^)),)$(RESET)"
+	@echo "$(GREEN)$(CHECKMARK) Config built (extended: $(word 2,$^))$(RESET)"
 
 # Build calypso bundle
 build-calypso: 
