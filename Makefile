@@ -134,10 +134,10 @@ else
 endif
 
 test: CONFIG_ENV = test
-test:
+test: desktop$/merged-config-test.json
 	@echo "$(CYAN)Building test...$(RESET)"
 
-	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
+	cp desktop$/merged-config-$(CONFIG_ENV).json desktop$/config.json
 	@npx electron-builder install-app-deps
 	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --config .$/webpack.config.test.js
 	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
