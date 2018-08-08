@@ -38,7 +38,7 @@ build-source: checks desktop$/config.json build-calypso build-desktop
 	@echo "$(CYAN)$(CHECKMARK) All parts built$(RESET)"
 
 # Start app
-start:
+start: rebuild-deps
 	@echo "$(CYAN)Starting app...$(RESET)"
 
 	@NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG) npx electron .
@@ -143,6 +143,10 @@ ifneq ("$(CALYPSO_NODE_VERSION)", "$(CURRENT_NODE_VERSION)")
 else 
 	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
 endif
+
+.PHONY: rebuild-deps
+rebuild-deps:
+	@npx electron-rebuild
 
 test: CONFIG_ENV = test
 test:
