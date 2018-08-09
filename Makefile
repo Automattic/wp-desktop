@@ -149,11 +149,11 @@ rebuild-deps:
 	@npx electron-rebuild
 
 test: CONFIG_ENV = test
-test:
+test: rebuild-deps
 	@echo "$(CYAN)Building test...$(RESET)"
 
 	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
-	@npx electron-builder install-app-deps
+	
 	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --config .$/webpack.config.test.js
 	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
 
