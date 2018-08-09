@@ -162,4 +162,4 @@ clean:
 	@rm -rf .$/release
 	@rm -rf .$/build
 
-.PHONY: test build-sources
+.PHONY: test build-source
