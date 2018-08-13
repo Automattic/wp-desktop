@@ -14,7 +14,7 @@ If you do not want to re-compile your code you can split the command into buildi
 
 ```bash
 # Creating the JS bundles, CSS files, ...
-make build-sources [CONFIG]
+make build-source [CONFIG]
 
 # Package the App
 make package [BUILD_PLATFORM]
