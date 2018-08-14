@@ -38,7 +38,7 @@ build-source: checks desktop$/config.json build-calypso build-desktop
 	@echo "$(CYAN)$(CHECKMARK) All parts built$(RESET)"
 
 # Start app
-start:
+start: rebuild-deps
 	@echo "$(CYAN)Starting app...$(RESET)"
 
 	@NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG) npx electron .
@@ -144,12 +144,16 @@ else
 	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
 endif
 
+.PHONY: rebuild-deps
+rebuild-deps:
+	@npx electron-rebuild
+
 test: CONFIG_ENV = test
-test:
+test: rebuild-deps
 	@echo "$(CYAN)Building test...$(RESET)"
 
 	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
-	@npx electron-builder install-app-deps
+	
 	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --config .$/webpack.config.test.js
 	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
 
