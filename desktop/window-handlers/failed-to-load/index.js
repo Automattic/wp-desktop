@@ -24,6 +24,7 @@ const FAILED_FILE = 'file://' + assets.getPath( FAIL_TO_LOAD_FILE );
 const ERRORS_TO_IGNORE = [
 	-3,     // ABORTED
 	-102,   // CONNECTION_REFUSED
+	-109,   // ADDRESS_UNREACHABLE
 	-502,   // NO_PRIVATE_KEY_FOR_CERT
 	-501,   // INSECURE_RESPONSE
 ];
@@ -65,6 +66,8 @@ function failedToLoadError( mainWindow ) {
 	}
 }
 
+// TODO: evaluate if this is still the way to go to handle requests.
+// @adlk: Keep in mind that every request, even the ones we do not control (e.g. atomic- or self hosted sites), might cause the app to "soft-crash" even though the user experience might not be affected directly by some requests that fail.
 module.exports = function( mainWindow ) {
 	// This attempts to catch some network errors and display an error screen in order to avoid a blank white page
 	mainWindow.webContents.on( 'did-fail-load', function( event, errorCode, errorDescription ) {
