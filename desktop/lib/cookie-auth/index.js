@@ -103,7 +103,7 @@ function setSessionCookies( window, onComplete ) {
 	};
 }
 
-function auth( window, onAuthorized ) {
+function auth( window ) {
 	var userData, currentRequest;
 
 	ipc.on( 'user-auth', function( event, user, token ) {
@@ -113,7 +113,7 @@ function auth( window, onAuthorized ) {
 				// already authing
 				return;
 			}
-			currentRequest = authorize( userData.username, token ).on( 'response', setSessionCookies( window, onAuthorized ) );
+			currentRequest = authorize( userData.username, token ).on( 'response', setSessionCookies( window ) );
 		} else {
 			// retrieve all cookies
 			window.webContents.session.cookies.get( {}, function( e, cookies ) {

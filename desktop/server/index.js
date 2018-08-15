@@ -43,9 +43,7 @@ function showAppWindow() {
 
 	mainWindow = new BrowserWindow( config );
 
-	cookieAuth( mainWindow, function() {
-		mainWindow.webContents.send( 'cookie-auth-complete' );
-	} );
+	cookieAuth( mainWindow );
 
 	mainWindow.webContents.on( 'did-finish-load', function() {
 		mainWindow.webContents.send( 'app-config', Config, Settings.isDebug(), System.getDetails() );
@@ -53,8 +51,7 @@ function showAppWindow() {
 		const ipc = electron.ipcMain;
 		ipc.on( 'mce-contextmenu', function( ev ) {
 			mainWindow.send( 'mce-contextmenu', ev );
-		});
-
+		} );
 	} );
 
 	mainWindow.webContents.session.webRequest.onBeforeRequest( function( details, callback ) {
@@ -70,7 +67,7 @@ function showAppWindow() {
 		// always allow previews to be loaded in iframes
 		if ( details.resourceType === 'subFrame' ) {
 			const headers = Object.assign( {}, details.responseHeaders );
-			Object.keys( headers ).forEach( function ( name ) {
+			Object.keys( headers ).forEach( function( name ) {
 				if ( name.toLowerCase() === 'x-frame-options' ) {
 					delete headers[ name ];
 				}
