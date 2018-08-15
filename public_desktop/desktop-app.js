@@ -37,18 +37,6 @@ function startDesktopApp() {
 		showWarning( 'Unable to connect to WordPress.com. <button onclick="document.location.reload()">Try again?</button>' );
 	}
 
-	function postCalypso() {
-		// Ensure the dock notification badge is cleared immediatley when notification icon is clicked
-		// The iframe postMessage can be delayed
-		var notIcon = document.querySelector( '#header li.notifications a' );
-
-		if ( notIcon ) {
-			notIcon.addEventListener( 'click', function() {
-				electron.ipcRenderer.send( 'unread-notices-count', 0 );
-			} );
-		}
-	}
-
 	function calysoHasLoaded() {
 		return document.getElementById( 'content' );
 	}
@@ -58,8 +46,6 @@ function startDesktopApp() {
 			if ( ! calysoHasLoaded() ) {
 				showNoCalypso();
 				checkForCalypso();
-			} else {
-				postCalypso();
 			}
 		}, 5000 );
 	}
@@ -117,9 +103,7 @@ function startDesktopApp() {
 		if ( navigator.onLine ) {
 			startCalypso();
 
-			if ( calysoHasLoaded() ) {
-				postCalypso();
-			} else {
+			if ( !calysoHasLoaded() ) {
 				checkForCalypso();
 			}
 		} else {
