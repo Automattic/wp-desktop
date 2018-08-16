@@ -120,21 +120,22 @@ try {
 	});
 	
 	electron.ipcRenderer.on( 'app-config', function( event, config, debug, details ) {
+	electron.ipcRenderer.on( 'app-config', function( event, config, isDebug, details ) {
 		// if this is the first run, and on the login page, show Windows and Mac users a pin app reminder
-		if ( details.firstRun && document.querySelectorAll( '.logged-out-auth' ).length > 0 ) {
+		if ( details.firstRun && document.querySelectorAll( '.is-section-auth' ).length > 0 ) {
 			if ( details.platform === 'windows' || details.platform === 'darwin' ) {
-				var container = document.querySelector( '#wpcom' );
-				var pinApp = container.querySelector( '.pin-app' );
+				const container = document.querySelector( '#wpcom' );
+				let pinApp = container.querySelector( '.pin-app' );
 
 				if ( ! pinApp ) {
-					var node = document.createElement( 'div' );
+					const node = document.createElement( 'div' );
 					node.className = 'pin-app';
 					container.appendChild( node );
 					pinApp = container.querySelector( '.pin-app' );
 				}
 
-				var closeButton = '<a href="#" class="pin-app-close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.705,7.705l-1.41-1.41L12,10.59L7.705,6.295l-1.41,1.41L10.59,12l-4.295,4.295l1.41,1.41L12,13.41 l4.295,4.295l1.41-1.41L13.41,12L17.705,7.705z"/></svg></a>';
-				var pinAppMsg = '';
+				const closeButton = '<a href="#" class="pin-app-close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.705,7.705l-1.41-1.41L12,10.59L7.705,6.295l-1.41,1.41L10.59,12l-4.295,4.295l1.41,1.41L12,13.41 l4.295,4.295l1.41-1.41L13.41,12L17.705,7.705z"/></svg></a>';
+				let pinAppMsg = '';
 
 				if ( details.platform === 'windows' ) {
 					pinAppMsg = '<h2>Keep WordPress.com in your taskbar</h2>' +
@@ -149,7 +150,7 @@ try {
 				pinApp.innerHTML = closeButton + pinAppMsg;
 
 				// close button
-				var pinAppClose = container.querySelector( '.pin-app-close' );
+				const pinAppClose = container.querySelector( '.pin-app-close' );
 				pinAppClose.onclick = function() {
 					pinApp.style.display = 'none';
 				};
