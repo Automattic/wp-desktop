@@ -299,9 +299,12 @@ jobs:
       #             nvm use
       #             make test TEST_PRODUCTION_BINARY=true
       - run:
-          name: e2e test
+          name: Start Chromedriver
           command: |
                   ./node_modules/.bin/chromedriver &
+      - run:
+          name: e2e test
+          command: |
                   ./node_modules/.bin/mocha test/tests/e2e.js
       - run:
           name: Release cleanup
