@@ -6,7 +6,7 @@ const driver = new webdriver.Builder()
 	.withCapabilities({
 		chromeOptions: {
 			// Here is the path to your Electron binary.
-			binary: './release/WordPress.com.app/Contents/MacOS/WordPress.com',
+			binary: './release/mac/WordPress.com.app/Contents/MacOS/WordPress.com',
 			args: [ '--disable-http-cache' ]
 		}
 	})
