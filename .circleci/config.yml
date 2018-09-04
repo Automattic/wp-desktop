@@ -302,6 +302,7 @@ jobs:
           name: Start Chromedriver
           command: |
                   ./node_modules/.bin/chromedriver &
+          background: true
       - run:
           name: e2e test
           command: |
