@@ -164,7 +164,7 @@ jobs:
                     source $HOME/.nvm/nvm.sh
                     nvm use
                     make test
-					./node_modules/.bin/mocha test/tests/e2e.js
+                    ./node_modules/.bin/mocha test/tests/e2e.js
                   fi
       - *calypso_finalize_cache
       - *calypso_save_cache
