@@ -62,7 +62,7 @@ references:
               if [ -n "${CALYPSO_HASH}" ]; then
                 # cache bust e2e tests
                 uuidgen > calypso-current-hash
-              else 
+              else
                 git rev-parse @:./calypso > calypso-current-hash
               fi
   calypso_restore_cache: &calypso_restore_cache
@@ -164,6 +164,7 @@ jobs:
                     source $HOME/.nvm/nvm.sh
                     nvm use
                     make test
+					./node_modules/.bin/mocha test/tests/e2e.js
                   fi
       - *calypso_finalize_cache
       - *calypso_save_cache
@@ -188,7 +189,7 @@ jobs:
           command: |
                   apt-get update
                   apt-get -y install libxkbfile-dev libxkbfile-dev:i386 libxss-dev libx11-dev:i386
-      - run:  
+      - run:
           name: Install dependencies
           name: Npm install
           command: |
@@ -246,7 +247,7 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=w
-      - run: 
+      - run:
           name: Release cleanup
           command: |
                   set +e
@@ -292,13 +293,13 @@ jobs:
                   make package BUILD_PLATFORM=m
       # Temporarily disable the test
       # TODO: Fixme – seems to be an issue with `portscanner`
-      # - run: 
+      # - run:
       #     name: Test
       #     command: |
       #             source $HOME/.nvm/nvm.sh
       #             nvm use
       #             make test TEST_PRODUCTION_BINARY=true
-      - run: 
+      - run:
           name: Release cleanup
           command: |
                   set +e
