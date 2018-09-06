@@ -1,3 +1,4 @@
+import helper from 'helper';
 const webdriver = require('selenium-webdriver');
 
 const driver = new webdriver.Builder()
@@ -18,7 +19,10 @@ describe( 'check app loads', function() {
 	it( 'show log in form', async function() {
 		//driver.get( 'https://www.wordpress.com' );
 		//await driver.sleep(30000);
-		await driver.takeScreenshot();
+		await driver.takeScreenshot().then( data => {
+			const dst = path.resolve( 'screenshots', 'myscreenshot.png' );
+			return helper.writeImage( data, dst );
+			} );
 		await driver.findElement( webdriver.By.name( 'login' ), 20000 ).sendKeys( 'e2eflowtesting3' );
 		await driver.findElement( webdriver.By.name( 'password' ), 20000 ).sendKeys( 'wTSw9i2MA89LuPrYd3ZD' );
 		return await driver.findElement( webdriver.By.css( 'button.is-primary' ), 20000 ).click();
