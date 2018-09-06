@@ -313,7 +313,8 @@ jobs:
           root: /Users/distiller/wp-desktop
           paths:
             - release
-            - screenshots
+      - store_artifacts:
+          path: screenshots
 
   artifacts:
     docker:
@@ -324,8 +325,6 @@ jobs:
           at: /wp-desktop
       - store_artifacts:
           path: release
-      - store_artifacts:
-          path: screenshots
 
 
 workflows:
