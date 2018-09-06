@@ -1,6 +1,9 @@
-import fs from 'fs-extra';
+const fs = require('fs-extra');
 
-export function writeImage( data, dst ) {
-	fs.ensureFileSync( dst );
-	return fs.writeFileSync( dst, data, 'base64' );
+module.exports
+{
+	function writeImage( data, dst ) {
+		fs.ensureFileSync( dst );
+		return fs.writeFileSync( dst, data, 'base64' );
+	}
 }

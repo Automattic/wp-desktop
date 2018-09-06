@@ -1,6 +1,6 @@
-import helper from 'helper';
+const helper = require('./helper.js');
 const webdriver = require('selenium-webdriver');
-
+const path = require( 'path' );
 const driver = new webdriver.Builder()
 // The "9515" is the port opened by chrome driver.
 	.usingServer('http://localhost:9515')
