@@ -1,6 +1,4 @@
-const helper = require('./helper.js');
 const webdriver = require('selenium-webdriver');
-const path = require( 'path' );
 const driver = new webdriver.Builder()
 // The "9515" is the port opened by chrome driver.
 	.usingServer('http://localhost:9515')
@@ -13,16 +11,13 @@ const driver = new webdriver.Builder()
 	})
 	.forBrowser('electron')
 	.build();
+before( function() {
+	driver.sleep( 20000 );
+} );
 
 describe( 'check app loads', function() {
 	this.timeout( 30000 );
 	it( 'show log in form', async function() {
-		//driver.get( 'https://www.wordpress.com' );
-		//await driver.sleep(30000);
-		await driver.takeScreenshot().then( data => {
-			const dst = path.resolve( 'screenshots', 'myscreenshot.png' );
-			return helper.writeImage( data, dst );
-			} );
 		await driver.findElement( webdriver.By.name( 'login' ), 20000 ).sendKeys( 'e2eflowtesting3' );
 		await driver.findElement( webdriver.By.name( 'password' ), 20000 ).sendKeys( 'wTSw9i2MA89LuPrYd3ZD' );
 		return await driver.findElement( webdriver.By.css( 'button.is-primary' ), 20000 ).click();
