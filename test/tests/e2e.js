@@ -13,6 +13,7 @@ const tempDriver = driverConfig.build();
 let driver;
 
 before( function() {
+	tempDriver.sleep( 10000 );
 	tempDriver.close();
 	driver = driverConfig.build();
 } );
