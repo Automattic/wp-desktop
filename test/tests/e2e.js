@@ -11,9 +11,6 @@ const driver = new webdriver.Builder()
 	})
 	.forBrowser('electron')
 	.build();
-before( function() {
-	driver.sleep( 20000 );
-} );
 
 describe( 'check app loads', function() {
 	this.timeout( 30000 );
