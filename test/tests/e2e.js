@@ -4,7 +4,7 @@ const driverConfig = new webdriver.Builder()
 	.withCapabilities({
 		chromeOptions: {
 			// Here is the path to your Electron binary.
-			binary: './release/mac/WordPress.com.app/Contents/MacOS/WordPress.com',
+			binary: './release/linux-unpacked/wpcom',
 			args: [ '--disable-http-cache' ]
 		}
 	})
@@ -19,7 +19,7 @@ before( function() {
 
 describe( 'check app loads', function() {
 	this.timeout( 30000 );
-	it( 'show log in form', async function() {
+	it( 'Log in as user', async function() {
 
 		await driver.findElement( webdriver.By.name( 'login' ), 20000 ).sendKeys( 'e2eflowtesting3' );
 		await driver.findElement( webdriver.By.name( 'password' ), 20000 ).sendKeys( 'wTSw9i2MA89LuPrYd3ZD' );

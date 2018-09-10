@@ -205,6 +205,14 @@ jobs:
                   nvm use
                   make package BUILD_PLATFORM=l
       - run:
+          name: e2e Tests
+          command: |
+                  apt-get install -y libxi6 libgconf-2-4 Xvfb
+                  export DISPLAY=':99.0'
+                  Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+                  ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
+                  ./node_modules/.bin/mocha test/tests/e2e.js
+      - run:
           name: Release cleanup
           command: |
                   set +e
@@ -302,7 +310,6 @@ jobs:
           name: e2e Tests
           command: |
                   ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
-                  sleep 30
                   ./node_modules/.bin/mocha test/tests/e2e.js
       - run:
           name: Release cleanup
