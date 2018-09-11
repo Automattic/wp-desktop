@@ -208,8 +208,9 @@ jobs:
           name: e2e Tests
           command: |
                   apt-get install -y libxi6 libgconf-2-4 xvfb
-                  export DISPLAY=':0.0'
-                  Xvfb :0 -screen 0 1024x768x24 > /dev/null 2>&1 &
+                  export DISPLAY=':99.0'
+                  Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+                  sleep 3
                   export BINARY_PATH="./release/linux-unpacked/wpcom"
                   ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
                   ./node_modules/.bin/mocha test/tests/e2e.js
