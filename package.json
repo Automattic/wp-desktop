@@ -51,6 +51,7 @@
     "json-loader": "^0.5.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
+    "mocha-steps": "^1.1.0",
     "mv": "^2.1.1",
     "selenium-webdriver": "3.6.0",
     "unzip": "^0.1.11",

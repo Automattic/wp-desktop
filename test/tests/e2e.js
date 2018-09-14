@@ -1,3 +1,5 @@
+const LoginPage = require('./lib/pages/login-page');
+const ReaderPage = require('./lib/pages/reader-page');
 const webdriver = require( 'selenium-webdriver' );
 const driverConfig = new webdriver.Builder()
 	.usingServer( 'http://localhost:9515' )
@@ -19,19 +21,19 @@ before( async function() {
 	driver = await driverConfig.build();
 } );
 
-describe( 'check app loads', function() {
+describe( 'User Can log in', function() {
 	this.timeout( 30000 );
-	it( 'Log in as user', async function() {
-		await driver.findElement( webdriver.By.name( 'login' ), 20000 ).sendKeys( 'e2eflowtesting3' );
-		await driver.findElement( webdriver.By.name( 'password' ), 20000 ).sendKeys( 'wTSw9i2MA89LuPrYd3ZD' );
-		return await driver.findElement( webdriver.By.css( 'button.is-primary' ), 20000 ).click();
+	it( 'Can log in', async function() {
+		let loginPage = new LoginPage( driver );
+		return await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
 	} );
-	it( 'show wait', async function() {
-		return driver.sleep( 3000 );
-	} );
-	after( async function() {
-		await driver.executeScript( 'window.localStorage.clear();' );
-		return await driver.close();
+
+	it( 'Can see Reader Page after logging in', async function() {
+		return await ReaderPage.Expect( driver );
 	} );
 } );
 
+after( async function() {
+	this.timeout( 20000 );
+	return await driver.close();
+} );
