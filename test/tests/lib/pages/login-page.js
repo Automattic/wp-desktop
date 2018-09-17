@@ -21,8 +21,8 @@ class LoginPage extends AsyncBaseContainer {
 		await driverHelper.setWhenSettable( driver, passwordSelector, password, {
 			secureValue: true,
 		} );
-		await driver.sleep( 2000 );
-		return await driverHelper.clickWhenClickable( driver, submitSelector );
+		await driverHelper.clickWhenClickable( driver, submitSelector );
+		return await driverHelper.waitTillNotPresent( driver, userNameSelector );
 	}
 }
 

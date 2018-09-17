@@ -3,7 +3,7 @@
 const webdriver = require( 'selenium-webdriver' );
 const { forEach } = require( 'lodash' );
 
-const explicitWaitMS = 30000;
+const explicitWaitMS = 20000;
 const by = webdriver.By;
 
 exports.clickWhenClickable = function( driver, selector, waitOverride ) {
@@ -13,7 +13,10 @@ exports.clickWhenClickable = function( driver, selector, waitOverride ) {
 		function() {
 			return driver.findElement( selector ).then(
 				function( element ) {
-					return element.click()
+					return element.click().then(
+						function() {
+							return true;
+						} );
 				},
 				function() {
 					return false;
@@ -24,6 +27,23 @@ exports.clickWhenClickable = function( driver, selector, waitOverride ) {
 		`Timed out waiting for element with ${ selector.using } of '${
 			selector.value
 		}' to be clickable`
+	);
+};
+
+exports.waitTillNotPresent = function( driver, selector, waitOverride ) {
+	const timeoutWait = waitOverride ? waitOverride : explicitWaitMS;
+	let self = this;
+
+	return driver.wait(
+		function() {
+			return self.isElementPresent( driver, selector ).then( function( isPresent ) {
+				return ! isPresent;
+			} );
+		},
+		timeoutWait,
+		`Timed out waiting for element with ${ selector.using } of '${
+			selector.value
+			}' to NOT be present`
 	);
 };
 
