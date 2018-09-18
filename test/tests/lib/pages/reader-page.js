@@ -1,4 +1,7 @@
 /** @format */
+
+const { By } = require( 'selenium-webdriver' );
+
 const AsyncBaseContainer = require( '../async-base-container' );
 
 class ReaderPage extends AsyncBaseContainer {
