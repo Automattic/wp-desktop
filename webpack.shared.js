@@ -29,6 +29,10 @@ module.exports = {
 				test: /\.jsx?$/,
 				loader: 'babel-loader',
 				exclude: /node_modules/
+			},
+			{
+				test: /\.(sc|sa|c)ss$/,
+				loader: 'ignore-loader'
 			}
 		]
 	},
