@@ -158,7 +158,7 @@ exports.clickIfPresent = function( driver, selector, attempts ) {
 exports.isElementPresent = async function( driver, selector ) {
 	const elements = await driver.findElements( selector );
 	return !! elements.length;
-}
+};
 
 exports.getErrorMessageIfPresent = function( driver ) {
 	const errorNoticeTextSelector = by.css( '.notice.is-error .notice__text' );

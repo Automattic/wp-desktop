@@ -6,7 +6,7 @@ const driverHelper = require( '../driver-helper' );
 
 class LoginPage extends AsyncBaseContainer {
 	constructor( driver ) {
-		super( driver, By.css( 'is-section-auth' ) );
+		super( driver, By.css( '.is-section-auth' ) );
 	}
 
 	async login( username, password ) {
@@ -22,7 +22,7 @@ class LoginPage extends AsyncBaseContainer {
 			secureValue: true,
 		} );
 		await driverHelper.clickWhenClickable( driver, submitSelector );
-		return await driverHelper.waitTillNotPresent( driver, userNameSelector );
+		await driver.sleep( 1000 );
 	}
 }
 

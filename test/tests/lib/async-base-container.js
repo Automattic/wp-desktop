@@ -1,7 +1,5 @@
 /** @format */
 
-const { isEqual } = require( 'lodash' );
-
 const driverHelper = require( './driver-helper' );
 
 class AsyncBaseContainer {
@@ -23,14 +21,8 @@ class AsyncBaseContainer {
 	}
 
 	async _expectInit() {
-		if ( global.__JNSite === true ) {
-			await driverHelper.refreshIfJNError( this.driver );
-		}
 		await this.waitForPage();
 		await this.checkForConsoleErrors();
-		if ( typeof this._postInit === 'function' ) {
-			await this._postInit();
-		}
 	}
 
 	async waitForPage() {
