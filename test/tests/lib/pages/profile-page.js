@@ -18,20 +18,6 @@ class ProfilePage extends AsyncBaseContainer {
 		await driverHelper.clickWhenClickable( this.driver, signOutSelector );
 		await this.driver.sleep( 1000 );
 	}
-
-	async chooseManagePurchases() {
-		return await driverHelper.clickWhenClickable(
-			this.driver,
-			by.css( '.sidebar a[href$="purchases"]' )
-		);
-	}
-
-	async chooseAccountSettings() {
-		return await driverHelper.clickWhenClickable(
-			this.driver,
-			by.css( '.sidebar a[href$="account"]' )
-		);
-	}
 }
 
 module.exports = ProfilePage;

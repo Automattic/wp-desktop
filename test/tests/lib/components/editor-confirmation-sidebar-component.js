@@ -21,14 +21,6 @@ class EditorConfirmationSidebarComponent extends AsyncBaseContainer {
 			by.css( '.editor-confirmation-sidebar__action button.button' )
 		);
 	}
-
-	async publishDateShown() {
-		const dateSelector = by.css(
-			'.editor-confirmation-sidebar .editor-publish-date__header-chrono'
-		);
-		await driverHelper.waitTillPresentAndDisplayed( this.driver, dateSelector );
-		return await this.driver.findElement( dateSelector ).getText();
-	}
 }
 
 module.exports = EditorConfirmationSidebarComponent;
