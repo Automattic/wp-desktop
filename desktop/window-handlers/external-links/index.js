@@ -3,7 +3,7 @@
 /**
  * External Dependencies
  */
-const shell = require( 'electron' ).shell;
+const { shell } = require( 'electron' );
 const debug = require( 'debug' )( 'desktop:external-links' );
 const { URL } = require( 'url' );
 
@@ -30,7 +30,8 @@ const ALWAYS_OPEN_IN_APP = [
 
 const DONT_OPEN_IN_BROWSER = [
 	Config.server_url,
-	'https://public-api.wordpress.com/connect/'
+	'https://public-api.wordpress.com/connect/',
+	'https://accounts.google.com/*',
 ];
 
 const domainAndPathSame = ( first, second ) => first.hostname === second.hostname && ( first.pathname === second.pathname || second.pathname === '/*' );
