@@ -81,7 +81,7 @@ references:
   calypso_save_cache: &calypso_save_cache
     save_cache:
       name: Save calypso cache
-      key: v1-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
+      key: v2-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
       paths: *app_cache_paths
 
 jobs:
