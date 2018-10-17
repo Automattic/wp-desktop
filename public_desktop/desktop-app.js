@@ -7,7 +7,6 @@ let startApp = function() {
 
 let booted = false;
 let debug;
-const loadContextMenu = true;
 
 function startDesktopApp() {
 	if ( electron.isDebug() ) {
@@ -79,33 +78,6 @@ function startDesktopApp() {
 		}
 	}
 
-	function contextMenu( ev ) {
-		var menu = {};
-		var showEditorMenu = false;
-
-		// check if in visual editor, ipc sends an EventEmitter
-		if ( typeof ev.sender !== 'undefined' ) {
-			showEditorMenu = true;
-		} else if ( ( typeof ev.target !== 'undefined' ) && ev.target.closest( 'textarea, input, [contenteditable="true"]' ) ) {
-			// check if in textarea or similar
-			showEditorMenu = true;
-		}
-
-		if ( showEditorMenu ) {
-			menu = electron.showEditorMenu();
-		} else {
-			const selectedText = window.getSelection().toString();
-			menu = electron.showGeneralMenu( selectedText );
-		}
-
-		// The 'contextmenu' event is emitted after 'selectionchange' has fired but possibly before the
-		// visible selection has changed. Try to wait to show the menu until after that, otherwise the
-		// visible selection will update after the menu dismisses and look weird.
-		setTimeout( function() {
-			menu.popup( electron.getCurrentWindow() );
-		}, 30 );
-	}
-
 	debug = electron.debug( 'desktop:browser' );
 
 	// Everything is ready, start Calypso
@@ -118,19 +90,6 @@ function startDesktopApp() {
 
 		document.addEventListener( 'keydown', keyboardHandler );
 		document.addEventListener( 'click', preventNewWindow );
-
-		if ( loadContextMenu ) {
-			debug( 'Setting up Context Menus' );
-
-			electron.resetSelection();
-
-			document.addEventListener( 'mousedown', electron.resetSelection );
-			document.addEventListener( 'contextmenu', contextMenu );
-
-			// listen for tinymce IPC event for context menu
-			// required for visual editor since within iframe
-			electron.ipcRenderer.on( 'mce-contextmenu', contextMenu );
-		}
 	}
 
 	// This is called by Calypso
@@ -172,15 +131,14 @@ function startDesktopApp() {
 // Wrap this in an exception handler. If it fails then it means Electron is not present, and we are in a browser
 // This will then cause the browser to redirect to hey.html
 try {
-	electron.ipcRenderer.on( 'is-calypso', function() {
-		electron.ipcRenderer.send( 'is-calypso-response', document.getElementById( 'wpcom' ) !== null );
-	} );
-
+	electron.ipcRenderer.on('is-calypso', function () {
+		electron.ipcRenderer.send('is-calypso-response', document.getElementById('wpcom') !== null);
+	});
+	
 	electron.ipcRenderer.on( 'app-config', function( event, config, debug, details ) {
 		// if this is the first run, and on the login page, show Windows and Mac users a pin app reminder
-		if ( details.firstRun && document.querySelectorAll('.logged-out-auth').length > 0 ) {
-			if ( details.platform === "windows" || details.platform === "darwin" ) {
-
+		if ( details.firstRun && document.querySelectorAll( '.logged-out-auth' ).length > 0 ) {
+			if ( details.platform === 'windows' || details.platform === 'darwin' ) {
 				var container = document.querySelector( '#wpcom' );
 				var pinApp = container.querySelector( '.pin-app' );
 
@@ -192,15 +150,15 @@ try {
 				}
 
 				var closeButton = '<a href="#" class="pin-app-close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.705,7.705l-1.41-1.41L12,10.59L7.705,6.295l-1.41,1.41L10.59,12l-4.295,4.295l1.41,1.41L12,13.41 l4.295,4.295l1.41-1.41L13.41,12L17.705,7.705z"/></svg></a>';
-				var pinAppMsg = "";
+				var pinAppMsg = '';
 
-				if ( details.platform === "windows" ) {
-					pinAppMsg = "<h2>Keep WordPress.com in your taskbar</h2>" +
-					"<p>Drag the icon from your desktop to your taskbar</p>" +
+				if ( details.platform === 'windows' ) {
+					pinAppMsg = '<h2>Keep WordPress.com in your taskbar</h2>' +
+					'<p>Drag the icon from your desktop to your taskbar</p>' +
 					'<img src="/desktop/pin-app-taskbar.png" alt="" width="143" height="27" />';
-				} else if ( details.platform === "darwin" && !details.pinned ) {
-					pinAppMsg = "<h2>Keep WordPress.com in your dock</h2>" +
-					"<p>Right-click the WordPress.com icon in your dock, select Options > Keep in Dock</p>" +
+				} else if ( details.platform === 'darwin' && !details.pinned ) {
+					pinAppMsg = '<h2>Keep WordPress.com in your dock</h2>' +
+					'<p>Right-click the WordPress.com icon in your dock, select Options > Keep in Dock</p>' +
 					'<img src="/desktop/pin-app-dock.png" alt="" width="128" height="30" />';
 				}
 
@@ -208,8 +166,8 @@ try {
 
 				// close button
 				var pinAppClose = container.querySelector( '.pin-app-close' );
-				pinAppClose.onclick = function () {
-					pinApp.style.display = "none";
+				pinAppClose.onclick = function() {
+					pinApp.style.display = 'none';
 				};
 			}
 		}

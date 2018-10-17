@@ -2,14 +2,15 @@
  * External Dependencies
  */
 
-const electron = require( 'electron' );
-const ipcMain = electron.ipcMain;
-const expect = require( 'chai' ).expect;
+const { ipcMain } = require( 'electron' );
+const { expect } = require( 'chai' );
 
 /**
  * Internal dependencies
  */
-const boot = require( '../../release/WordPress.com-darwin-x64-unpacked/desktop/app' );
+const boot = require( '../desktop/app' );
+
+process.chdir( process.env.CALYPSO_PATH );
 
 describe( 'check app loads', function() {
 	it( 'should have calypso in DOM', function( done ) {

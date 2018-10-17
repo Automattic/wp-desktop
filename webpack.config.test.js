@@ -9,7 +9,7 @@ var path = require( 'path' );
 var shared = require( './webpack.shared' );
 
 var options = {
-	entry: './desktop/test/boot.js',
+	entry: './test/appStart.js',
 	output: {
 		path: path.join( __dirname, 'build' ),
 		filename: 'desktop-test.js',
