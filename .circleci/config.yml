@@ -48,7 +48,8 @@ references:
   app_cache_paths: &app_cache_paths
     - calypso-hash
     - build
-    - resource/certificates
+    - resource/certificates/win.p12
+    - resource/certificates/mac.p12
     - calypso/public
     - calypso/server
     - calypso/config
@@ -69,7 +70,7 @@ references:
     restore_cache:
       name: Restore calypso cache
       keys:
-        - v1-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
+        - v2-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
   calypso_finalize_cache: &calypso_finalize_cache
     run:
       name: Finalize calypso cache
@@ -80,7 +81,7 @@ references:
   calypso_save_cache: &calypso_save_cache
     save_cache:
       name: Save calypso cache
-      key: v1-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
+      key: v2-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
       paths: *app_cache_paths
 
 jobs:
@@ -110,11 +111,9 @@ jobs:
       - run:
           name: Decrypt assets
           command: |
-                  if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
-                    openssl aes-256-cbc -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-                    openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-                    openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-                  fi
+                  openssl aes-256-cbc -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+                  openssl aes-256-cbc -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+                  openssl aes-256-cbc -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
       - *npm_restore_cache
       - run:
           name: Npm install
