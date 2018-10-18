@@ -24,6 +24,10 @@ const driver = new webdriver.Builder()
 
 let loggedInUrl;
 
+before(function() {
+	this.timeout( 30000 );
+} );
+
 describe( 'User Can log in', function() {
 	step( 'Can log in', async function() {
 		let loginPage = new LoginPage( driver );
