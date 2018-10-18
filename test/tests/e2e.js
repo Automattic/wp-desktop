@@ -24,11 +24,8 @@ const driver = new webdriver.Builder()
 
 let loggedInUrl;
 
-before(function() {
-	this.timeout( 30000 );
-} );
-
 describe( 'User Can log in', function() {
+	this.timeout( 30000 );
 	step( 'Can log in', async function() {
 		let loginPage = new LoginPage( driver );
 		await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
@@ -41,6 +38,7 @@ describe( 'User Can log in', function() {
 } );
 
 describe( 'Publish a New Post', function() {
+	this.timeout( 30000 );
 	const blogPostTitle = dataHelper.randomPhrase();
 	const blogPostQuote =
 		'“Whenever you find yourself on the side of the majority, it is time to pause and reflect.”\n- Mark Twain';
@@ -85,6 +83,7 @@ describe( 'Publish a New Post', function() {
 } );
 
 describe( 'Can Log Out', function() {
+	this.timeout( 30000 );
 	step( 'Can view profile to log out', async function() {
 		let navbarComponent = await NavBarComponent.Expect( driver );
 		await navbarComponent.clickProfileLink();
