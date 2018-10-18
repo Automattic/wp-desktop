@@ -10,7 +10,7 @@ const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
 
 const dataHelper = require( './lib/data-helper' );
-const driver = new webdriver.Builder()
+const driverConfig = new webdriver.Builder()
 	.usingServer( 'http://localhost:9515' )
 	.withCapabilities( {
 		chromeOptions: {
@@ -19,10 +19,18 @@ const driver = new webdriver.Builder()
 			args: [ '--disable-renderer-backgrounding', '--disable-http-cache' ]
 		}
 	} )
-	.forBrowser( 'electron' )
-	.build();
+	.forBrowser( 'electron' );
 
+const tempDriver =  driverConfig.build();
 let loggedInUrl;
+let driver;
+
+before( async function() {
+	this.timeout( 30000 );
+	await tempDriver.quit();
+	driver = await driverConfig.build();
+	return driver.sleep( 2000 );
+} );
 
 describe( 'User Can log in', function() {
 	this.timeout( 30000 );
@@ -100,5 +108,6 @@ describe( 'Can Log Out', function() {
 } );
 
 after( async function() {
+	this.timeout( 30000 );
 	return await driver.quit();
 } );
