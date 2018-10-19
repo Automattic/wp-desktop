@@ -16,7 +16,7 @@ const driverConfig = new webdriver.Builder()
 		chromeOptions: {
 			// Here is the path to your Electron binary.
 			binary: process.env.BINARY_PATH,
-			args: [ '--disable-renderer-backgrounding', '--disable-http-cache' ]
+			args: [ '--disable-renderer-backgrounding', '--disable-http-cache', '--start-maximized' ]
 		}
 	} )
 	.forBrowser( 'electron' );
