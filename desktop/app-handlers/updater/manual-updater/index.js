@@ -3,72 +3,99 @@
 /**
  * External Dependencies
  */
-const electron = require( 'electron' );
-const dialog = electron.dialog;
-const shell = electron.shell;
+const { app, shell } = require( 'electron' );
+const fetch = require( 'electron-fetch' ).default;
+const yaml = require( 'js-yaml' );
+const semver = require( 'semver' );
 const debug = require( 'debug' )( 'desktop:updater:manual' );
-const https = require( 'https' );
 
-function ManualUpdater( url ) {
-	debug( 'Starting manual-updater' );
+/**
+ * Internal dependencies
+ */
+const Updater = require( 'lib/updater' );
+const { bumpStat, sanitizeVersion, getPlatform } = require( 'lib/desktop-analytics' );
 
-	this.hasPrompted = false;
-	this.url = url;
-}
+const statsPlatform = getPlatform( process.platform )
+const sanitizedVersion = sanitizeVersion( app.getVersion() );
 
-ManualUpdater.prototype.ping = function() {
-	const that = this;
+class ManualUpdater extends Updater {
+	constructor( { apiUrl, downloadUrl, options = {} } ) {
+		super( options );
 
-	debug( 'Pinging update URL ' + this.url );
+		this.apiUrl = apiUrl;
+		this.downloadUrl = downloadUrl;
+		this.latestReleaseTag = null;
+	}
 
-	https.get( this.url, function( response ) {
-		let body = '';
+	async ping() {
+		const options = {
+			headers: {
+				'User-Agent': `WP-Desktop/${app.getVersion()}`,
+			},
+		};
 
-		response.on( 'data', function( chunk ) {
-			body += chunk;
-		} );
+		try {
+			debug( 'is beta', this.beta )
+			const url = `${this.apiUrl}${!this.beta ? '/latest' : ''}`;
+			debug( 'Checking for update. Fetching:', url );
 
-		response.on( 'end', function() {
-			if ( body ) {
-				try {
-					let update = JSON.parse( body );
+			const releaseResp = await fetch( url, options );
 
-					that.onAvailable( update );
-				} catch ( e ) {
-					debug( 'Error parsing update JSON' );
+			if ( releaseResp.status !== 200 ) {
+				return;
+			}
+
+			let releaseBody = await releaseResp.json();
+
+			if ( this.beta ) {
+				const prerelease = releaseBody.find( ( d ) => d.prerelease );
+				if ( prerelease ) {
+					releaseBody = prerelease;
 				}
 			}
-		} );
-	} ).on( 'error', this.onError.bind( this ) );
-};
 
-ManualUpdater.prototype.onError = function( error ) {
-	if ( error.status === 204 ) {
-		debug( 'No updates available' );
-	} else {
-		debug( 'Error checking for new version: ' + error.toString() );
-	}
-};
+			const releaseAsset = releaseBody.assets.find(
+				release => release.name === 'latest.yml'
+			);
+			if ( releaseAsset ) {
+				const configResp = await fetch(
+					releaseAsset.browser_download_url,
+					options
+				);
 
-ManualUpdater.prototype.onAvailable = function( update ) {
-	const updateDialogOptions = {
-		buttons: [ 'Download', 'Cancel' ],
-		title: 'Update Available',
-		message: update.name,
-		detail: update.notes + '\n\nYou will need to download and install the new version manually.'
-	};
+				if ( configResp.status !== 200 ) {
+					return;
+				}
 
-	debug( 'Update available: ' + update.version );
+				const configBody = await configResp.text();
+				const releaseConfig = yaml.safeLoad( configBody );
 
-	if ( this.hasPrompted === false ) {
-		this.hasPrompted = true;
+				if ( semver.lt( app.getVersion(), releaseConfig.version ) ) {
+					debug(
+						'New update is available, prompting user to update to',
+						releaseConfig.version
+					);
+					this.latestReleaseTag = releaseBody.tag_name;
 
-		dialog.showMessageBox( updateDialogOptions, function( i ) {
-			if ( i === 0 ) {
-				shell.openExternal( update.url );
+					bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-needs-update` );
+
+					this.setVersion( releaseConfig.version );
+					this.notify();
+				} else {
+					debug( 'Update is not available' );
+
+					bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-no-update` );
+					return;
+				}
 			}
-		} );
+		} catch ( err ) {
+			debug( err.message );
+		}
 	}
-};
+
+	onConfirm() {
+		shell.openExternal( `${this.downloadUrl}${this.latestReleaseTag ? `/tag/${this.latestReleaseTag}` : ''}` );
+	}
+}
 
 module.exports = ManualUpdater;
