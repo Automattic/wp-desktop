@@ -61,8 +61,6 @@ function replaceInternalCalypsoUrl( url ) {
 		url.port = '';
 	}
 
-	debug( 'Returning url object', url );
-
 	return url;
 }
 
