@@ -66,7 +66,7 @@ function replaceInternalCalypsoUrl( url ) {
 
 module.exports = function( webContents ) {
 	webContents.on( 'will-navigate', function( event, url ) {
-		let parsedUrl = new URL( url );
+		const parsedUrl = new URL( url );
 
 		for ( let x = 0; x < ALWAYS_OPEN_IN_APP.length; x++ ) {
 			const alwaysOpenUrl = new URL( ALWAYS_OPEN_IN_APP[ x ] );
