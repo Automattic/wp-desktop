@@ -76,6 +76,18 @@ class AutoUpdater extends Updater {
 	onConfirm() {
 		AppQuit.allowQuit();
 		autoUpdater.quitAndInstall();
+
+		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-confirm-update` );
+	}
+
+	onCancel() {
+		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-update-cancelled` );
+	}
+
+	onError( event ) {
+		debug( 'Update error', event );
+
+		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-update-error` );
 	}
 }
 

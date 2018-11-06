@@ -90,11 +90,17 @@ class ManualUpdater extends Updater {
 			}
 		} catch ( err ) {
 			debug( err.message );
+			bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-update-check-error` );
 		}
 	}
 
 	onConfirm() {
 		shell.openExternal( `${this.downloadUrl}${this.latestReleaseTag ? `/tag/${this.latestReleaseTag}` : ''}` );
+		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-confirm-update` );
+	}
+
+	onCancel() {
+		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-update-cancelled` );
 	}
 }
 
