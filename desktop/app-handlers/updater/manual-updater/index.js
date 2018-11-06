@@ -24,7 +24,6 @@ class ManualUpdater extends Updater {
 
 		this.apiUrl = apiUrl;
 		this.downloadUrl = downloadUrl;
-		this.latestReleaseTag = null;
 	}
 
 	async ping() {
@@ -75,7 +74,6 @@ class ManualUpdater extends Updater {
 						'New update is available, prompting user to update to',
 						releaseConfig.version
 					);
-					this.latestReleaseTag = releaseBody.tag_name;
 
 					bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-needs-update` );
 
@@ -95,7 +93,8 @@ class ManualUpdater extends Updater {
 	}
 
 	onConfirm() {
-		shell.openExternal( `${this.downloadUrl}${this.latestReleaseTag ? `/tag/${this.latestReleaseTag}` : ''}` );
+		shell.openExternal( `${this.downloadUrl}${this.beta ? '?beta=1' : ''}` );
+
 		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-confirm-update` );
 	}
 
