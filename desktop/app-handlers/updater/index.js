@@ -37,8 +37,8 @@ module.exports = function() {
 						dialogMessage:
 							'{name} {newVersion} is now available — you have {currentVersion}. Would you like to download it now?',
 						confirmLabel: 'Download',
+						beta,
 					},
-					beta,
 				} );
 			}
 
