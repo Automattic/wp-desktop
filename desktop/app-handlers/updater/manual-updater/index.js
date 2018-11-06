@@ -35,9 +35,9 @@ class ManualUpdater extends Updater {
 		};
 
 		try {
-			debug( 'is beta', this.beta )
 			const url = `${this.apiUrl}${!this.beta ? '/latest' : ''}`;
 			debug( 'Checking for update. Fetching:', url );
+			debug( 'Checking for beta release:', this.beta )
 
 			const releaseResp = await fetch( url, options );
 
