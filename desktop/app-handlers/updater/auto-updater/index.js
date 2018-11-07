@@ -79,17 +79,17 @@ class AutoUpdater extends Updater {
 		AppQuit.allowQuit();
 		autoUpdater.quitAndInstall();
 
-		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-confirm` );
+		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-confirm` );
 	}
 
 	onCancel() {
-		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-update-cancel` );
+		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-update-cancel` );
 	}
 
 	onError( event ) {
 		debug( 'Update error', event );
 
-		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-update-error` );
+		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-update-error` );
 	}
 }
 
