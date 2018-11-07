@@ -19,6 +19,8 @@ const Updater = require( 'lib/updater' );
 const statsPlatform = getPlatform( process.platform )
 const sanitizedVersion = sanitizeVersion( app.getVersion() );
 
+const getStatsString = ( isBeta ) => `${statsPlatform}${isBeta ? '-b' : ''}-${sanitizedVersion}`;
+
 function dialogDebug( message ) {
 	debug( message );
 
@@ -50,12 +52,12 @@ class AutoUpdater extends Updater {
 
 	onAvailable( info ) {
 		debug( 'New update is available', info.version )
-		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-needs-update` );
+		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-needs-update` );
 	}
 
 	onNotAvailable() {
 		debug( 'No update is available' )
-		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-no-update` );
+		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-no-update` );
 	}
 
 	onDownloaded( info ) {
@@ -77,17 +79,17 @@ class AutoUpdater extends Updater {
 		AppQuit.allowQuit();
 		autoUpdater.quitAndInstall();
 
-		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-confirm-update` );
+		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-confirm` );
 	}
 
 	onCancel() {
-		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-update-cancelled` );
+		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-update-cancel` );
 	}
 
 	onError( event ) {
 		debug( 'Update error', event );
 
-		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-update-error` );
+		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-update-error` );
 	}
 }
 

@@ -6,9 +6,11 @@ function buildQuerystring( group, name ) {
 
 	if ( 'object' === typeof group ) {
 		for ( const key in group ) {
+			checkLength( key, group[key] )
 			uriComponent += '&x_' + encodeURIComponent( key ) + '=' + encodeURIComponent( group[key] );
 		}
 	} else {
+		checkLength( group, name )
 		uriComponent = '&x_' + encodeURIComponent( group ) + '=' + encodeURIComponent( name );
 	}
 
@@ -33,10 +35,11 @@ export async function bumpStat( group, name ) {
 	}
 };
 
-// Cet analytics conform version string
+// Get analytics conform version string
 // version string needs to be formatted without `.`
+// Replaces `beta` with `b` as stats key and value is limited to 32 chars
 export function sanitizeVersion( version ) {
-	return version.replace( /\./g, '-' );
+	return version.replace( /\./g, '-' ).replace( 'beta', 'b' );
 }
 
 const PLATFORMS = {
@@ -48,4 +51,14 @@ const PLATFORMS = {
 // Get analytics conform platform string
 export function getPlatform( platform ) {
 	return PLATFORMS[platform];
+}
+
+// Stats key and value is limited to 32 chars
+function checkLength( key, val ) {
+	if ( key.length > 32 ) {
+		debug( `WARNING: bumpStat() key '${key}' is longer than 32 chars` );
+	}
+	if ( val.length > 32 ) {
+		debug( `WARNING: bumpStat() value '${val}' is longer than 32 chars` );
+	}
 }

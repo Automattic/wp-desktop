@@ -18,6 +18,8 @@ const { bumpStat, sanitizeVersion, getPlatform } = require( 'lib/desktop-analyti
 const statsPlatform = getPlatform( process.platform )
 const sanitizedVersion = sanitizeVersion( app.getVersion() );
 
+const getStatsString = ( isBeta ) => `${statsPlatform}${isBeta ? '-b' : ''}-${sanitizedVersion}`;
+
 class ManualUpdater extends Updater {
 	constructor( { apiUrl, downloadUrl, options = {} } ) {
 		super( options );
@@ -75,31 +77,31 @@ class ManualUpdater extends Updater {
 						releaseConfig.version
 					);
 
-					bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-needs-update` );
+					bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-needs-update` );
 
 					this.setVersion( releaseConfig.version );
 					this.notify();
 				} else {
 					debug( 'Update is not available' );
 
-					bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-no-update` );
+					bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-no-update` );
 					return;
 				}
 			}
 		} catch ( err ) {
 			debug( err.message );
-			bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-update-check-error` );
+			bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-check-failed` );
 		}
 	}
 
 	onConfirm() {
 		shell.openExternal( `${this.downloadUrl}${this.beta ? '?beta=1' : ''}` );
 
-		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-confirm-update` );
+		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-dl-update` );
 	}
 
 	onCancel() {
-		bumpStat( 'wpcom-desktop-update-check', `${statsPlatform}${this.beta ? '-beta' : ''}-${sanitizedVersion}-update-cancelled` );
+		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-update-cancel` );
 	}
 }
 
