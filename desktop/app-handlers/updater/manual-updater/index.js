@@ -20,88 +20,132 @@ const sanitizedVersion = sanitizeVersion( app.getVersion() );
 
 const getStatsString = ( isBeta ) => `${statsPlatform}${isBeta ? '-b' : ''}-${sanitizedVersion}`;
 
+const requestOptions = {
+	headers: {
+		'User-Agent': `WP-Desktop/${app.getVersion()}`,
+	},
+};
+
 class ManualUpdater extends Updater {
 	constructor( { apiUrl, downloadUrl, options = {} } ) {
 		super( options );
 
 		this.apiUrl = apiUrl;
 		this.downloadUrl = downloadUrl;
+
+		this.isEffectiveBeta = false;
 	}
 
 	async ping() {
-		const options = {
-			headers: {
-				'User-Agent': `WP-Desktop/${app.getVersion()}`,
-			},
-		};
-
 		try {
-			const url = `${this.apiUrl}${!this.beta ? '/latest' : ''}`;
+			const url = this.apiUrl;
 			debug( 'Checking for update. Fetching:', url );
 			debug( 'Checking for beta release:', this.beta )
 
-			const releaseResp = await fetch( url, options );
+			const releaseResp = await fetch( url, requestOptions );
 
 			if ( releaseResp.status !== 200 ) {
 				return;
 			}
 
-			let releaseBody = await releaseResp.json();
+			const releases = await releaseResp.json();
 
-			if ( this.beta ) {
-				const prerelease = releaseBody.find( ( d ) => d.prerelease );
-				if ( prerelease ) {
-					releaseBody = prerelease;
-				}
+			const latestStableRelease = releases.find( ( d ) => !d.prerelease );
+			const latestBetaRelease = releases.find( ( d ) => d.prerelease );
+
+			if ( ( !latestStableRelease && !this.beta ) ) {
+				debug( 'No stable release found' );
+				return;
+			};
+
+			let latestStableReleaseVersion;
+			if ( latestStableRelease ) {
+				const assetUrl = this.getConfigUrl( latestStableRelease.assets );
+				latestStableReleaseVersion = await this.getReleaseVersion( assetUrl );
 			}
 
-			const releaseAsset = releaseBody.assets.find(
-				release => release.name === 'latest.yml'
-			);
-			if ( releaseAsset ) {
-				const configResp = await fetch(
-					releaseAsset.browser_download_url,
-					options
-				);
+			let latestReleaseVersion;
 
-				if ( configResp.status !== 200 ) {
-					return;
+			if ( this.beta && latestBetaRelease ) {
+				let latestBetaReleaseVersion;
+				const assetUrl = this.getConfigUrl( latestBetaRelease.assets );
+				latestBetaReleaseVersion = await this.getReleaseVersion( assetUrl );
+
+				if ( semver.valid( latestStableReleaseVersion ) &&
+					semver.valid( latestBetaReleaseVersion ) &&
+					semver.lt( latestBetaReleaseVersion, latestStableReleaseVersion ) ) {
+					latestReleaseVersion = latestStableReleaseVersion;
+
+					debug( 'Latest stable version is newer than latest latest beta. Switching to stable channel:', latestReleaseVersion );
+				} else if ( semver.valid( latestBetaReleaseVersion ) ) {
+					latestReleaseVersion = latestBetaReleaseVersion;
+
+					this.isEffectiveBeta = true;
 				}
+			} else if ( latestStableReleaseVersion ) {
+				latestReleaseVersion = latestStableReleaseVersion;
+			}
 
-				const configBody = await configResp.text();
-				const releaseConfig = yaml.safeLoad( configBody );
+			if ( !latestReleaseVersion ) {
+				debug( 'No release found' );
 
-				if ( semver.lt( app.getVersion(), releaseConfig.version ) ) {
-					debug(
-						'New update is available, prompting user to update to',
-						releaseConfig.version
-					);
+				return;
+			}
 
-					bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-needs-update` );
+			if ( semver.lt( app.getVersion(), latestReleaseVersion ) ) {
+				debug( 'New update is available, prompting user to update to', latestReleaseVersion );
+				bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-needs-update` );
 
-					this.setVersion( releaseConfig.version );
-					this.notify();
-				} else {
-					debug( 'Update is not available' );
+				this.setVersion( latestReleaseVersion );
+				this.notify();
+			} else {
+				debug( 'Update is not available' );
+				bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-no-update` );
 
-					bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-no-update` );
-					return;
-				}
+				return;
 			}
 		} catch ( err ) {
-			debug( err.message );
+			console.log( err );
 			bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-check-failed` );
 		}
 	}
 
 	onConfirm() {
-		shell.openExternal( `${this.downloadUrl}${this.beta ? '?beta=1' : ''}` );
+		shell.openExternal( `${this.downloadUrl}${this.isEffectiveBeta ? '?beta=1' : ''}` );
 
 		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-dl-update` );
 	}
 
 	onCancel() {
 		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-update-cancel` );
+	}
+
+	getConfigUrl( assets ) {
+		const asset = assets.find(
+			file => file.name === 'latest.yml'
+		);
+
+		return asset.browser_download_url || null;
+	}
+
+	async getReleaseVersion( url ) {
+		try {
+			const resp = await fetch(
+				url,
+				requestOptions
+			);
+
+			if ( resp.status !== 200 ) {
+				return null;
+			}
+
+			const body = await resp.text();
+			const config = yaml.safeLoad( body );
+
+			return config.version || null;
+		} catch ( err ) {
+			console.log( err );
+		}
 	}
 }
 
