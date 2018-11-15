@@ -3,72 +3,150 @@
 /**
  * External Dependencies
  */
-const electron = require( 'electron' );
-const dialog = electron.dialog;
-const shell = electron.shell;
+const { app, shell } = require( 'electron' );
+const fetch = require( 'electron-fetch' ).default;
+const yaml = require( 'js-yaml' );
+const semver = require( 'semver' );
 const debug = require( 'debug' )( 'desktop:updater:manual' );
-const https = require( 'https' );
 
-function ManualUpdater( url ) {
-	debug( 'Starting manual-updater' );
+/**
+ * Internal dependencies
+ */
+const Updater = require( 'lib/updater' );
+const { bumpStat, sanitizeVersion, getPlatform } = require( 'lib/desktop-analytics' );
 
-	this.hasPrompted = false;
-	this.url = url;
-}
+const statsPlatform = getPlatform( process.platform )
+const sanitizedVersion = sanitizeVersion( app.getVersion() );
 
-ManualUpdater.prototype.ping = function() {
-	const that = this;
+const getStatsString = ( isBeta ) => `${statsPlatform}${isBeta ? '-b' : ''}-${sanitizedVersion}`;
 
-	debug( 'Pinging update URL ' + this.url );
+const requestOptions = {
+	headers: {
+		'User-Agent': `WP-Desktop/${app.getVersion()}`,
+	},
+};
 
-	https.get( this.url, function( response ) {
-		let body = '';
+class ManualUpdater extends Updater {
+	constructor( { apiUrl, downloadUrl, options = {} } ) {
+		super( options );
 
-		response.on( 'data', function( chunk ) {
-			body += chunk;
-		} );
+		this.apiUrl = apiUrl;
+		this.downloadUrl = downloadUrl;
 
-		response.on( 'end', function() {
-			if ( body ) {
-				try {
-					let update = JSON.parse( body );
+		this.isEffectiveBeta = false;
+	}
 
-					that.onAvailable( update );
-				} catch ( e ) {
-					debug( 'Error parsing update JSON' );
+	async ping() {
+		try {
+			const url = this.apiUrl;
+			debug( 'Checking for update. Fetching:', url );
+			debug( 'Checking for beta release:', this.beta )
+
+			const releaseResp = await fetch( url, requestOptions );
+
+			if ( releaseResp.status !== 200 ) {
+				return;
+			}
+
+			const releases = await releaseResp.json();
+
+			const latestStableRelease = releases.find( ( d ) => !d.prerelease );
+			const latestBetaRelease = releases.find( ( d ) => d.prerelease );
+
+			if ( ( !latestStableRelease && !this.beta ) ) {
+				debug( 'No stable release found' );
+				return;
+			};
+
+			let latestStableReleaseVersion;
+			if ( latestStableRelease ) {
+				const assetUrl = this.getConfigUrl( latestStableRelease.assets );
+				latestStableReleaseVersion = await this.getReleaseVersion( assetUrl );
+			}
+
+			let latestReleaseVersion;
+
+			if ( this.beta && latestBetaRelease ) {
+				let latestBetaReleaseVersion;
+				const assetUrl = this.getConfigUrl( latestBetaRelease.assets );
+				latestBetaReleaseVersion = await this.getReleaseVersion( assetUrl );
+
+				if ( semver.valid( latestStableReleaseVersion ) &&
+					semver.valid( latestBetaReleaseVersion ) &&
+					semver.lt( latestBetaReleaseVersion, latestStableReleaseVersion ) ) {
+					latestReleaseVersion = latestStableReleaseVersion;
+
+					debug( 'Latest stable version is newer than latest latest beta. Switching to stable channel:', latestReleaseVersion );
+				} else if ( semver.valid( latestBetaReleaseVersion ) ) {
+					latestReleaseVersion = latestBetaReleaseVersion;
+
+					this.isEffectiveBeta = true;
 				}
+			} else if ( latestStableReleaseVersion ) {
+				latestReleaseVersion = latestStableReleaseVersion;
 			}
-		} );
-	} ).on( 'error', this.onError.bind( this ) );
-};
 
-ManualUpdater.prototype.onError = function( error ) {
-	if ( error.status === 204 ) {
-		debug( 'No updates available' );
-	} else {
-		debug( 'Error checking for new version: ' + error.toString() );
-	}
-};
+			if ( !latestReleaseVersion ) {
+				debug( 'No release found' );
 
-ManualUpdater.prototype.onAvailable = function( update ) {
-	const updateDialogOptions = {
-		buttons: [ 'Download', 'Cancel' ],
-		title: 'Update Available',
-		message: update.name,
-		detail: update.notes + '\n\nYou will need to download and install the new version manually.'
-	};
-
-	debug( 'Update available: ' + update.version );
-
-	if ( this.hasPrompted === false ) {
-		this.hasPrompted = true;
-
-		dialog.showMessageBox( updateDialogOptions, function( i ) {
-			if ( i === 0 ) {
-				shell.openExternal( update.url );
+				return;
 			}
-		} );
+
+			if ( semver.lt( app.getVersion(), latestReleaseVersion ) ) {
+				debug( 'New update is available, prompting user to update to', latestReleaseVersion );
+				bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-needs-update` );
+
+				this.setVersion( latestReleaseVersion );
+				this.notify();
+			} else {
+				debug( 'Update is not available' );
+				bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-no-update` );
+
+				return;
+			}
+		} catch ( err ) {
+			console.log( err );
+			bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-check-failed` );
+		}
 	}
-};
+
+	onConfirm() {
+		shell.openExternal( `${this.downloadUrl}${this.isEffectiveBeta ? '?beta=1' : ''}` );
+
+		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-dl-update` );
+	}
+
+	onCancel() {
+		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-update-cancel` );
+	}
+
+	getConfigUrl( assets ) {
+		const asset = assets.find(
+			file => file.name === 'latest.yml'
+		);
+
+		return asset.browser_download_url || null;
+	}
+
+	async getReleaseVersion( url ) {
+		try {
+			const resp = await fetch(
+				url,
+				requestOptions
+			);
+
+			if ( resp.status !== 200 ) {
+				return null;
+			}
+
+			const body = await resp.text();
+			const config = yaml.safeLoad( body );
+
+			return config.version || null;
+		} catch ( err ) {
+			console.log( err );
+		}
+	}
+}
 
 module.exports = ManualUpdater;
