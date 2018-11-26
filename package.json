@@ -1,6 +1,6 @@
 {
   "name": "WordPressDesktop",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
@@ -46,6 +46,7 @@
     "electron-rebuild": "1.8.2",
     "eslint": "^2.10.2",
     "eslint-plugin-react": "^5.1.1",
+    "ignore-loader": "0.1.2",
     "json-loader": "^0.5.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
