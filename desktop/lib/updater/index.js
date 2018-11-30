@@ -80,7 +80,7 @@ class Updater extends EventEmitter {
 
 	expandMacros( originalText ) {
 		const macros = {
-			name: app.getName(),
+			name: 'WordPress.com',
 			currentVersion: app.getVersion(),
 			newVersion: this._version,
 		};
