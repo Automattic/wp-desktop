@@ -9,6 +9,7 @@ const debug = require( 'debug' )( 'desktop:updater' );
  * Internal dependencies
  */
 const platform = require( 'lib/platform' );
+const config = require( 'lib/config' );
 
 class Updater extends EventEmitter {
 	constructor( options ) {
@@ -80,7 +81,7 @@ class Updater extends EventEmitter {
 
 	expandMacros( originalText ) {
 		const macros = {
-			name: 'WordPress.com',
+			name: config.appName,
 			currentVersion: app.getVersion(),
 			newVersion: this._version,
 		};
