@@ -6,6 +6,7 @@
 	"server_host": "127.0.0.1",
 	"wordpress_host": "wordpress.com",
 	"debug": false,
+	"appName": "WordPress.com",
 	"appPathName": "WordPress.com",
 	"mainWindow": {
 		"acceptFirstMouse": false,
