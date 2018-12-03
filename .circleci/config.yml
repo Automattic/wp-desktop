@@ -1,6 +1,24 @@
 version: 2
 
 references:
+  restore-calypso-node-modules-cache: &restore-calypso-node-modules-cache
+    name: "Restore Calypso node_modules cache"
+    key: v0-calypso-node-modules-{{ checksum "calypso/.nvmrc" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
+  calypso-npm-install: &calypso-npm-install
+    name: Install Calypso npm dependencies
+    command: |
+      if [ ! -d calypso/node_modules ]; then
+        source $HOME/.nvm/nvm.sh
+        nvm use
+        cd calypso
+        npm ci
+      fi
+  save-calypso-node-modules-cache: &save-calypso-node-modules-cache
+    name: "Save Calypso node_modules cache"
+    key: v0-calypso-node-modules-{{ checksum "calypso/.nvmrc" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
+    paths:
+      - calypso/node_modules
+
   restore_nvm: &restore_nvm
     restore_cache:
       name: Restoring NVM cache
@@ -121,9 +139,10 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   npm ci
-                  cd calypso
-                  npm ci
       - *npm_save_cache
+      - *restore-calypso-node-modules-cache
+      - *calypso-npm-install
+      - *save-calypso-node-modules-cache
       - run:
           name: Build sources
           command: |
