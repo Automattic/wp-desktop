@@ -208,7 +208,6 @@ jobs:
                   apt-get -y install libxkbfile-dev libxkbfile-dev:i386 libxss-dev libx11-dev:i386
       - run:
           name: Install dependencies
-          name: Npm install
           command: |
             source $HOME/.nvm/nvm.sh
             nvm use
