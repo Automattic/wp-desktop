@@ -22,6 +22,21 @@ references:
       paths:
         - calypso/node_modules
 
+  restore-electron-builder-cache: &restore-electron-builder-cache
+    restore_cache:
+      name: Restore electron caches
+      keys:
+        v0-electron-cache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+        v0-electron-cache-{{ arch }}-{{ .Branch }}
+        v0-electron-cache-{{ arch }}-master
+  save-electron-builder-cache: &save-electron-builder-cache
+    restore_cache:
+      name: Save electron caches
+      key: v0-electron-cache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+      paths:
+        - ~/electron-cache
+        - ~/electron-builder-cache
+
   restore_nvm: &restore_nvm
     restore_cache:
       name: Restoring NVM cache
@@ -216,14 +231,18 @@ jobs:
             nvm use
             npm ci
       - *npm_save_cache
+      - *restore-electron-builder-cache
       - run:
           name: Build Linux
           environment:
             CSC_LINK: resource/certificates/win.p12
+            ELECTRON_CACHE: ~/electron-cache
+            ELECTRON_BUILDER_CACHE: ~/electron-builder-cache
           command: |
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  make package BUILD_PLATFORM=l
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            make package BUILD_PLATFORM=l
+      - *save-electron-builder-cache
       - run:
           name: Release cleanup
           command: |
@@ -255,17 +274,21 @@ jobs:
             nvm use
             npm ci
       - *npm_save_cache
+      - *restore-electron-builder-cache
       - run:
           name: Build Windows
           environment:
             WIN_CSC_LINK: resource/certificates/win.p12
             CSC_FOR_PULL_REQUEST: true # don't do this in production
             USE_HARD_LINKS: "false" # must be string
+            ELECTRON_CACHE: ~/electron-cache
+            ELECTRON_BUILDER_CACHE: ~/electron-builder-cache
           command: |
                   set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=w
+      - *save-electron-builder-cache
       - run:
           name: Release cleanup
           command: |
@@ -300,9 +323,12 @@ jobs:
             nvm use
             npm ci
       - *npm_save_cache
+      - *restore-electron-builder-cache
       - run:
           name: Build Mac
           environment:
+            ELECTRON_CACHE: ~/electron-cache
+            ELECTRON_BUILDER_CACHE: ~/electron-builder-cache
             CSC_LINK: resource/certificates/mac.p12
             CSC_FOR_PULL_REQUEST: true # don't do this in production
           command: |
@@ -310,6 +336,7 @@ jobs:
                   source $HOME/.nvm/nvm.sh
                   nvm use
                   make package BUILD_PLATFORM=m
+      - *save-electron-builder-cache
       # Temporarily disable the test
       # TODO: Fixme – seems to be an issue with `portscanner`
       # - run:
