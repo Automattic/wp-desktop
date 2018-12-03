@@ -2,8 +2,8 @@ version: 2
 
 references:
   restore-calypso-node-modules-cache: &restore-calypso-node-modules-cache
-    - name: "Restore Calypso node_modules cache"
-    - key: v0-calypso-node-modules-{{ checksum "calypso/.nvmrc" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
+    name: "Restore Calypso node_modules cache"
+    key: v0-calypso-node-modules-{{ checksum "calypso/.nvmrc" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
   calypso-npm-install: &calypso-npm-install
     name: Install Calypso npm dependencies
     command: |
