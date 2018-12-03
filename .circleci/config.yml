@@ -26,9 +26,9 @@ references:
     restore_cache:
       name: Restore electron caches
       keys:
-        v0-electron-cache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
-        v0-electron-cache-{{ arch }}-{{ .Branch }}
-        v0-electron-cache-{{ arch }}-master
+        - v0-electron-cache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+        - v0-electron-cache-{{ arch }}-{{ .Branch }}
+        - v0-electron-cache-{{ arch }}-master
   save-electron-builder-cache: &save-electron-builder-cache
     restore_cache:
       name: Save electron caches
