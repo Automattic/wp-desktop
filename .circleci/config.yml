@@ -134,8 +134,8 @@ references:
   				}
   			  }'
   webhook_notify: &webhook_notify
-	- *webhook_notify_failed
-	- *webhook_notify_success
+	<<: *webhook_notify_failed
+	<<: *webhook_notify_success
 
 jobs:
   build:
