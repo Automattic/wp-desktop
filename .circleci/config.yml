@@ -26,13 +26,13 @@ references:
     restore_cache:
       name: Restore electron caches
       keys:
-        - v0-electron-cache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
-        - v0-electron-cache-{{ arch }}-{{ .Branch }}
-        - v0-electron-cache-{{ arch }}-master
+        - v1-electron-cache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+        - v1-electron-cache-{{ arch }}-{{ .Branch }}
+        - v1-electron-cache-{{ arch }}-master
   save-electron-builder-cache: &save-electron-builder-cache
     save_cache:
       name: Save electron caches
-      key: v0-electron-cache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+      key: v1-electron-cache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
       paths:
         - ~/electron-cache
         - ~/electron-builder-cache
@@ -236,8 +236,8 @@ jobs:
           name: Build Linux
           environment:
             CSC_LINK: resource/certificates/win.p12
-            ELECTRON_CACHE: ~/electron-cache
-            ELECTRON_BUILDER_CACHE: ~/electron-builder-cache
+            ELECTRON_CACHE: $HOME/electron-cache
+            ELECTRON_BUILDER_CACHE: $HOME/electron-builder-cache
           command: |
             source $HOME/.nvm/nvm.sh
             nvm use
@@ -281,8 +281,8 @@ jobs:
             WIN_CSC_LINK: resource/certificates/win.p12
             CSC_FOR_PULL_REQUEST: true # don't do this in production
             USE_HARD_LINKS: "false" # must be string
-            ELECTRON_CACHE: ~/electron-cache
-            ELECTRON_BUILDER_CACHE: ~/electron-builder-cache
+            ELECTRON_CACHE: $HOME/electron-cache
+            ELECTRON_BUILDER_CACHE: $HOME/electron-builder-cache
           command: |
                   set +e
                   source $HOME/.nvm/nvm.sh
@@ -327,8 +327,8 @@ jobs:
       - run:
           name: Build Mac
           environment:
-            ELECTRON_CACHE: ~/electron-cache
-            ELECTRON_BUILDER_CACHE: ~/electron-builder-cache
+            ELECTRON_CACHE: $HOME/electron-cache
+            ELECTRON_BUILDER_CACHE: $HOME/electron-builder-cache
             CSC_LINK: resource/certificates/mac.p12
             CSC_FOR_PULL_REQUEST: true # don't do this in production
           command: |
