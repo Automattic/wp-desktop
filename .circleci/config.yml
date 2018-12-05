@@ -26,13 +26,13 @@ references:
     restore_cache:
       name: Restore electron caches
       keys:
-        - v1-electron-cache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
-        - v1-electron-cache-{{ arch }}-{{ .Branch }}
-        - v1-electron-cache-{{ arch }}-master
+        - v2-electron-cache-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ .Revision }}
+        - v2-electron-cache-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}
+        - v2-electron-cache-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-master
   save-electron-builder-cache: &save-electron-builder-cache
     save_cache:
       name: Save electron caches
-      key: v1-electron-cache-{{ arch }}-{{ .Branch }}-{{ .Revision }}
+      key: v2-electron-cache-{{ arch }}-{{ .Environment.CIRCLE_JOB }}-{{ .Branch }}-{{ .Revision }}
       paths:
         - ~/electron-cache
         - ~/electron-builder-cache
