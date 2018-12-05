@@ -85,9 +85,9 @@ references:
       paths: *app_cache_paths
   webhook_notify_success: &webhook_notify_success
     run:
-    name: Notify webhook of test results
-    when: on_success
-    command: |
+      name: Notify webhook of test results
+      when: on_success
+      command: |
           set +o errexit
           if [[ $CIRCLE_BRANCH != "/tests/"* ]]; then
             exit
@@ -110,9 +110,9 @@ references:
           }'
   webhook_notify_failed: &webhook_notify_failed
     run:
-    name: Notify webhook of test results
-    when: on_success
-    command: |
+      name: Notify webhook of test results
+      when: on_success
+      command: |
         set +o errexit
         if [[ $CIRCLE_BRANCH != "/tests/"* ]]; then
           exit
@@ -133,9 +133,6 @@ references:
             }
           }
         }'
-  webhook_notify: &webhook_notify
-    <<: *webhook_notify_failed
-    <<: *webhook_notify_success
 
 jobs:
   build:
@@ -222,7 +219,8 @@ jobs:
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
           paths: *app_cache_paths
-      - *webhook_notify
+      - *webhook_notify_success
+      - *webhook_notify_failed
 
   linux:
     docker:
