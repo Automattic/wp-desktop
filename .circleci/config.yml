@@ -89,7 +89,7 @@ references:
       when: on_success
       command: |
           set +o errexit
-          if [[ $CIRCLE_BRANCH != "/tests/"* ]]; then
+          if [[ $CIRCLE_BRANCH != "tests/"* ]]; then
             exit
           fi
           curl -X POST "https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook" \
@@ -111,10 +111,10 @@ references:
   webhook_notify_failed: &webhook_notify_failed
     run:
       name: Notify webhook of test results
-      when: on_success
+      when: on_fail
       command: |
         set +o errexit
-        if [[ $CIRCLE_BRANCH != "/tests/"* ]]; then
+        if [[ $BRANCHNAME != "tests/"* ]]; then
           exit
         fi
         curl -X POST "https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook" \
