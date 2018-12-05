@@ -85,7 +85,7 @@ references:
       paths: *app_cache_paths
   webhook_notify_success: &webhook_notify_success
     run:
-      name: Notify webhook of test results
+      name: Notify webhook of successful build
       when: on_success
       command: |
           set +o errexit
@@ -110,7 +110,7 @@ references:
           }'
   webhook_notify_failed: &webhook_notify_failed
     run:
-      name: Notify webhook of test results
+      name: Notify webhook of failed build
       when: on_fail
       command: |
         set +o errexit
