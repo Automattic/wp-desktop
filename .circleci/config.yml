@@ -176,6 +176,7 @@ jobs:
       - *npm_save_cache
       - run:
           name: Build sources
+          no_output_timeout: 20m
           command: |
                   # only use the updater when we are building from master or a release branch
                   # if [[ $CIRCLE_BRANCH =~ ^release(.*)|(^master$) ]]
