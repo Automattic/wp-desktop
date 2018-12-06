@@ -83,6 +83,56 @@ references:
       name: Save calypso cache
       key: v2-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
       paths: *app_cache_paths
+  webhook_notify_success: &webhook_notify_success
+    run:
+      name: Notify webhook of successful build
+      when: on_success
+      command: |
+          set +o errexit
+          if [[ $CIRCLE_BRANCH != "tests/"* ]]; then
+            exit
+          fi
+          curl -X POST "https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook" \
+          -H 'Cache-Control: no-cache'	\
+          -H 'Content-Type: application/json'	\
+          -d '{
+              "payload": {
+                "outcome": "'"success"'",
+                "status": "'"success"'",
+                "branch": "'"$BRANCHNAME"'",
+                "build_url": "'"$CIRCLE_BUILD_URL"'",
+                "build_parameters": {
+                  "build_num": '"$CIRCLE_BUILD_NUM"',
+                  "sha": "'"$sha"'",
+                  "calypsoProject": "'"$calypsoProject"'"
+                }
+              }
+          }'
+  webhook_notify_failed: &webhook_notify_failed
+    run:
+      name: Notify webhook of failed build
+      when: on_fail
+      command: |
+        set +o errexit
+        if [[ $BRANCHNAME != "tests/"* ]]; then
+          exit
+        fi
+        curl -X POST "https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook" \
+        -H 'Cache-Control: no-cache'	\
+        -H 'Content-Type: application/json'	\
+        -d '{
+          "payload": {
+            "outcome": "'"failed"'",
+            "status": "'"failed"'",
+            "branch": "'"$BRANCHNAME"'",
+            "build_url": "'"$CIRCLE_BUILD_URL"'",
+            "build_parameters": {
+              "build_num": '"$CIRCLE_BUILD_NUM"',
+              "sha": "'"$sha"'",
+              "calypsoProject": "'"$calypsoProject"'"
+            }
+          }
+        }'
 
 jobs:
   build:
@@ -169,6 +219,8 @@ jobs:
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
           paths: *app_cache_paths
+      - *webhook_notify_success
+      - *webhook_notify_failed
 
   linux:
     docker:
@@ -367,15 +419,3 @@ workflows:
               ignore: /tests.*/
             tags:
               only: /.*/
-
-
-experimental:
-  notify:
-    branches:
-      only:
-        - /tests.*/
-
-
-notify:
-  webhooks:
-    - url: https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook
