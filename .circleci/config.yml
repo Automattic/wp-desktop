@@ -172,7 +172,7 @@ jobs:
                   nvm use
                   npm ci
                   cd calypso
-                  npm ci
+                  npx lerna bootstrap
       - *npm_save_cache
       - run:
           name: Build sources
@@ -197,7 +197,7 @@ jobs:
                       CONFIG_ENV=test
                     fi
 
-                    make build-source CONFIG_ENV=$CONFIG_ENV
+                    make build-source CONFIG_ENV=$CONFIG_ENV EMIT_STATS=true
                   else
                     make desktop/config.json CONFIG_ENV=$CONFIG_ENV
                     make build-desktop
