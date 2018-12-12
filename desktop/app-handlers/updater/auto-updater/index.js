@@ -3,9 +3,8 @@
 /**
  * External Dependencies
  */
-const electron = require( 'electron' );
-const autoUpdater = electron.autoUpdater;
-const dialog = electron.dialog;
+const { app } = require( 'electron' );
+const { autoUpdater } = require( 'electron-updater' )
 const debug = require( 'debug' )( 'desktop:updater:auto' );
 
 /**
@@ -14,6 +13,13 @@ const debug = require( 'debug' )( 'desktop:updater:auto' );
 const AppQuit = require( 'lib/app-quit' );
 const Config = require( 'lib/config' );
 const debugTools = require( 'lib/debug-tools' );
+const { bumpStat, sanitizeVersion, getPlatform } = require( 'lib/desktop-analytics' );
+const Updater = require( 'lib/updater' );
+
+const statsPlatform = getPlatform( process.platform )
+const sanitizedVersion = sanitizeVersion( app.getVersion() );
+
+const getStatsString = ( isBeta ) => `${statsPlatform}${isBeta ? '-b' : ''}-${sanitizedVersion}`;
 
 function dialogDebug( message ) {
 	debug( message );
@@ -23,59 +29,68 @@ function dialogDebug( message ) {
 	}
 }
 
-function AutoUpdater( url ) {
-	debug( 'Starting auto-updater' );
+class AutoUpdater extends Updater {
+	constructor( options = {} ) {
+		super( options );
 
-	this.hasPrompted = false;
-	this.url = url;
+		autoUpdater.on( 'error', this.onError.bind( this ) );
+		autoUpdater.on( 'update-available', this.onAvailable.bind( this ) );
+		autoUpdater.on( 'update-not-available', this.onNotAvailable.bind( this ) );
+		autoUpdater.on( 'update-downloaded', this.onDownloaded.bind( this ) );
 
-	autoUpdater.setFeedURL( url );
-	autoUpdater.on( 'error', this.onError.bind( this ) );
-	autoUpdater.on( 'update-available', this.onAvailable.bind( this ) );
-	autoUpdater.on( 'update-not-available', this.onNotAvailable.bind( this ) );
-	autoUpdater.on( 'update-downloaded', this.onDownloaded.bind( this ) );
-}
+		autoUpdater.autoInstallOnAppQuit = false;
 
-AutoUpdater.prototype.ping = function() {
-	dialogDebug( 'Pinging update URL ' + this.url );
-	autoUpdater.checkForUpdates();
-};
-
-AutoUpdater.prototype.onError = function( error ) {
-	dialogDebug( 'Auto-updater failed: ' + error );
-};
-
-AutoUpdater.prototype.onAvailable = function() {
-	dialogDebug( 'Update detected' );
-};
-
-AutoUpdater.prototype.onNotAvailable = function() {
-	dialogDebug( 'No update detected' );
-};
-
-AutoUpdater.prototype.onDownloaded = function( event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate ) {
-	const updateDialogOptions = {
-		buttons: [ 'Update & Restart', 'Cancel' ],
-		title: 'Update Available',
-		message: releaseName,
-		detail: releaseNotes
-	};
-
-	debug( 'Updated download: ' + releaseName + ' ' + releaseNotes );
-
-	if ( this.hasPrompted === false ) {
-		this.hasPrompted = true;
-
-		dialog.showMessageBox( updateDialogOptions, function( i ) {
-			this.hasPrompted = false;
-
-			if ( i === 0 ) {
-				debug( 'Update and restart' );
-				AppQuit.allowQuit();
-				quitAndUpdate();
-			}
-		} );
+		if ( this.beta ) {
+			autoUpdater.allowPrerelease = true;
+		}
 	}
-};
+
+	ping() {
+		dialogDebug( 'Checking for update' );
+		autoUpdater.checkForUpdates();
+	}
+
+	onAvailable( info ) {
+		debug( 'New update is available', info.version )
+		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-needs-update` );
+	}
+
+	onNotAvailable() {
+		debug( 'No update is available' )
+		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-no-update` );
+	}
+
+	onDownloaded( info ) {
+		debug( 'Update downloaded', info.version );
+
+		this.setVersion( info.version );
+		this.notify();
+
+		const stats = {
+			'wpcom-desktop-download': `${statsPlatform}-app`,
+			'wpcom-desktop-download-by-ver': `${statsPlatform}-app-${sanitizedVersion}`,
+			'wpcom-desktop-download-ref': `update-${statsPlatform}-app`,
+			'wpcom-desktop-download-ref-only': 'update',
+		}
+		bumpStat( stats );
+	}
+
+	onConfirm() {
+		AppQuit.allowQuit();
+		autoUpdater.quitAndInstall();
+
+		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-confirm` );
+	}
+
+	onCancel() {
+		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-update-cancel` );
+	}
+
+	onError( event ) {
+		debug( 'Update error', event );
+
+		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-update-error` );
+	}
+}
 
 module.exports = AutoUpdater;

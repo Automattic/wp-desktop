@@ -7,3 +7,4 @@ publish/publish-config.js
 publish/node_modules/
 resource/secrets
 build
+dev-app-update.yml

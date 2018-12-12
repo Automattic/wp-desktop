@@ -5,7 +5,7 @@
  */
 const shell = require( 'electron' ).shell;
 const debug = require( 'debug' )( 'desktop:external-links' );
-const { URL } = require( 'url' );
+const { URL, format } = require( 'url' );
 
 /**
  * Internal dependencies
@@ -53,6 +53,17 @@ function openInBrowser( event, url ) {
 	event.preventDefault();
 }
 
+function replaceInternalCalypsoUrl( url ) {
+	if ( url.hostname === Config.server_host ) {
+		debug( 'Replacing internal url with public url', url.hostname, Config.wordpress_url );
+
+		url.hostname = Config.wordpress_host;
+		url.port = '';
+	}
+
+	return url;
+}
+
 module.exports = function( webContents ) {
 	webContents.on( 'will-navigate', function( event, url ) {
 		const parsedUrl = new URL( url );
@@ -70,7 +81,7 @@ module.exports = function( webContents ) {
 	} );
 
 	webContents.on( 'new-window', function( event, url, frameName, disposition, options ) {
-		const parsedUrl = new URL( url );
+		let parsedUrl = new URL( url );
 
 		for ( let x = 0; x < DONT_OPEN_IN_BROWSER.length; x++ ) {
 			const dontOpenUrl = new URL( DONT_OPEN_IN_BROWSER[ x ] );
@@ -88,7 +99,11 @@ module.exports = function( webContents ) {
 			}
 		}
 
-		debug( 'Open in new browser for ' + url );
-		openInBrowser( event, url );
+		parsedUrl = replaceInternalCalypsoUrl( parsedUrl );
+
+		const openUrl = format( parsedUrl );
+
+		debug( 'Open in new browser for ' + openUrl );
+		openInBrowser( event, openUrl );
 	} );
 };
