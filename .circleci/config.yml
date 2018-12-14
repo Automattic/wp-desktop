@@ -200,9 +200,6 @@ jobs:
 
                     make build-source CONFIG_ENV=$CONFIG_ENV EMIT_STATS=true
                   else
-                    # We need to build the lerna packages
-                    npm run build-packages
-
                     make desktop/config.json CONFIG_ENV=$CONFIG_ENV
                     make build-desktop
                   fi
