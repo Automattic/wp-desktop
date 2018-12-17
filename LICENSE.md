@@ -1,6 +1,6 @@
 
 WordPress.com for Desktop is an Electron wrapper for Calypso, the new WordPress.com front-end.
-Copyright (C) 2015 by its contributors.
+Copyright (C) 2018 by its contributors.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
