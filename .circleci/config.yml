@@ -1,6 +1,42 @@
 version: 2
 
 references:
+  setup-test-dirs: &setup-test-dirs
+    name: Create Directories for Results and Artifacts
+    command: |
+      mkdir -p "$HOME/terser-cache"
+
+  #
+  # Terser cache caching
+  #
+  restore-terser-cache: &restore-terser-cache
+    name: Restore Terser cache
+    keys:
+      - v0-terser-{{ .Branch }}-{{ .Revision }}
+      - v0-terser-{{ .Branch }}
+      - v0-terser-master
+      - v0-terser
+  save-terser-cache: &save-terser-cache
+    name: Save Terser cache
+    key: v0-terser-{{ .Branch }}-{{ .Revision }}
+    paths:
+      - ~/terser-cache
+
+  # Babel cache
+  # More about the CircleCI cache: https://circleci.com/docs/2.0/caching
+  restore-babel-client-cache: &restore-babel-client-cache
+    name: Restore Babel Client Cache
+    keys:
+      - v1-babel-client-{{ .Branch }}-{{ .Revision }}
+      - v1-babel-client-{{ .Branch }}
+      - v1-babel-client-master
+      - v1-babel-client
+  save-babel-client-cache: &save-babel-client-cache
+    name: Save Babel Client Cache
+    key: v1-babel-client-{{ .Branch }}-{{ .Revision }}
+    paths:
+      - "calypso/build/.babel-client-cache"
+
   restore_nvm: &restore_nvm
     restore_cache:
       name: Restoring NVM cache
@@ -142,6 +178,7 @@ jobs:
     shell: /bin/bash --login
     working_directory: /Users/distiller/wp-desktop
     steps:
+      - run: *setup-test-dirs
       - checkout
       - run:
           name: Setup calypso
@@ -175,6 +212,8 @@ jobs:
                   cd calypso
                   npx lerna bootstrap
       - *npm_save_cache
+      - restore_cache: *restore-babel-client-cache
+      - restore_cache: *restore-terser-cache
       - run:
           name: Build sources
           no_output_timeout: 20m
@@ -204,6 +243,8 @@ jobs:
                     make desktop/config.json CONFIG_ENV=$CONFIG_ENV
                     make build-desktop
                   fi
+      - save_cache: *save-terser-cache
+      - save_cache: *save-babel-client-cache
       - run:
           name: Test
           command: |
