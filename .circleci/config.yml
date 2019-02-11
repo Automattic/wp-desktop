@@ -173,7 +173,7 @@ jobs:
                   nvm use
                   npm ci
                   cd calypso
-                  npx lerna bootstrap
+                  npm ci
       - *npm_save_cache
       - run:
           name: Build sources
