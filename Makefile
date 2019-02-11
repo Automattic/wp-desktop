@@ -85,7 +85,7 @@ endif
 
 # Build calypso bundle
 build-calypso: 
-	@cd $(CALYPSO_DIR) && NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV) npm run -s build
+	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s build
 
 	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
@@ -93,7 +93,7 @@ build-calypso:
 calypso-dev: 
 	@echo "$(CYAN)Starting Calypso...$(RESET)"
 
-	@cd $(CALYPSO_DIR) && NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
+	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
 
 # Build desktop bundle
 build-desktop:
@@ -101,7 +101,7 @@ ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
 endif
 
-	@NODE_ENV=$(NODE_ENV) NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)$/webpack.config.js
+	NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)$/webpack.config.js
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
