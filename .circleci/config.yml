@@ -71,7 +71,7 @@ references:
     restore_cache:
       name: Restore calypso cache
       keys:
-        - v3-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
+        - v4-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
   calypso_finalize_cache: &calypso_finalize_cache
     run:
       name: Finalize calypso cache
@@ -82,7 +82,7 @@ references:
   calypso_save_cache: &calypso_save_cache
     save_cache:
       name: Save calypso cache
-      key: v3-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
+      key: v4-calypso-{{ arch }}-{{ checksum "calypso-current-hash" }}
       paths: *app_cache_paths
   webhook_notify_success: &webhook_notify_success
     run:
