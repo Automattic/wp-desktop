@@ -411,13 +411,13 @@ workflows:
       - build:
           filters:
             branches:
-              ignore: /tests.*/
+              ignore: /tests\/.*/
             tags:
               only: /.*/
       - build-release:
           filters:
             branches:
-              ignore: /tests.*/
+              ignore: /tests\/.*/
             tags:
               only: /.*/
       - windows:
@@ -425,7 +425,7 @@ workflows:
           - build-release
           filters:
             branches:
-              ignore: /tests.*/
+              ignore: /tests\/.*/
             tags:
               only: /.*/
       - linux:
@@ -433,7 +433,7 @@ workflows:
           - build-release
           filters:
             branches:
-              ignore: /tests.*/
+              ignore: /tests\/.*/
             tags:
               only: /.*/
       - mac:
@@ -441,7 +441,7 @@ workflows:
           - build-release
           filters:
             branches:
-              ignore: /tests.*/
+              ignore: /tests\/.*/
             tags:
               only: /.*/
       - artifacts:
@@ -451,6 +451,6 @@ workflows:
             - mac
           filters:
             branches:
-              ignore: /tests.*/
+              ignore: /tests\/.*/
             tags:
               only: /.*/
