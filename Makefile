@@ -28,8 +28,6 @@ NODE_ENV = production
 BUILD_PLATFORM = 
 DEBUG = 
 TEST_PRODUCTION_BINARY = false
-MINIFY_JS = true
-NODE_ARGS = --max_old_space_size=8192
 
 # Set default target
 .DEFAULT_GOAL := build
@@ -87,7 +85,7 @@ endif
 
 # Build calypso bundle
 build-calypso: 
-	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
+	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s build
 
 	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
