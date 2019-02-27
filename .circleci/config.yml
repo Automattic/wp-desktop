@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 
 references:
   restore_nvm: &restore_nvm
@@ -32,6 +32,13 @@ references:
       key: v1-nvm-0-33-11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
       paths:
         - ~/.nvm
+  decrypt_assets: &decrypt_assets
+    run:
+      name: Decrypt assets
+      command: |
+              openssl aes-256-cbc -md md5 -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+              openssl aes-256-cbc -md md5 -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+              openssl aes-256-cbc -md md5 -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
   npm_restore_cache: &npm_restore_cache
     restore_cache:
       name: Restore npm cache
@@ -45,6 +52,15 @@ references:
       key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
       paths:
         - ~/.npm
+  npm_install: &npm_install
+    run:
+      name: Npm install
+      command: |
+              source $HOME/.nvm/nvm.sh
+              nvm use
+              npm ci
+              cd calypso
+              npm ci
   install_linux_dependencies: &install_linux_dependencies
     run:
       name: Install linux dev dependencies
@@ -63,6 +79,18 @@ references:
     - calypso/packages
     - calypso/npm-shrinkwrap.json
     - calypso/.nvmrc
+  setup_calypso: &setup_calypso
+    run:
+      name: Setup calypso
+      command: |
+              git submodule init
+              git submodule update
+
+              if [ -n "${CALYPSO_HASH}" ]; then
+                cd calypso;
+                git fetch;
+                git checkout ${CALYPSO_HASH};
+              fi
   calypso_prepare_cache: &calypso_prepare_cache
     run:
       name: Prepare calypso cache
@@ -90,6 +118,34 @@ references:
       name: Save calypso cache
       key: v6-calypso-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "calypso-current-hash" }}
       paths: *app_cache_paths
+  build_sources: &build_sources
+    run:
+        name: Build sources
+        no_output_timeout: 20m
+        command: |
+                source $HOME/.nvm/nvm.sh
+                nvm use
+
+                # only build the whole bundle when there is no calypso-hash file
+                if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
+                  make build-source CONFIG_ENV=$CONFIG_ENV EMIT_STATS=false MINIFY_JS=$MINIFY_JS NODE_ARGS="$NODE_ARGS"
+                else
+                  make desktop/config.json CONFIG_ENV=$CONFIG_ENV
+                  make build-desktop
+                fi
+  test: &test
+    run:
+      name: Test
+      command: |
+              set +e
+
+              # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
+              # TODO: We might be able to ignore this once we switched to electron-builders auto-update
+              if [ "$CONFIG_ENV" == "test" ]; then
+                source $HOME/.nvm/nvm.sh
+                nvm use
+                make test
+              fi
   webhook_notify_success: &webhook_notify_success
     run:
       name: Notify webhook of successful build
@@ -141,71 +197,6 @@ references:
           }
         }'
 
-
-commands:
-  build-and-test:
-    steps: 
-      - run:
-          name: Setup calypso
-          command: |
-                  git submodule init
-                  git submodule update
-
-                  if [ -n "${CALYPSO_HASH}" ]; then
-                    cd calypso;
-                    git fetch;
-                    git checkout ${CALYPSO_HASH};
-                  fi
-      - *calypso_prepare_cache
-      - *calypso_restore_cache
-      - *restore_nvm
-      - *setup_nvm
-      - *save_nvm
-      - run:
-          name: Decrypt assets
-          command: |
-                  openssl aes-256-cbc -md md5 -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-                  openssl aes-256-cbc -md md5 -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-                  openssl aes-256-cbc -md md5 -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-      - *npm_restore_cache
-      - run:
-          name: Npm install
-          command: |
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  npm ci
-                  cd calypso
-                  npm ci
-      - *npm_save_cache
-      - run:
-          name: Build sources
-          no_output_timeout: 20m
-          command: |
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-
-                  # only build the whole bundle when there is no calypso-hash file
-                  if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
-                    make build-source CONFIG_ENV=$CONFIG_ENV EMIT_STATS=false MINIFY_JS=$MINIFY_JS NODE_ARGS="$NODE_ARGS"
-                  else
-                    make desktop/config.json CONFIG_ENV=$CONFIG_ENV
-                    make build-desktop
-                  fi
-      - run:
-          name: Test
-          command: |
-                  set +e
-
-                  # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
-                  # TODO: We might be able to ignore this once we switched to electron-builders auto-update
-                  if [ "$CONFIG_ENV" == "test" ]; then
-                    source $HOME/.nvm/nvm.sh
-                    nvm use
-                    make test
-                  fi
-      - *calypso_finalize_cache
-      - *calypso_save_cache
-
 jobs:
   build:
     docker:
@@ -218,7 +209,20 @@ jobs:
     steps:
       - checkout
       - *install_linux_dependencies
-      - build-and-test
+      - *setup_calypso
+      - *calypso_prepare_cache
+      - *calypso_restore_cache
+      - *restore_nvm
+      - *setup_nvm
+      - *save_nvm
+      - *decrypt_assets
+      - *npm_restore_cache
+      - *npm_install
+      - *npm_save_cache
+      - *build_sources
+      - *test
+      - *calypso_finalize_cache
+      - *calypso_save_cache
       - *webhook_notify_success
       - *webhook_notify_failed
 
@@ -232,7 +236,20 @@ jobs:
       NODE_ARGS: --max_old_space_size=8192
     steps:
       - checkout
-      - build-and-test
+      - *setup_calypso
+      - *calypso_prepare_cache
+      - *calypso_restore_cache
+      - *restore_nvm
+      - *setup_nvm
+      - *save_nvm
+      - *decrypt_assets
+      - *npm_restore_cache
+      - *npm_install
+      - *npm_save_cache
+      - *build_sources
+      - *test
+      - *calypso_finalize_cache
+      - *calypso_save_cache
       - persist_to_workspace:
           root: ~/wp-desktop
           paths: *app_cache_paths
