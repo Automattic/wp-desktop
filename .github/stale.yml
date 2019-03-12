@@ -26,9 +26,9 @@ staleLabel: "[Status] Stale"
 markComment: >
   This issue has been marked as stale because:
   
-  * It has been inactive for the past year.
-  * It isn't in a project or a milestone.
-  * It hasn’t been labeled `[Pri] BLOCKER`, `[Pri] High`, or `OSS Citizen`.
+   * It has been inactive for the past year.
+   * It isn't in a project or a milestone.
+   * It hasn’t been labeled `[Pri] BLOCKER`, `[Pri] High`, or `OSS Citizen`.
   
   Please comment with an update if you believe this issue is still valid or if it can be closed.
   This issue will also be reviewed for validity and priority (cc @designsimply).
