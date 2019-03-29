@@ -26,10 +26,6 @@ references:
         nvm install "$NODE_VERSION"
         nvm alias default "$NODE_VERSION"
         nvm use "$NODE_VERSION"
-
-        # Use an Electron mirror to avoid issues downloading Electron binaries from Github
-        # Documented in https://github.com/electron/chromedriver#custom-mirror
-        echo 'export ELECTRON_MIRROR="https://npm.taobao.org/mirrors/electron/"' >> $BASH_ENV
   save_nvm: &save_nvm
     save_cache:
       name: Saving NVM cache
