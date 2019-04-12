@@ -156,7 +156,7 @@ test: rebuild-deps
 
 	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
 	
-	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --config .$/webpack.config.test.js
+	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --mode production --config .$/webpack.config.test.js
 	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
 
 distclean: clean
