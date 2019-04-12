@@ -57,6 +57,7 @@ module.exports = {
 	resolve: {
 		extensions: [ '.js', '.jsx', '.json' ],
 		modules: [
+			'node_modules',
 			path.join( __dirname, 'calypso', 'node_modules' ),
 			path.join( __dirname, 'node_modules' ),
 			path.join( __dirname, 'calypso', 'server' ),
