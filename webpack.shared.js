@@ -15,13 +15,6 @@ module.exports = {
 				loader: path.join( __dirname, 'calypso', 'server', 'bundler', 'extensions-loader' )
 			},
 			{
-				include: path.join( __dirname, 'calypso', 'client/sections.js' ),
-				use: {
-					loader: path.join( __dirname, 'calypso', 'server', 'bundler', 'sections-loader' ),
-					options: { forceRequire: true, onlyIsomorphic: true },
-				},
-			},
-			{
 				test: /\.html$/,
 				loader: 'html-loader'
 			},
