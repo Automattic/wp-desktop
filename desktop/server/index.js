@@ -30,7 +30,7 @@ var mainWindow = null;
 function showAppWindow() {
 	const preloadFile = path.resolve( path.join( __dirname, '..', '..', 'public_desktop', 'preload.js' ) );
 	let appUrl = Config.server_url + ':' + Config.server_port;
-	let lastLocation = Settings.getSetting( settingConstants.LAST_LOCATION );
+	let lastLocation = skipCriticalStartupLocations( Settings.getSetting( settingConstants.LAST_LOCATION ) );
 
 	if ( lastLocation && isValidLastLocation( lastLocation ) ) {
 		appUrl += lastLocation;
@@ -111,6 +111,32 @@ function startServer( started_cb ) {
 	server.start( app, function() {
 		started_cb( showAppWindow() );
 	} );
+}
+
+/**
+ * Modify the location in order to 
+ */
+function skipCriticalStartupLocations ( loc ) {
+	if ( typeof loc !== 'string' ) {
+		return loc;
+	}
+
+	if ( loc.startsWith( '/block-editor/post/' ) ) {
+		let newLoc = loc.substr(0, loc.lastIndexOf('/')).replace('/block-editor/post/', '/posts/');
+		return newLoc;
+	}
+
+	if ( loc.startsWith( '/block-editor/page/' ) ) {
+		let newLoc = loc.substr(0, loc.lastIndexOf('/')).replace('/block-editor/page/', '/pages/');
+		return newLoc;
+	}
+
+	if ( loc.startsWith( '/customize/' ) ) {
+		let newLoc = loc.replace('/customize/', '/posts/');
+		return newLoc;
+	}
+
+	return loc;
 }
 
 function isValidLastLocation( loc ) {
