@@ -114,7 +114,9 @@ function startServer( started_cb ) {
 }
 
 /**
- * Modify the location in order to 
+ * Temp fix: this function modifies the location in order to skip the ones that
+ * trigger a new login request (see https://github.com/Automattic/wp-desktop/issues/582)
+ * To be removed as soon as a proper fix lands in Calypso.
  */
 function skipCriticalStartupLocations ( loc ) {
 	if ( typeof loc !== 'string' ) {
