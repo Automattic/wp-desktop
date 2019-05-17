@@ -28,7 +28,6 @@
     "wordpress",
     "wordpress.com"
   ],
-  "browserslist": "electron 1.7.16",
   "devDependencies": {
     "@automattic/calypso-build": "2.0.0",
     "asana-phrase": "^0.0.8",
