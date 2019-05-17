@@ -62,7 +62,7 @@ dev-server: checks
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
 	"$(MAKE) calypso-dev NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV)" \
-	"wait-on http://localhost:3000 && $(MAKE) build-desktop BROWSERSLIST="electron $(node -p "require('electron/package.json').version")" NODE_ENV=$(NODE_ENV)" \
+	"wait-on http://localhost:3000 && $(MAKE) build-desktop BROWSERSLIST=\"electron \$\(node -p \"require\('electron/package.json'\).version\"\)\" NODE_ENV=$(NODE_ENV)" \
 
 # Start app in dev mode
 dev: NODE_ENV = development
@@ -87,7 +87,7 @@ endif
 
 # Build calypso bundle
 build-calypso:
-	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) BROWSERSLIST="electron $(node -p "require('electron/package.json').version")" npm run -s build
+	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) BROWSERSLIST="electron \$(node -p "require('electron/package.json').version")" npm run -s build
 
 	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
@@ -103,7 +103,7 @@ ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
 endif
 
-	NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client $(THIS_DIR)$/node_modules$/.bin$/@automattic$/calypso-build --config $(THIS_DIR)$/webpack.config.js
+	NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client $(THIS_DIR)$/node_modules$/.bin$/calypso-build --config $(THIS_DIR)$/webpack.config.js
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
@@ -156,7 +156,7 @@ test: rebuild-deps
 
 	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
 
-	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client $(THIS_DIR)$/node_modules$/.bin$/@automattic$/calypso-build --mode production --config .$/webpack.config.test.js
+	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client $(THIS_DIR)$/node_modules$/.bin$/calypso-build --mode production --config .$/webpack.config.test.js
 	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
 
 distclean: clean
