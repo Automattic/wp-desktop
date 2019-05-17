@@ -3,7 +3,6 @@
  */
 var path = require( 'path' );
 var webpack = require( 'webpack' );
-var fs = require('fs');
 
 module.exports = {
 	target: 'node',
