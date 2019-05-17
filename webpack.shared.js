@@ -26,7 +26,7 @@ module.exports = {
 				loader: 'html-loader'
 			},
 			{
-				test: /\.jsx?$/,
+				test: /\.[jt]sx?$/,
 				loader: 'babel-loader',
 				exclude: /node_modules/
 			},
@@ -55,7 +55,7 @@ module.exports = {
 		'devdocs/components-usage-stats.json'
 	],
 	resolve: {
-		extensions: [ '.js', '.jsx', '.json' ],
+		extensions: [ '.js', '.jsx', '.json', '.ts', '.tsx' ],
 		modules: [
 			'node_modules',
 			path.join( __dirname, 'calypso', 'node_modules' ),

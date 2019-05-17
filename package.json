@@ -65,6 +65,7 @@
     "xvfb-maybe": "0.2.1"
   },
   "dependencies": {
+    "@babel/preset-typescript": "7.3.3",
     "debug": "2.6.8",
     "electron-fetch": "1.2.1",
     "electron-spellchecker": "github:ssbc/electron-spellchecker-prebuilt",
@@ -77,7 +78,8 @@
     "portscanner": "1.2.0",
     "pug": "2.0.0-rc.4",
     "semver": "5.6.0",
-    "superagent": "1.8.5"
+    "superagent": "1.8.5",
+    "typescript": "3.4.5"
   },
   "build": {
     "productName": "WordPress.com",
