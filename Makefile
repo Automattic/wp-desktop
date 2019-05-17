@@ -19,6 +19,8 @@ RESET = `tput sgr0`
 
 CALYPSO_DIR := $(THIS_DIR)/calypso
 
+BROWSERSLIST_QUERY = 'electron $(shell node -p "require('electron/package.json').version" | grep -Eo "([0-9]+\.[0-9]+)")'
+
 CHECKMARK = ✓
 
 # Environment Variables
@@ -62,7 +64,7 @@ dev-server: checks
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
 	"$(MAKE) calypso-dev NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV)" \
-	"wait-on http://localhost:3000 && $(MAKE) build-desktop BROWSERSLIST=\"electron \$\(node -p \"require\('electron/package.json'\).version\"\)\" NODE_ENV=$(NODE_ENV)" \
+	"wait-on http://localhost:3000 && $(MAKE) build-desktop BROWSERSLIST=$(BROWSERSLIST_QUERY) NODE_ENV=$(NODE_ENV)" \
 
 # Start app in dev mode
 dev: NODE_ENV = development
@@ -87,7 +89,7 @@ endif
 
 # Build calypso bundle
 build-calypso:
-	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) BROWSERSLIST="electron \$(node -p "require('electron/package.json').version")" npm run -s build
+	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) BROWSERSLIST=$(BROWSERSLIST_QUERY) npm run -s build
 
 	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
