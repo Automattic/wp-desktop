@@ -98,7 +98,7 @@
           "server/pages/**/*",
           "!server/pages/test",
           "!server/pages/README.md",
-          "server/bundler/assets.json",
+          "server/bundler/assets-fallback.json",
           "config/*(secrets|_shared|desktop).json"
         ]
       }
