@@ -61,7 +61,7 @@ module.exports = {
 		'devdocs/components-usage-stats.json',
 	],
 	resolve: {
-		extensions: [ '.js', '.jsx', '.json' ],
+		extensions: [ '.json', '.js', '.jsx', '.ts', '.tsx' ],
 		modules: [
 			'node_modules',
 			path.join( __dirname, 'calypso', 'node_modules' ),

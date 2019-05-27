@@ -104,8 +104,9 @@ build-desktop:
 ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
 endif
+	@echo "Node path: $(NODE_PATH)"
 
-	NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client $(THIS_DIR)$/node_modules$/.bin$/calypso-build --config $(THIS_DIR)$/webpack.config.js
+	NODE_PATH=$(NODE_PATH)$(ENV_PATH_SEP)calypso$/server$(ENV_PATH_SEP)calypso$/client $(THIS_DIR)$/node_modules$/.bin$/calypso-build --config $(THIS_DIR)$/webpack.config.js
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
