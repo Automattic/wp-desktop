@@ -22,7 +22,7 @@ var options = {
 		ignored: /node_modules/,
 	},
 	target: 'electron-main',
-	mode: process.env.NODE_ENV,
+	mode: isDevelopment ? 'development' : 'production',
 };
 
 module.exports = Object.assign( shared, options );
