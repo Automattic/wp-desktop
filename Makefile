@@ -19,14 +19,16 @@ RESET = `tput sgr0`
 
 CALYPSO_DIR := $(THIS_DIR)/calypso
 
+BROWSERSLIST_QUERY = 'electron $(shell node -p "require('electron/package.json').version" | grep -Eo "([0-9]+\.[0-9]+)")'
+
 CHECKMARK = ✓
 
 # Environment Variables
-CONFIG_ENV = 
+CONFIG_ENV =
 CALYPSO_ENV = desktop
 NODE_ENV = production
-BUILD_PLATFORM = 
-DEBUG = 
+BUILD_PLATFORM =
+DEBUG =
 TEST_PRODUCTION_BINARY = false
 MINIFY_JS = true
 NODE_ARGS = --max_old_space_size=8192
@@ -62,12 +64,12 @@ dev-server: checks
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
 	"$(MAKE) calypso-dev NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV)" \
-	"wait-on http://localhost:3000 && $(MAKE) build-desktop NODE_ENV=$(NODE_ENV)" \
+	"wait-on http://localhost:3000 && $(MAKE) build-desktop BROWSERSLIST=$(BROWSERSLIST_QUERY) NODE_ENV=$(NODE_ENV)" \
 
 # Start app in dev mode
 dev: NODE_ENV = development
 dev: DEBUG = desktop:*
-dev: 
+dev:
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
 
@@ -82,17 +84,17 @@ else
 	$(eval EXTENDED = true)
 endif
 	@node -e "const base = require('$(BASE_CONFIG)'); let env; try { env = require('$(ENV_CONFIG)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
-	
+
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
-build-calypso: 
-	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
+build-calypso:
+	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) BROWSERSLIST=$(BROWSERSLIST_QUERY) npm run -s build
 
 	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
 # Run Calypso server
-calypso-dev: 
+calypso-dev:
 	@echo "$(CYAN)Starting Calypso...$(RESET)"
 
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
@@ -102,8 +104,9 @@ build-desktop:
 ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
 endif
+	@echo "Node path: $(NODE_PATH)"
 
-	NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)$/webpack.config.js
+	NODE_PATH=$(NODE_PATH)$(ENV_PATH_SEP)calypso$/server$(ENV_PATH_SEP)calypso$/client $(THIS_DIR)$/node_modules$/.bin$/calypso-build --config $(THIS_DIR)$/webpack.config.js
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
@@ -113,7 +116,7 @@ package:
 
 	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
 
-# Combined steps for building app 
+# Combined steps for building app
 build: build-source package
 
 # Perform checks
@@ -128,7 +131,7 @@ ifneq (43452,$(shell node -p "require('$(CALYPSO_DIR)$/config$/secrets.json').de
 	$(error "desktop_oauth_client_id" must be "43452" in $(CALYPSO_DIR)$/config$/secrets.json)
 endif
 endif
-else 
+else
 	$(error $(CALYPSO_DIR)$/config$/secrets.json does not exist)
 endif
 
@@ -142,7 +145,7 @@ CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 check-node-version-parity:
 ifneq ("$(CALYPSO_NODE_VERSION)", "$(CURRENT_NODE_VERSION)")
 	$(error Please ensure that wp-desktop is using NodeJS $(CALYPSO_NODE_VERSION) to match wp-calypso before continuing. 	Current NodeJS version: $(CURRENT_NODE_VERSION))
-else 
+else
 	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
 endif
 
@@ -155,8 +158,8 @@ test: rebuild-deps
 	@echo "$(CYAN)Building test...$(RESET)"
 
 	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
-	
-	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --mode production --config .$/webpack.config.test.js
+
+	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client $(THIS_DIR)$/node_modules$/.bin$/calypso-build --mode production --config .$/webpack.config.test.js
 	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
 
 distclean: clean

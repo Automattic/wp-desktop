@@ -1,9 +1,15 @@
 /**
- * External Dependencies
+ * External dependencies
  */
 var path = require( 'path' );
 var webpack = require( 'webpack' );
 var fs = require( 'fs' );
+
+/**
+ * Internal dependencies
+ */
+const TranspileConfig = require( '@automattic/calypso-build/webpack/transpile' );
+const { workerCount } = require( './calypso/webpack.common' );
 
 module.exports = {
 	target: 'node',
@@ -25,11 +31,12 @@ module.exports = {
 				test: /\.html$/,
 				loader: 'html-loader',
 			},
-			{
-				test: /\.[jt]sx?$/,
-				loader: 'babel-loader',
-				exclude: /node_modules/,
-			},
+			TranspileConfig.loader( {
+				workerCount,
+				presets: [ require.resolve( '@automattic/calypso-build/babel/default.js' ) ],
+				cacheDirectory: true,
+				exclude: /node_modules\//,
+			} ),
 			{
 				test: /\.(sc|sa|c)ss$/,
 				loader: 'ignore-loader',
