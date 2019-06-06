@@ -46,6 +46,7 @@ class AutoUpdater extends Updater {
 		if ( this.beta ) {
 			autoUpdater.channel = 'beta';
 			autoUpdater.allowPrerelease = true;
+			autoUpdater.allowDowngrade = false;
 		}
 	}
 
