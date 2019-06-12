@@ -12,8 +12,7 @@ const debug = require( 'debug' )( 'desktop:app-instance' );
 const config = require( 'lib/config' );
 const platform = require( 'lib/platform' );
 
-function AppInstance() {
-}
+function AppInstance() {}
 
 // This is called whenever another instance is started
 AppInstance.prototype.anotherInstanceStarted = function() {
@@ -25,16 +24,13 @@ AppInstance.prototype.anotherInstanceStarted = function() {
 };
 
 AppInstance.prototype.isSingleInstance = function() {
-	let shouldQuit;
+	const gotTheLock = app.requestSingleInstanceLock();
 
-	shouldQuit = app.makeSingleInstance( this.anotherInstanceStarted.bind( this ) );
-
-	if ( shouldQuit ) {
+	if ( ! gotTheLock ) {
 		debug( 'App is already running, quitting' );
-		app.exit();
+		app.quit();
 		return false;
 	}
-
 	return true;
 };
 
