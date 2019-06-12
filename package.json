@@ -44,7 +44,7 @@
 		"check-node-version": "3.2.0",
 		"concurrently": "3.5.1",
 		"electron": "4.2.4",
-		"electron-builder": "20.32.0",
+		"electron-builder": "20.36.0",
 		"electron-chromedriver": "1.8.0",
 		"electron-mocha": "2.3.1",
 		"electron-packager": "7.7.0",
