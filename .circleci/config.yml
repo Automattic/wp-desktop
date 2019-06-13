@@ -36,9 +36,9 @@ references:
     run:
       name: Decrypt assets
       command: |
-              openssl aes-256-cbc -md md5 -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-              openssl aes-256-cbc -md md5 -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-              openssl aes-256-cbc -md md5 -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+        openssl aes-256-cbc -md md5 -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+        openssl aes-256-cbc -md md5 -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
+        openssl aes-256-cbc -md md5 -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
   npm_restore_cache: &npm_restore_cache
     restore_cache:
       name: Restore npm cache
@@ -56,11 +56,11 @@ references:
     run:
       name: Npm install
       command: |
-              source $HOME/.nvm/nvm.sh
-              nvm use
-              npm ci
-              cd calypso
-              npm ci
+        source $HOME/.nvm/nvm.sh
+        nvm use
+        npm ci
+        cd calypso
+        npm ci
   install_linux_dependencies: &install_linux_dependencies
     run:
       name: Install linux dev dependencies
@@ -83,24 +83,24 @@ references:
     run:
       name: Setup calypso
       command: |
-              git submodule init
-              git submodule update
+        git submodule init
+        git submodule update
 
-              if [ -n "${CALYPSO_HASH}" ]; then
-                cd calypso;
-                git fetch;
-                git checkout ${CALYPSO_HASH};
-              fi
+        if [ -n "${CALYPSO_HASH}" ]; then
+          cd calypso;
+          git fetch;
+          git checkout ${CALYPSO_HASH};
+        fi
   calypso_prepare_cache: &calypso_prepare_cache
     run:
       name: Prepare calypso cache
       command: |
-              if [ -n "${CALYPSO_HASH}" ]; then
-                # cache bust e2e tests
-                uuidgen > calypso-current-hash
-              else
-                git rev-parse @:./calypso > calypso-current-hash
-              fi
+        if [ -n "${CALYPSO_HASH}" ]; then
+          # cache bust e2e tests
+          uuidgen > calypso-current-hash
+        else
+          git rev-parse @:./calypso > calypso-current-hash
+        fi
   calypso_restore_cache: &calypso_restore_cache
     restore_cache:
       name: Restore calypso cache
@@ -110,9 +110,9 @@ references:
     run:
       name: Finalize calypso cache
       command: |
-              if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
-                cp calypso-current-hash calypso-hash
-              fi
+        if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
+          cp calypso-current-hash calypso-hash
+        fi
   calypso_save_cache: &calypso_save_cache
     save_cache:
       name: Save calypso cache
@@ -120,57 +120,57 @@ references:
       paths: *app_cache_paths
   build_sources: &build_sources
     run:
-        name: Build sources
-        no_output_timeout: 30m
-        command: |
-                source $HOME/.nvm/nvm.sh
-                nvm use
+      name: Build sources
+      no_output_timeout: 30m
+      command: |
+        source $HOME/.nvm/nvm.sh
+        nvm use
 
-                # only build the whole bundle when there is no calypso-hash file
-                if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
-                  make build-source CONFIG_ENV=$CONFIG_ENV EMIT_STATS=false MINIFY_JS=$MINIFY_JS NODE_ARGS="$NODE_ARGS"
-                else
-                  make desktop/config.json CONFIG_ENV=$CONFIG_ENV
-                  make build-desktop
-                fi
+        # only build the whole bundle when there is no calypso-hash file
+        if [ "$(cat calypso-current-hash)" != "$(cat calypso-hash)" ]; then
+          make build-source CONFIG_ENV=$CONFIG_ENV EMIT_STATS=false MINIFY_JS=$MINIFY_JS NODE_ARGS="$NODE_ARGS"
+        else
+          make desktop/config.json CONFIG_ENV=$CONFIG_ENV
+          make build-desktop
+        fi
   test: &test
     run:
       name: Test
       command: |
-              set +e
+        set +e
 
-              # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
-              # TODO: We might be able to ignore this once we switched to electron-builders auto-update
-              if [ "$CONFIG_ENV" == "test" ]; then
-                source $HOME/.nvm/nvm.sh
-                nvm use
-                make test
-              fi
+        # At this stage, we can only do canary tests when CONFIG_ENV=test as the electron binary is not signed
+        # TODO: We might be able to ignore this once we switched to electron-builders auto-update
+        if [ "$CONFIG_ENV" == "test" ]; then
+          source $HOME/.nvm/nvm.sh
+          nvm use
+          make test
+        fi
   webhook_notify_success: &webhook_notify_success
     run:
       name: Notify webhook of successful build
       when: on_success
       command: |
-          set +o errexit
-          if [[ $CIRCLE_BRANCH != "tests/"* ]]; then
-            exit
-          fi
-          curl -X POST "https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook" \
-          -H 'Cache-Control: no-cache'	\
-          -H 'Content-Type: application/json'	\
-          -d '{
-              "payload": {
-                "outcome": "'"success"'",
-                "status": "'"success"'",
-                "branch": "'"$BRANCHNAME"'",
-                "build_url": "'"$CIRCLE_BUILD_URL"'",
-                "build_parameters": {
-                  "build_num": '"$CIRCLE_BUILD_NUM"',
-                  "sha": "'"$sha"'",
-                  "calypsoProject": "'"$calypsoProject"'"
-                }
+        set +o errexit
+        if [[ $CIRCLE_BRANCH != "tests/"* ]]; then
+          exit
+        fi
+        curl -X POST "https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook" \
+        -H 'Cache-Control: no-cache'	\
+        -H 'Content-Type: application/json'	\
+        -d '{
+            "payload": {
+              "outcome": "'"success"'",
+              "status": "'"success"'",
+              "branch": "'"$BRANCHNAME"'",
+              "build_url": "'"$CIRCLE_BUILD_URL"'",
+              "build_parameters": {
+                "build_num": '"$CIRCLE_BUILD_NUM"',
+                "sha": "'"$sha"'",
+                "calypsoProject": "'"$calypsoProject"'"
               }
-          }'
+            }
+        }'
   webhook_notify_failed: &webhook_notify_failed
     run:
       name: Notify webhook of failed build
@@ -228,7 +228,7 @@ jobs:
 
   build-release:
     macos:
-      xcode: "9.0"
+      xcode: '10.1.0'
     working_directory: ~/wp-desktop
     environment:
       CONFIG_ENV: release
@@ -279,15 +279,15 @@ jobs:
           environment:
             CSC_LINK: resource/certificates/win.p12
           command: |
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  make package BUILD_PLATFORM=l
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            make package BUILD_PLATFORM=l
       - run:
           name: Release cleanup
           command: |
-                  set +e
-                  rm -rf release/github
-                  rm -rf release/linux-unpacked
+            set +e
+            rm -rf release/github
+            rm -rf release/linux-unpacked
       - persist_to_workspace:
           root: ~/wp-desktop
           paths:
@@ -295,7 +295,7 @@ jobs:
 
   windows:
     macos:
-      xcode: "9.0"
+      xcode: '10.1.0'
     shell: /bin/bash --login
     working_directory: /Users/distiller/wp-desktop
     steps:
@@ -318,21 +318,21 @@ jobs:
           environment:
             WIN_CSC_LINK: resource/certificates/win.p12
             CSC_FOR_PULL_REQUEST: true # don't do this in production
-            USE_HARD_LINKS: "false" # must be string
+            USE_HARD_LINKS: 'false' # must be string
           command: |
-                  set +e
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  make package BUILD_PLATFORM=w
+            set +e
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            make package BUILD_PLATFORM=w
       - run:
           name: Release cleanup
           command: |
-                  set +e
-                  tar -zcvf release/win-unpacked-x64.tar.gz release/win-unpacked
-                  tar -zcvf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
-                  rm -rf release/github
-                  rm -rf release/win-unpacked
-                  rm -rf release/win-ia32-unpacked/
+            set +e
+            tar -zcvf release/win-unpacked-x64.tar.gz release/win-unpacked
+            tar -zcvf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
+            rm -rf release/github
+            rm -rf release/win-unpacked
+            rm -rf release/win-ia32-unpacked/
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
           paths:
@@ -340,7 +340,7 @@ jobs:
 
   mac:
     macos:
-      xcode: "9.0"
+      xcode: '10.1.0'
     shell: /bin/bash --login
     working_directory: /Users/distiller/wp-desktop
     steps:
@@ -364,10 +364,10 @@ jobs:
             CSC_LINK: resource/certificates/mac.p12
             CSC_FOR_PULL_REQUEST: true # don't do this in production
           command: |
-                  set +e
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  make package BUILD_PLATFORM=m
+            set +e
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            make package BUILD_PLATFORM=m
       # Temporarily disable the test
       # TODO: Fixme – seems to be an issue with `portscanner`
       # - run:
@@ -379,15 +379,15 @@ jobs:
       - run:
           name: e2e Tests
           command: |
-                  export BINARY_PATH="./release/mac/WordPress.com.app/Contents/MacOS/WordPress.com"
-                  ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
-                  ./node_modules/.bin/mocha test/tests/e2e.js
+            export BINARY_PATH="./release/mac/WordPress.com.app/Contents/MacOS/WordPress.com"
+            ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
+            ./node_modules/.bin/mocha test/tests/e2e.js
       - run:
           name: Release cleanup
           command: |
-                  set +e
-                  rm -rf release/github
-                  rm -rf release/mac
+            set +e
+            rm -rf release/github
+            rm -rf release/mac
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
           paths:
@@ -402,7 +402,6 @@ jobs:
           at: /wp-desktop
       - store_artifacts:
           path: release
-
 
 workflows:
   version: 2
@@ -422,7 +421,7 @@ workflows:
               only: /.*/
       - windows:
           requires:
-          - build-release
+            - build-release
           filters:
             branches:
               ignore: /tests\/.*/
@@ -430,7 +429,7 @@ workflows:
               only: /.*/
       - linux:
           requires:
-          - build-release
+            - build-release
           filters:
             branches:
               ignore: /tests\/.*/
@@ -438,7 +437,7 @@ workflows:
               only: /.*/
       - mac:
           requires:
-          - build-release
+            - build-release
           filters:
             branches:
               ignore: /tests\/.*/
