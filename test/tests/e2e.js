@@ -1,6 +1,5 @@
 const assert = require( 'chai' ).assert;
-const webdriver = require( 'selenium-webdriver' );
-
+const { Builder, promise } = require( 'selenium-webdriver' );
 const EditorPage = require( './lib/pages/editor-page' );
 const LoginPage = require( './lib/pages/login-page' );
 const PostEditorToolbarComponent = require( './lib/components/post-editor-toolbar-component' );
@@ -8,20 +7,20 @@ const NavBarComponent = require( './lib/components/nav-bar-component' );
 const ProfilePage = require( './lib/pages/profile-page' );
 const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
-
 const dataHelper = require( './lib/data-helper' );
-const driverConfig = new webdriver.Builder()
+
+const driverConfig = new Builder()
 	.usingServer( 'http://localhost:9515' )
 	.withCapabilities( {
 		chromeOptions: {
 			// Here is the path to your Electron binary.
 			binary: process.env.BINARY_PATH,
-			args: [ '--disable-renderer-backgrounding', '--disable-http-cache', '--start-maximized' ]
-		}
+			args: [ '--disable-renderer-backgrounding', '--disable-http-cache', '--start-maximized' ],
+		},
 	} )
 	.forBrowser( 'electron' );
 
-const tempDriver =  driverConfig.build();
+const tempDriver = driverConfig.build();
 let loggedInUrl;
 let driver;
 
@@ -62,11 +61,7 @@ describe( 'Publish a New Post', function() {
 		await editorPage.enterContent( blogPostQuote + '\n' );
 
 		let errorShown = await editorPage.errorDisplayed();
-		return assert.strictEqual(
-			errorShown,
-			false,
-			'There is an error shown on the editor page!'
-		);
+		return assert.strictEqual( errorShown, false, 'There is an error shown on the editor page!' );
 	} );
 
 	step( 'Can publish and view content', async function() {
