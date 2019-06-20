@@ -24,11 +24,25 @@ const tempDriver = driverConfig.build();
 let loggedInUrl;
 let driver;
 
+async function dismissAlertIfPresent( browser ) {
+	try {
+		await browser
+			.switchTo()
+			.alert()
+			.dismiss();
+		return true;
+	} catch ( error ) {
+		return false;
+	}
+}
+
 before( async function() {
 	this.timeout( 30000 );
+	await dismissAlertIfPresent( tempDriver );
 	await tempDriver.quit();
 	driver = await driverConfig.build();
-	return driver.sleep( 2000 );
+	await driver.sleep( 2000 );
+	return await dismissAlertIfPresent( driver );
 } );
 
 describe( 'User Can log in', function() {
