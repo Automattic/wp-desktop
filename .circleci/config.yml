@@ -376,12 +376,12 @@ jobs:
       #             source $HOME/.nvm/nvm.sh
       #             nvm use
       #             make test TEST_PRODUCTION_BINARY=true
-      - run:
-          name: e2e Tests
-          command: |
-                  export BINARY_PATH="./release/mac/WordPress.com.app/Contents/MacOS/WordPress.com"
-                  ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
-                  ./node_modules/.bin/mocha test/tests/e2e.js
+      # - run:
+      #    name: e2e Tests
+      #    command: |
+      #            export BINARY_PATH="./release/mac/WordPress.com.app/Contents/MacOS/WordPress.com"
+      #            ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
+      #            ./node_modules/.bin/mocha test/tests/e2e.js
       - run:
           name: Release cleanup
           command: |
