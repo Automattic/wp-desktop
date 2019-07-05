@@ -10,7 +10,6 @@ const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
 
 const dataHelper = require( './lib/data-helper' );
-const videoRecorder = require( './lib/video-recorder' );
 const driverConfig = new webdriver.Builder()
 	.usingServer( 'http://localhost:9515' )
 	.withCapabilities( {
@@ -27,8 +26,6 @@ let loggedInUrl;
 let driver;
 
 before( async function() {
-	videoRecorder.startDisplay();
-	videoRecorder.startVideo();
 	this.timeout( 30000 );
 	await tempDriver.quit();
 	driver = await driverConfig.build();
@@ -110,15 +107,7 @@ describe( 'Can Log Out', function() {
 	} );
 } );
 
-afterEach( async function() {
-	if ( this.currentTest && this.currentTest.state === 'failed' ) {
-		await videoRecorder.stopVideo( this.currentTest );
-	}
-} );
-
 after( async function() {
 	this.timeout( 30000 );
-	videoRecorder.stopVideo( this.currentTest );
-	videoRecorder.stopDisplay();
 	return await driver.quit();
 } );
