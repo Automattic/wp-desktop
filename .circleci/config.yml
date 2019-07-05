@@ -393,7 +393,7 @@ jobs:
           paths:
             - release
       - store_artifacts:
-          path: screenshots
+          path: screenshots/
 
   artifacts:
     docker:
