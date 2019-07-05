@@ -64,7 +64,7 @@ describe( 'Publish a New Post', function() {
 		let errorShown = await editorPage.errorDisplayed();
 		return assert.strictEqual(
 			errorShown,
-			false,
+			true,
 			'There is an error shown on the editor page!'
 		);
 	} );
