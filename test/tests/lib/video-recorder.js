@@ -3,11 +3,10 @@
 /**
  * External dependencies
  */
-import config from 'config';
-import path from 'path';
-import fs from 'fs';
-import child_process from 'child_process';
-import ffmpeg from 'ffmpeg-static';
+const path = require( 'path' );
+const fs = require( 'fs' );
+const child_process = require( 'child_process' );
+const ffmpeg = require( 'ffmpeg-static' );
 
 let file;
 let xvfb;
@@ -28,9 +27,7 @@ function createDir( dir ) {
 }
 
 function isVideoEnabled() {
-	const video = config.has( 'useTestVideo' )
-		? config.get( 'useTestVideo' )
-		: process.env.TEST_VIDEO;
+	const video = process.env.CI;
 	return video === 'true';
 }
 
