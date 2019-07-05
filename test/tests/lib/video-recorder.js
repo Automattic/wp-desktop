@@ -9,7 +9,6 @@ const child_process = require( 'child_process' );
 const ffmpeg = require( 'ffmpeg-static' );
 
 let file;
-let xvfb;
 let ffVideo;
 
 exports.createDir = function( dir ) {
@@ -29,36 +28,6 @@ exports.createDir = function( dir ) {
 exports.isVideoEnabled = function() {
 	const video = process.env.CI;
 	return video === 'true';
-};
-
-exports.getFreeDisplay = function() {
-	let i = 99 + Math.round( Math.random() * 100 );
-	while ( fs.existsSync( `/tmp/.X${ i }-lock` ) ) {
-		i++;
-	}
-	global.displayNum = i;
-};
-
-exports.startDisplay = function() {
-	if ( ! this.isVideoEnabled() ) {
-		return;
-	}
-	this.getFreeDisplay();
-	xvfb = child_process.spawn( 'Xvfb', [
-		'-ac',
-		':' + global.displayNum,
-		'-screen',
-		'0',
-		'1600x1200x24',
-		'+extension',
-		'RANDR',
-	] );
-};
-
-exports.stopDisplay = function() {
-	if ( this.isVideoEnabled() && xvfb ) {
-		xvfb.kill();
-	}
 };
 
 exports.startVideo = function() {

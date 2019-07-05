@@ -1,10 +1,5 @@
 const videoRecorder = require( './video-recorder' );
 
-// Start xvfb display
-before( async function() {
-	await videoRecorder.startDisplay();
-} );
-
 // Start recording
 before( async function() {
 	await videoRecorder.startVideo();
@@ -20,9 +15,4 @@ afterEach( async function() {
 // Stop video
 after( async function() {
 	await videoRecorder.stopVideo();
-} );
-
-// Stop xvfb display
-after( async function() {
-	await videoRecorder.stopDisplay();
 } );
