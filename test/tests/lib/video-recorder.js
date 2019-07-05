@@ -12,7 +12,7 @@ let file;
 let xvfb;
 let ffVideo;
 
-function createDir( dir ) {
+exports.createDir = function( dir ) {
 	dir = path.resolve( dir );
 	if ( fs.existsSync( dir ) ) return dir;
 	try {
@@ -20,30 +20,30 @@ function createDir( dir ) {
 		return dir;
 	} catch ( error ) {
 		if ( error.code === 'ENOENT' ) {
-			return createDir( path.dirname( dir ) ) && createDir( dir );
+			return this.createDir( path.dirname( dir ) ) && createDir( dir );
 		}
 		throw error;
 	}
-}
+};
 
-function isVideoEnabled() {
+exports.isVideoEnabled = function() {
 	const video = process.env.CI;
 	return video === 'true';
-}
+};
 
-function getFreeDisplay() {
+exports.getFreeDisplay = function() {
 	let i = 99 + Math.round( Math.random() * 100 );
 	while ( fs.existsSync( `/tmp/.X${ i }-lock` ) ) {
 		i++;
 	}
 	global.displayNum = i;
-}
+};
 
-export function startDisplay() {
-	if ( ! isVideoEnabled() ) {
+exports.startDisplay = function() {
+	if ( ! this.isVideoEnabled() ) {
 		return;
 	}
-	getFreeDisplay();
+	this.getFreeDisplay();
 	xvfb = child_process.spawn( 'Xvfb', [
 		'-ac',
 		':' + global.displayNum,
@@ -53,16 +53,16 @@ export function startDisplay() {
 		'+extension',
 		'RANDR',
 	] );
-}
+};
 
-export function stopDisplay() {
-	if ( isVideoEnabled() && xvfb ) {
+exports.stopDisplay = function() {
+	if ( this.isVideoEnabled() && xvfb ) {
 		xvfb.kill();
 	}
-}
+};
 
-export function startVideo() {
-	if ( ! isVideoEnabled() ) {
+exports.startVideo = function() {
+	if ( ! this.isVideoEnabled() ) {
 		return;
 	}
 	const dateTime = new Date()
@@ -71,7 +71,7 @@ export function startVideo() {
 		.replace( /:/g, '-' );
 	const fileName = `${ global.displayNum }-${ dateTime }.mpg`;
 	file = path.resolve( path.join( './screenshots/videos', fileName ) );
-	createDir( path.dirname( file ) );
+	this.createDir( path.dirname( file ) );
 	ffVideo = child_process.spawn( ffmpeg.path, [
 		'-f',
 		'x11grab',
@@ -87,10 +87,10 @@ export function startVideo() {
 		'error',
 		file,
 	] );
-}
+};
 
-export function stopVideo( currentTest = null ) {
-	if ( ! isVideoEnabled() ) {
+exports.stopVideo = function( currentTest = null ) {
+	if ( ! this.isVideoEnabled() ) {
 		return;
 	}
 	if ( currentTest && ffVideo ) {
@@ -117,4 +117,4 @@ export function stopVideo( currentTest = null ) {
 			}
 		} );
 	}
-}
+};

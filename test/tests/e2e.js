@@ -22,7 +22,7 @@ const driverConfig = new webdriver.Builder()
 	} )
 	.forBrowser( 'electron' );
 
-const tempDriver =  driverConfig.build();
+const tempDriver = driverConfig.build();
 let loggedInUrl;
 let driver;
 
@@ -110,9 +110,15 @@ describe( 'Can Log Out', function() {
 	} );
 } );
 
+afterEach( async function() {
+	if ( this.currentTest && this.currentTest.state === 'failed' ) {
+		await videoRecorder.stopVideo( this.currentTest );
+	}
+} );
+
 after( async function() {
 	this.timeout( 30000 );
-	videoRecorder.stopVideo();
+	videoRecorder.stopVideo( this.currentTest );
 	videoRecorder.stopDisplay();
 	return await driver.quit();
 } );
