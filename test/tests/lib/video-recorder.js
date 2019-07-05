@@ -43,14 +43,14 @@ exports.startVideo = function() {
 	this.createDir( path.dirname( file ) );
 	ffVideo = child_process.spawn( ffmpeg.path, [
 		'-f',
-		'x11grab',
+		'avfoundation',
 		'-video_size',
 		'1440x1000',
 		'-r',
 		30,
 		'-i',
-		':' + global.displayNum,
-		'-pix_fmt',
+		'default:none',
+		'-pixel_format',
 		'yuv420p',
 		'-loglevel',
 		'error',
