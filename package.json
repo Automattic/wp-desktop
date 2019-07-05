@@ -51,6 +51,7 @@
     "electron-rebuild": "1.8.2",
     "eslint": "2.13.1",
     "eslint-plugin-react": "5.2.2",
+    "ffmpeg-static": "2.4.0",
     "fs-extra": "7.0.1",
     "ignore-loader": "0.1.2",
     "json-loader": "0.5.7",
