@@ -20,7 +20,7 @@ exports.createDir = function( dir ) {
 		return dir;
 	} catch ( error ) {
 		if ( error.code === 'ENOENT' ) {
-			return this.createDir( path.dirname( dir ) ) && createDir( dir );
+			return this.createDir( path.dirname( dir ) ) && this.createDir( dir );
 		}
 		throw error;
 	}
