@@ -29,7 +29,7 @@ before( async function() {
 	this.timeout( 30000 );
 	await tempDriver.quit();
 	driver = await driverConfig.build();
-	return driver.sleep( 2000 );
+	return await driver.sleep( 2000 );
 } );
 
 describe( 'User Can log in', function() {

@@ -379,6 +379,7 @@ jobs:
       - run:
           name: e2e Tests
           command: |
+                  launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist
                   killall
                   export BINARY_PATH="./release/mac/WordPress.com.app/Contents/MacOS/WordPress.com"
                   ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
