@@ -38,7 +38,7 @@ exports.startVideo = function() {
 		.toISOString()
 		.split( '.' )[ 0 ]
 		.replace( /:/g, '-' );
-	const fileName = `${ global.displayNum }-${ dateTime }.mpg`;
+	const fileName = `e2e-test-run-${ dateTime }.mpg`;
 	file = path.resolve( path.join( './screenshots/videos', fileName ) );
 	this.createDir( path.dirname( file ) );
 	ffVideo = child_process.spawn( ffmpeg.path, [
