@@ -10,6 +10,7 @@ const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
 
 const dataHelper = require( './lib/data-helper' );
+const videoRecorder = require( './lib/video-recorder' );
 const driverConfig = new webdriver.Builder()
 	.usingServer( 'http://localhost:9515' )
 	.withCapabilities( {
@@ -34,6 +35,12 @@ before( async function() {
 
 describe( 'User Can log in', function() {
 	this.timeout( 30000 );
+
+	// Start recording
+	before( async function() {
+		await videoRecorder.startVideo();
+	} );
+
 	step( 'Can log in', async function() {
 		let loginPage = new LoginPage( driver );
 		await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
@@ -50,6 +57,11 @@ describe( 'Publish a New Post', function() {
 	const blogPostTitle = dataHelper.randomPhrase();
 	const blogPostQuote =
 		'“Whenever you find yourself on the side of the majority, it is time to pause and reflect.”\n- Mark Twain';
+
+	// Start recording
+	before( async function() {
+		await videoRecorder.startVideo();
+	} );
 
 	step( 'Can navigate to post editor', async function() {
 		const navbarComponent = await NavBarComponent.Expect( driver );
@@ -92,6 +104,12 @@ describe( 'Publish a New Post', function() {
 
 describe( 'Can Log Out', function() {
 	this.timeout( 30000 );
+
+	// Start recording
+	before( async function() {
+		await videoRecorder.startVideo();
+	} );
+
 	step( 'Can view profile to log out', async function() {
 		let navbarComponent = await NavBarComponent.Expect( driver );
 		await navbarComponent.clickProfileLink();

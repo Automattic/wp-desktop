@@ -379,7 +379,15 @@ jobs:
       - run:
           name: e2e Tests
           command: |
-                  launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist
+                  if [[ $(plutil -convert xml1 -o - ~/Library/Preferences/ByHost/com.apple.notificationcenterui.*.plist | grep false) ]]; then
+                    osascript <<EOD
+                      tell application "System Events" to tell process "SystemUIServer"
+                        key down option
+                        click menu bar item 1 of menu bar 1
+                        key up option
+                      end tell
+                  EOD
+                  fi
                   killall
                   export BINARY_PATH="./release/mac/WordPress.com.app/Contents/MacOS/WordPress.com"
                   ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
