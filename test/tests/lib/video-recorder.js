@@ -74,7 +74,7 @@ exports.stopVideo = function( currentTest = null ) {
 
 		fs.rename( file, newFile, function( err ) {
 			if ( err ) {
-				console.log( 'Screencast Video:' + file );
+				return console.log( 'Screencast Video:' + file );
 			}
 			console.log( 'Screencast Video:' + newFile );
 		} );
