@@ -58,32 +58,11 @@ exports.startVideo = function() {
 	] );
 };
 
-exports.stopVideo = function( currentTest = null ) {
+exports.stopVideo = function() {
 	if ( ! this.isVideoEnabled() ) {
 		return;
 	}
-	if ( currentTest && ffVideo ) {
-		const currentTestName = currentTest.title.replace( /[^a-z0-9]/gi, '-' ).toLowerCase();
-		const dateTime = new Date()
-			.toISOString()
-			.split( '.' )[ 0 ]
-			.replace( /:/g, '-' );
-		const fileName = `${ currentTestName }-${ dateTime }.mpg`;
-		const newFile = path.resolve( path.join( './screenshots/videos', fileName ) );
+	if ( ffVideo && ! ffVideo.killed ) {
 		ffVideo.kill();
-
-		fs.rename( file, newFile, function( err ) {
-			if ( err ) {
-				return console.log( 'Screencast Video:' + file );
-			}
-			console.log( 'Screencast Video:' + newFile );
-		} );
-	} else if ( ffVideo && ! ffVideo.killed ) {
-		ffVideo.kill();
-		fs.unlink( file, function( err ) {
-			if ( err ) {
-				console.log( 'Deleting of file for passed test failed.' );
-			}
-		} );
 	}
 };
