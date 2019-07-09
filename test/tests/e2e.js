@@ -10,6 +10,7 @@ const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
 
 const dataHelper = require( './lib/data-helper' );
+const videoRecorder = require( './lib/video-recorder' );
 const driverConfig = new webdriver.Builder()
 	.usingServer( 'http://localhost:9515' )
 	.withCapabilities( {
@@ -21,7 +22,7 @@ const driverConfig = new webdriver.Builder()
 	} )
 	.forBrowser( 'electron' );
 
-const tempDriver =  driverConfig.build();
+const tempDriver = driverConfig.build();
 let loggedInUrl;
 let driver;
 
@@ -29,11 +30,12 @@ before( async function() {
 	this.timeout( 30000 );
 	await tempDriver.quit();
 	driver = await driverConfig.build();
-	return driver.sleep( 2000 );
+	return await driver.sleep( 2000 );
 } );
 
 describe( 'User Can log in', function() {
 	this.timeout( 30000 );
+
 	step( 'Can log in', async function() {
 		let loginPage = new LoginPage( driver );
 		await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
@@ -92,6 +94,7 @@ describe( 'Publish a New Post', function() {
 
 describe( 'Can Log Out', function() {
 	this.timeout( 30000 );
+
 	step( 'Can view profile to log out', async function() {
 		let navbarComponent = await NavBarComponent.Expect( driver );
 		await navbarComponent.clickProfileLink();
