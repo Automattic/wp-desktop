@@ -1,6 +1,5 @@
 const assert = require( 'chai' ).assert;
 const webdriver = require( 'selenium-webdriver' );
-
 const EditorPage = require( './lib/pages/editor-page' );
 const LoginPage = require( './lib/pages/login-page' );
 const PostEditorToolbarComponent = require( './lib/components/post-editor-toolbar-component' );
@@ -10,14 +9,18 @@ const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
 
 const dataHelper = require( './lib/data-helper' );
-const videoRecorder = require( './lib/video-recorder' );
 const driverConfig = new webdriver.Builder()
 	.usingServer( 'http://localhost:9515' )
 	.withCapabilities( {
 		chromeOptions: {
 			// Here is the path to your Electron binary.
 			binary: process.env.BINARY_PATH,
-			args: [ '--disable-renderer-backgrounding', '--disable-http-cache', '--start-maximized' ]
+			args: [
+				'--disable-renderer-backgrounding',
+				'--disable-http-cache',
+				'--start-maximized',
+				'--user-agent="Mozilla/5.0\ \(wp-e2e-tests\)\ AppleWebKit/537.36\ \(KHTML,\ like Gecko\)\ WordPressDesktop/4.2.0\ Chrome/58.0.3029.110\ Electron/1.7.16\ Safari/537.36"'
+			]
 		}
 	} )
 	.forBrowser( 'electron' );
