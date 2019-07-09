@@ -10,7 +10,6 @@ const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
 
 const dataHelper = require( './lib/data-helper' );
-const videoRecorder = require( './lib/video-recorder' );
 const driverConfig = new webdriver.Builder()
 	.usingServer( 'http://localhost:9515' )
 	.withCapabilities( {
