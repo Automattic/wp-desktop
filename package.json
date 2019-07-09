@@ -74,7 +74,7 @@
     "electron-spellchecker": "github:ssbc/electron-spellchecker-prebuilt",
     "electron-updater": "3.1.2",
     "express": "4.15.3",
-    "js-yaml": "3.12.0",
+    "js-yaml": "3.13.1",
     "lodash.clonedeep": "4.5.0",
     "lodash.debounce": "4.0.8",
     "nan": "2.11.1",
