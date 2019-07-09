@@ -37,7 +37,7 @@
     "@babel/preset-typescript": "7.3.3",
     "asana-phrase": "0.0.8",
     "asar": "0.11.0",
-    "babel-eslint": "8.2.2",
+    "babel-eslint": "8.2.6",
     "babel-loader": "8.0.0-beta.2",
     "chai": "3.5.0",
     "chalk": "2.3.1",
