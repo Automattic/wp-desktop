@@ -1,6 +1,6 @@
 const assert = require( 'chai' ).assert;
 const webdriver = require( 'selenium-webdriver' );
-
+const chrome = require( 'selenium-webdriver/chrome' );
 const EditorPage = require( './lib/pages/editor-page' );
 const LoginPage = require( './lib/pages/login-page' );
 const PostEditorToolbarComponent = require( './lib/components/post-editor-toolbar-component' );
@@ -10,9 +10,13 @@ const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
 
 const dataHelper = require( './lib/data-helper' );
-const videoRecorder = require( './lib/video-recorder' );
+let options = new chrome.Options();
+options.addArguments(
+	'user-agent=Mozilla/5.0 (wp-e2e-tests) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Electron/1.7.15 Safari/537.36'
+);
 const driverConfig = new webdriver.Builder()
 	.usingServer( 'http://localhost:9515' )
+	.setChromeOptions( options )
 	.withCapabilities( {
 		chromeOptions: {
 			// Here is the path to your Electron binary.
