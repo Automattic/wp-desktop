@@ -203,8 +203,8 @@ jobs:
       - image: circleci/node:10.14.0-browsers
     working_directory: ~/wp-desktop
     environment:
-      CONFIG_ENV: test
-      MINIFY_JS: false
+      CONFIG_ENV: release
+      MINIFY_JS: true
       NODE_ARGS: --max_old_space_size=2048
     steps:
       - checkout
@@ -225,31 +225,6 @@ jobs:
       - *calypso_save_cache
       - *webhook_notify_success
       - *webhook_notify_failed
-
-  build-release:
-    macos:
-      xcode: "9.0"
-    working_directory: ~/wp-desktop
-    environment:
-      CONFIG_ENV: release
-      MINIFY_JS: true
-      NODE_ARGS: --max_old_space_size=8192
-    steps:
-      - checkout
-      - *setup_calypso
-      - *calypso_prepare_cache
-      - *calypso_restore_cache
-      - *restore_nvm
-      - *setup_nvm
-      - *save_nvm
-      - *decrypt_assets
-      - *npm_restore_cache
-      - *npm_install
-      - *npm_save_cache
-      - *build_sources
-      - *test
-      - *calypso_finalize_cache
-      - *calypso_save_cache
       - persist_to_workspace:
           root: ~/wp-desktop
           paths: *app_cache_paths
@@ -418,15 +393,9 @@ workflows:
               ignore: /tests\/.*/
             tags:
               only: /.*/
-      - build-release:
-          filters:
-            branches:
-              ignore: /tests\/.*/
-            tags:
-              only: /.*/
       - windows:
           requires:
-          - build-release
+          - build
           filters:
             branches:
               ignore: /tests\/.*/
@@ -434,7 +403,7 @@ workflows:
               only: /.*/
       - linux:
           requires:
-          - build-release
+          - build
           filters:
             branches:
               ignore: /tests\/.*/
@@ -442,7 +411,7 @@ workflows:
               only: /.*/
       - mac:
           requires:
-          - build-release
+          - build
           filters:
             branches:
               ignore: /tests\/.*/
