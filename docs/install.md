@@ -6,7 +6,7 @@
 1. Clone this repository locally.
     - `git submodule init`
     - `git submodule update`
-1. Create a `calypso/config/secrets.json` file and fill it with [secrets](docs/secrets.md)
+1. Create a `calypso/config/secrets.json` file and fill it with [secrets](secrets.md)
 1. `npm install` will download all the required packages
 1. `make build` to create the builds
 1. Find the built apps in the `release` folder
