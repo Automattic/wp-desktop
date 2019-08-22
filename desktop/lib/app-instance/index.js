@@ -27,12 +27,17 @@ AppInstance.prototype.anotherInstanceStarted = function() {
 AppInstance.prototype.isSingleInstance = function() {
 	let shouldQuit;
 
-	shouldQuit = app.makeSingleInstance( this.anotherInstanceStarted.bind( this ) );
+	const gotTheLock = app.requestSingleInstanceLock()
 
-	if ( shouldQuit ) {
+	if ( !gotTheLock ) {
 		debug( 'App is already running, quitting' );
 		app.exit();
 		return false;
+	} else {
+		app.on('second-instance', ( event, commandLine, workingDirectory ) => {
+			// Someone tried to run a second instance, we should focus our window
+			this.anotherInstanceStarted.bind( this );
+		})
 	}
 
 	return true;
