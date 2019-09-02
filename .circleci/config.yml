@@ -121,7 +121,7 @@ references:
   build_sources: &build_sources
     run:
         name: Build sources
-        no_output_timeout: 20m
+        no_output_timeout: 30m
         command: |
                 source $HOME/.nvm/nvm.sh
                 nvm use
