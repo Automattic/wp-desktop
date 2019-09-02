@@ -22,7 +22,7 @@ module.exports = function() {
 	if ( Config.updater ) {
 		app.on( 'will-finish-launching', function() {
 			const beta = settings.getSetting( 'release-channel' ) === 'beta';
-			debug( 'Update channel', settings.getSetting( 'release-channel' ), beta )
+			debug( 'Update channel', settings.getSetting( 'release-channel' ) )
 			if ( platform.isOSX() || platform.isWindows() || process.env.APPIMAGE ) {
 				debug( 'Auto Update' )
 				updater = new AutoUpdater( {
