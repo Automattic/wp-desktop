@@ -19,20 +19,16 @@ const driverConfig = new webdriver.Builder()
 	.setChromeOptions( options )
 	.withCapabilities( {
 		chromeOptions: {
-			// Here is the path to your Electron binary.
-			binary: process.env.BINARY_PATH,
-			args: [ '--disable-renderer-backgrounding', '--disable-http-cache', '--start-maximized' ]
+			debuggerAddress: '127.0.0.1:9222'
 		}
 	} )
 	.forBrowser( 'electron' );
 
-const tempDriver = driverConfig.build();
 let loggedInUrl;
 let driver;
 
 before( async function() {
 	this.timeout( 30000 );
-	await tempDriver.quit();
 	driver = await driverConfig.build();
 	return await driver.sleep( 2000 );
 } );
