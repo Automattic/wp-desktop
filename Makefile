@@ -1,5 +1,5 @@
 ifeq ($(OS),Windows_NT)
-	FILE_PATH_SEP := \
+	FILE_PATH_SEP := $(strip \)
 	ENV_PATH_SEP := ;
 else
 	FILE_PATH_SEP := /
