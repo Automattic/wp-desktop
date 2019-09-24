@@ -3,7 +3,7 @@
  */
 var path = require( 'path' );
 var webpack = require( 'webpack' );
-var fs = require( 'fs' );
+const FileConfig = require( '@automattic/calypso-build/webpack/file-loader' );
 
 module.exports = {
 	target: 'node',
@@ -30,6 +30,7 @@ module.exports = {
 				loader: 'babel-loader',
 				exclude: /node_modules/,
 			},
+			FileConfig.loader(),
 			{
 				test: /\.(sc|sa|c)ss$/,
 				loader: 'ignore-loader',

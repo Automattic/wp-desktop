@@ -15,7 +15,7 @@ var options = {
 	output: {
 		path: path.join( __dirname, 'build' ),
 		filename: 'desktop.js',
-		libraryTarget: 'commonjs2'
+		libraryTarget: 'commonjs2',
 	},
 	watch: isDevelopment,
 	watchOptions: {
