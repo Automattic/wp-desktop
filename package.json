@@ -68,6 +68,7 @@
     "xvfb-maybe": "0.2.1"
   },
   "dependencies": {
+    "@automattic/calypso-build": "file:./calypso/packages/calypso-build",
     "acorn": "6.1.1",
     "debug": "2.6.8",
     "electron-fetch": "1.2.1",
