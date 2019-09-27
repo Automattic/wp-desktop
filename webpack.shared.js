@@ -3,7 +3,6 @@
  */
 var path = require( 'path' );
 var webpack = require( 'webpack' );
-var fs = require( 'fs' );
 
 module.exports = {
 	target: 'node',
@@ -33,6 +32,18 @@ module.exports = {
 			{
 				test: /\.(sc|sa|c)ss$/,
 				loader: 'ignore-loader',
+			},
+			{
+				test: /\.(?:gif|jpg|jpeg|png|svg)$/i,
+				use: {
+					loader: 'file-loader',
+					options: {
+						name: '[name]-[hash].[ext]',
+						outputPath: 'images',
+						publicPath: '/calypso/images/',
+						emitFile: false,
+					},
+				},
 			},
 		],
 	},
