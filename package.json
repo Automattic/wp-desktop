@@ -44,7 +44,8 @@
     "check-node-version": "3.2.0",
     "concurrently": "3.5.1",
     "electron": "1.7.16",
-    "electron-builder": "20.16.3",
+    "electron-builder": "20.41.0",
+    "electron-notarize": "^0.1.1",
     "electron-chromedriver": "1.8.0",
     "electron-mocha": "2.3.1",
     "electron-packager": "7.7.0",
@@ -109,7 +110,10 @@
     ],
     "mac": {
       "icon": "./resource/image/mac/app-icon.icns",
-      "category": "public.app-category.social-networking"
+			"category": "public.app-category.social-networking",
+			"entitlements": "./resource/macos/entitlements.mac.plist",
+    	"entitlementsInherit": "./resource/macos/entitlements.mac.inherit.plist",
+    	"hardenedRuntime": true
     },
     "dmg": {
       "title": "WordPress.com Installer",
@@ -168,6 +172,8 @@
         "libxtst6",
         "libnss3"
       ]
-    }
+		},
+		"afterSign": "./after_sign_hook.js",
+  	"afterAllArtifactBuild": "./after_sign_hook.js"
   }
 }
