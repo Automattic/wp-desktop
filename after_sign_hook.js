@@ -4,7 +4,7 @@ var electron_notarize = require('electron-notarize');
 
 module.exports = async function(params) {
   // Only notarize the app on Mac OS only.
-  if (process.platform !== 'darwin') {
+  if (params.electronPlatformName !== 'darwin') {
     return;
   }
   console.log('afterSign hook triggered', params);
@@ -15,7 +15,7 @@ module.exports = async function(params) {
   }
 
   // Same appId in electron-builder.
-  let appId = 'com.automattic.simplenote';
+  let appId = 'com.automattic.wordpress';
 
   let appPath = params.appOutDir
     ? path.join(
