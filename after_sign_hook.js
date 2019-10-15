@@ -17,23 +17,18 @@ module.exports = async function(params) {
   // Same appId in electron-builder.
   let appId = 'com.automattic.wordpress';
 
-  let appPath = params.appOutDir
-    ? path.join(
-        params.appOutDir,
-        `${params.packager.appInfo.productFilename}.app`
-      )
-    : params.artifactPaths[0].replace(new RegExp('.blockmap'), '');
+  let dmgPath = params.artifactPaths[1];
 
-  if (!fs.existsSync(appPath)) {
-    throw new Error(`Cannot find application at: ${appPath}`);
+	if (!fs.existsSync(dmgPath)) {
+    throw new Error(`Cannot find application at: ${dmgPath}`);
   }
 
-  console.log(`Notarizing ${appId} found at ${appPath}`);
+	console.log(`Notarizing ${appId} found at ${dmgPath}`);
 
   try {
     await electron_notarize.notarize({
       appBundleId: appId,
-      appPath: appPath,
+      appPath: dmgPath,
       appleId: process.env.NOTARIZATION_ID,
       appleIdPassword: process.env.NOTARIZATION_PWD,
       ascProvider: 'AutomatticInc',
@@ -42,5 +37,5 @@ module.exports = async function(params) {
     console.error(error);
   }
 
-  console.log(`Done notarizing ${appId}`);
+  console.log(`Done notarizing ${dmgPath}`);
 };
