@@ -59,6 +59,8 @@ references:
               source $HOME/.nvm/nvm.sh
               nvm use
               npm ci
+              patch -p1 < ./resource/macos/macPackager-patch.diff
+              patch -p1 < ./resource/macos/scheme-patch.diff
               cd calypso
               npm ci
   install_linux_dependencies: &install_linux_dependencies
@@ -248,6 +250,8 @@ jobs:
             source $HOME/.nvm/nvm.sh
             nvm use
             npm ci
+            patch -p1 < ./resource/macos/macPackager-patch.diff
+            patch -p1 < ./resource/macos/scheme-patch.diff
       - *npm_save_cache
       - run:
           name: Build Linux
@@ -287,6 +291,8 @@ jobs:
             source $HOME/.nvm/nvm.sh
             nvm use
             npm ci
+            patch -p1 < ./resource/macos/macPackager-patch.diff
+            patch -p1 < ./resource/macos/scheme-patch.diff
       - *npm_save_cache
       - run:
           name: Build Windows
@@ -315,7 +321,7 @@ jobs:
 
   mac:
     macos:
-      xcode: "9.0"
+      xcode: "10.0.0"
     shell: /bin/bash --login
     working_directory: /Users/distiller/wp-desktop
     steps:
@@ -332,6 +338,8 @@ jobs:
             source $HOME/.nvm/nvm.sh
             nvm use
             npm ci
+            patch -p1 < ./resource/macos/macPackager-patch.diff
+            patch -p1 < ./resource/macos/scheme-patch.diff
       - *npm_save_cache
       - run:
           name: Build Mac
