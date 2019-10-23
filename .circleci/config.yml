@@ -59,6 +59,8 @@ references:
               source $HOME/.nvm/nvm.sh
               nvm use
               npm ci
+              patch -p1 < ./resource/macos/macPackager-patch.diff
+              patch -p1 < ./resource/macos/scheme-patch.diff
               cd calypso
               npm ci
   install_linux_dependencies: &install_linux_dependencies
@@ -203,8 +205,8 @@ jobs:
       - image: circleci/node:10.14.0-browsers
     working_directory: ~/wp-desktop
     environment:
-      CONFIG_ENV: test
-      MINIFY_JS: false
+      CONFIG_ENV: release
+      MINIFY_JS: true
       NODE_ARGS: --max_old_space_size=2048
     steps:
       - checkout
@@ -225,31 +227,6 @@ jobs:
       - *calypso_save_cache
       - *webhook_notify_success
       - *webhook_notify_failed
-
-  build-release:
-    macos:
-      xcode: "9.0"
-    working_directory: ~/wp-desktop
-    environment:
-      CONFIG_ENV: release
-      MINIFY_JS: true
-      NODE_ARGS: --max_old_space_size=8192
-    steps:
-      - checkout
-      - *setup_calypso
-      - *calypso_prepare_cache
-      - *calypso_restore_cache
-      - *restore_nvm
-      - *setup_nvm
-      - *save_nvm
-      - *decrypt_assets
-      - *npm_restore_cache
-      - *npm_install
-      - *npm_save_cache
-      - *build_sources
-      - *test
-      - *calypso_finalize_cache
-      - *calypso_save_cache
       - persist_to_workspace:
           root: ~/wp-desktop
           paths: *app_cache_paths
@@ -273,6 +250,8 @@ jobs:
             source $HOME/.nvm/nvm.sh
             nvm use
             npm ci
+            patch -p1 < ./resource/macos/macPackager-patch.diff
+            patch -p1 < ./resource/macos/scheme-patch.diff
       - *npm_save_cache
       - run:
           name: Build Linux
@@ -312,6 +291,8 @@ jobs:
             source $HOME/.nvm/nvm.sh
             nvm use
             npm ci
+            patch -p1 < ./resource/macos/macPackager-patch.diff
+            patch -p1 < ./resource/macos/scheme-patch.diff
       - *npm_save_cache
       - run:
           name: Build Windows
@@ -340,7 +321,7 @@ jobs:
 
   mac:
     macos:
-      xcode: "9.0"
+      xcode: "10.0.0"
     shell: /bin/bash --login
     working_directory: /Users/distiller/wp-desktop
     steps:
@@ -357,6 +338,8 @@ jobs:
             source $HOME/.nvm/nvm.sh
             nvm use
             npm ci
+            patch -p1 < ./resource/macos/macPackager-patch.diff
+            patch -p1 < ./resource/macos/scheme-patch.diff
       - *npm_save_cache
       - run:
           name: Build Mac
@@ -379,6 +362,8 @@ jobs:
       - run:
           name: e2e Tests
           command: |
+                  killall touristd
+                  killall UserNotificationCenter
                   export BINARY_PATH="./release/mac/WordPress.com.app/Contents/MacOS/WordPress.com"
                   ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
                   ./node_modules/.bin/mocha test/tests/e2e.js
@@ -392,6 +377,8 @@ jobs:
           root: /Users/distiller/wp-desktop
           paths:
             - release
+      - store_artifacts:
+          path: screenshots/
 
   artifacts:
     docker:
@@ -414,15 +401,9 @@ workflows:
               ignore: /tests\/.*/
             tags:
               only: /.*/
-      - build-release:
-          filters:
-            branches:
-              ignore: /tests\/.*/
-            tags:
-              only: /.*/
       - windows:
           requires:
-          - build-release
+          - build
           filters:
             branches:
               ignore: /tests\/.*/
@@ -430,7 +411,7 @@ workflows:
               only: /.*/
       - linux:
           requires:
-          - build-release
+          - build
           filters:
             branches:
               ignore: /tests\/.*/
@@ -438,7 +419,7 @@ workflows:
               only: /.*/
       - mac:
           requires:
-          - build-release
+          - build
           filters:
             branches:
               ignore: /tests\/.*/

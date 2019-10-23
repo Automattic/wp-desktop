@@ -1,1 +1,2 @@
 --require mocha-steps
+test/tests/lib/mocha-hooks.js

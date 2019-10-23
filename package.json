@@ -1,6 +1,6 @@
 {
   "name": "WordPressDesktop",
-  "version": "4.3.0",
+  "version": "4.4.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
@@ -44,13 +44,16 @@
     "check-node-version": "3.2.0",
     "concurrently": "3.5.1",
     "electron": "1.7.16",
-    "electron-builder": "20.16.3",
+    "electron-builder": "20.32.0",
+    "electron-notarize": "^0.1.1",
     "electron-chromedriver": "1.8.0",
     "electron-mocha": "2.3.1",
     "electron-packager": "7.7.0",
     "electron-rebuild": "1.8.2",
     "eslint": "2.13.1",
     "eslint-plugin-react": "5.2.2",
+    "ffmpeg-static": "2.4.0",
+    "file-loader": "4.2.0",
     "fs-extra": "7.0.1",
     "ignore-loader": "0.1.2",
     "json-loader": "0.5.7",
@@ -71,7 +74,7 @@
     "debug": "2.6.8",
     "electron-fetch": "1.2.1",
     "electron-spellchecker": "github:ssbc/electron-spellchecker-prebuilt",
-    "electron-updater": "3.1.2",
+    "electron-updater": "4.0.0",
     "express": "4.15.3",
     "js-yaml": "3.12.0",
     "lodash.clonedeep": "4.5.0",
@@ -107,7 +110,10 @@
     ],
     "mac": {
       "icon": "./resource/image/mac/app-icon.icns",
-      "category": "public.app-category.social-networking"
+      "category": "public.app-category.social-networking",
+      "entitlements": "./resource/macos/entitlements.mac.plist",
+      "entitlementsInherit": "./resource/macos/entitlements.mac.inherit.plist",
+      "hardenedRuntime": true
     },
     "dmg": {
       "title": "WordPress.com Installer",
@@ -166,6 +172,7 @@
         "libxtst6",
         "libnss3"
       ]
-    }
+    },
+    "afterAllArtifactBuild": "./after_sign_hook.js"
   }
 }
