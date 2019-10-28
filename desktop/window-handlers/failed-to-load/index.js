@@ -77,7 +77,7 @@ module.exports = function( mainWindow ) {
 			} else {
 				debug( 'Failed to load from server, showing fallback page: code=' + errorCode + ' ' + errorDescription );
 
-				mainWindow.webContents.session.setProxy( 'direct://', function() {
+				mainWindow.webContents.session.setProxy( { proxyRules: 'direct://' }, function() {
 					mainWindow.loadURL( FAILED_FILE + '#' + errorCode );
 				} )
 			};
