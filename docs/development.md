@@ -15,7 +15,7 @@ We use Electron's [IPC](https://github.com/atom/electron/blob/master/docs/api/ip
 
 ### Dev mode
 
-You will need to separate terminal sessions
+You will need two separate terminal sessions
 
 **Terminal 1:**
 
