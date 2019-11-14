@@ -43,13 +43,13 @@ references:
     restore_cache:
       name: Restore npm cache
       keys:
-        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
+        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/package-lock.json" }}
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
   npm_save_cache: &npm_save_cache
     save_cache:
       name: Save npm cache
-      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
+      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/package-lock.json" }}
       paths:
         - ~/.npm
   npm_install: &npm_install
@@ -79,7 +79,7 @@ references:
     - calypso/config
     - calypso/package.json
     - calypso/packages
-    - calypso/npm-shrinkwrap.json
+    - calypso/package-lock.json
     - calypso/.nvmrc
   setup_calypso: &setup_calypso
     run:
