@@ -1,0 +1,64 @@
+image: Visual Studio 2019
+version: '{build}'
+
+skip_branch_with_pr: true
+
+branches:
+  except:
+    - gh-pages
+
+environment:
+  # Use AppVeyor "Quad-Core" workers (4 cores, 16GB RAM)
+  appveyor_build_worker_cloud: azure-westus
+  NVS_VERSION: "1.2.0"
+  # Expose correct Python version to node-gyp
+  PYTHON: "C:\Python27\\python.exe"
+  CSC_ENC_KEY:
+    secure: ef2yQX3A9dZPQzS6r7oY7pUtzK/ICiUUDZZsh/K7eT59a4BVdxqCfIZU812MmqQHK/iC4cYLdTW+tWHrq9bJquzQgHGjgB0cTBwS9KUjyOg=
+  GH_TOKEN:
+    secure: tEkmHMzn7bAyBQRq2wOh04s7M88O0daYVkiZuAcrEn5KBDpDH/en5jTIwKYqoC2d
+
+install:
+  # Configure and enable Docker in "MobyLinuxVM" mode (more performant)
+  - ps: .\resource\appveyor\docker-config.ps1
+  - ps: Switch-DockerLinux
+
+  # Ensure Docker can remove host files (for operations such as "npm ci")
+  - cmd: icacls "%cd%" /grant "DockerExchange":M /t >nul 2>&1
+
+  # Expose MSYS2 binaries to PATH (for "make" and other GNU utilities like cat, tput, etc.)
+  - set PATH=C:\msys64\usr\bin;%PATH%
+
+  # Init Calypso or defer to cache
+  - sh ./resource/appveyor/init-submodule.sh
+
+  - set /p NODE_VERSION=<calypso\.nvmrc
+  - set PATH=%LOCALAPPDATA%\nvs;%PATH%
+  - git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs %LOCALAPPDATA%\nvs
+  - nvs add %NODE_VERSION%
+  - nvs use %NODE_VERSION%
+  
+before_build:
+    - IF EXIST node_modules ( echo "Using wp-desktop node modules from cache" ) ELSE ( npm ci )
+
+    - openssl aes-256-cbc -md md5 -d -in resource\calypso\secrets.json.enc -out calypso\config\secrets.json -k "%CSC_ENC_KEY%"
+    - openssl aes-256-cbc -md md5 -d -in resource\certificates\win.p12.enc -out resource\certificates\win.p12 -k "%CSC_ENC_KEY%"
+
+build_script:
+    - make build-source DOCKER_HOST_MOUNT="%cd%" DOCKER_CONTAINER_MOUNT="/projects/wp-desktop" FORCE=false CONFIG_ENV=release
+    - make package
+
+after_build:
+    - ps: tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
+    - ps: tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
+    - rm -rf release/github
+    - rm -rf release/win-unpacked
+    - rm -rf release/win-ia32-unpacked/
+    
+artifacts:
+  - path: release
+
+cache:
+  - node_modules -> package-lock.json
+  - calypso-hash
+  - calypso

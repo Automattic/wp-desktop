@@ -1,13 +1,3 @@
-ifeq ($(OS),Windows_NT)
-	FILE_PATH_SEP := \
-	ENV_PATH_SEP := ;
-else
-	FILE_PATH_SEP := /
-	ENV_PATH_SEP := :
-endif
-
-/ = $(FILE_PATH_SEP)
-
 THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
 NPM_BIN_DIR = $(shell npm bin)
@@ -19,7 +9,11 @@ RESET = `tput sgr0`
 
 CALYPSO_DIR := $(THIS_DIR)/calypso
 
-CHECKMARK = ✓
+ifeq ($(OS),Windows_NT)
+	CHECKMARK = OK
+else
+	CHECKMARK = ✓
+endif
 
 # Environment Variables
 CONFIG_ENV = 
@@ -31,12 +25,42 @@ TEST_PRODUCTION_BINARY = false
 MINIFY_JS = true
 NODE_ARGS = --max_old_space_size=8192
 
+# Sed to strip leading v to ensure 'v1.2.3' and '1.2.3' can match.
+# The .nvmrc file may contain either, `node --version` prints with 'v' prefix.
+CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1/p')
+CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
+
+# Hash should change with either dependencides or node version.
+CALYPSO_CURRENT_HASH = $(shell echo $$(git rev-parse @:./calypso) )
+CALYPSO_CACHED_HASH = $(shell echo $$(cat calypso-hash || '') )
+
+DOCKER_HOST_MOUNT := $(THIS_DIR)
+DOCKER_CONTAINER_MOUNT =  /usr/src/wp-desktop
+
+CALYPSO_BUILD := cd calypso && npm ci && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
+DESKTOP_BUILD := NODE_PATH=calypso/server:calypso/client npx webpack --config webpack.config.js
+
+# MSYS2_ARG_CONV_EXCL="*" to prevent path translation by MSYS
+# (-v host directory needs to be an absolute, Windows-style argument)
+DOCKER_RUN := MSYS2_ARG_CONV_EXCL="*" docker run --rm \
+	-v "$(DOCKER_HOST_MOUNT)":"$(DOCKER_CONTAINER_MOUNT)" \
+	-w "$(DOCKER_CONTAINER_MOUNT)" \
+	node:$(CALYPSO_NODE_VERSION) /bin/bash -c
+
+ifeq ($(OS),Windows_NT)
+	CALYPSO_BUILD_CMD := $(DOCKER_RUN) "$(CALYPSO_BUILD)"
+	DESKTOP_BUILD_CMD := $(DOCKER_RUN) "$(DESKTOP_BUILD)"
+else
+	CALYPSO_BUILD_CMD := $(CALYPSO_BUILD)
+	DESKTOP_BUILD_CMD := CALYPSO_SERVER=true $(DESKTOP_BUILD)
+endif
+
 # Set default target
 .DEFAULT_GOAL := build
 
 # Build sources
 # TODO: run tasks parallel when in dev mode
-build-source: checks desktop$/config.json build-calypso build-desktop
+build-source: checks desktop/config.json build-calypso build-desktop
 	@echo "$(CYAN)$(CHECKMARK) All parts built$(RESET)"
 
 # Start app
@@ -57,7 +81,7 @@ dev-server: checks
 	@echo "|                                                |"
 	@echo "+------------------------------------------------+$(RESET)\n\n"
 
-	$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
+	$(MAKE) desktop/config.json CONFIG_ENV=$(CONFIG_ENV)
 
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
@@ -70,12 +94,11 @@ dev: DEBUG = desktop:*
 dev: 
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
+BASE_CONFIG := ./desktop-config/config-base.json
+ENV_CONFIG := ./desktop-config-$(CONFIG_ENV).json
 
-BASE_CONFIG := $(THIS_DIR)/desktop-config/config-base.json
-ENV_CONFIG := $(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
-
-.PHONY: desktop$/config.json
-desktop$/config.json:
+.PHONY: desktop/config.json
+desktop/config.json:
 ifeq (,$(wildcard $(ENV_CONFIG)))
 	$(warning Config file for environment "$(CONFIG_ENV)" does not exist. Ignoring environment.)
 else
@@ -86,10 +109,26 @@ endif
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
-build-calypso: 
-	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
+# FORCE is true by default and maintains current behavior (i.e. always rebuild)
+# Set to "false" to defer to cache when possible
+build-calypso: FORCE = true
+build-calypso:
+	@echo "Building calypso..."
+	@echo "Prior SHA: $(CALYPSO_CACHED_HASH)"
+	@echo "Current SHA: $(CALYPSO_CURRENT_HASH)"
 
-	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
+	@if [ "$(FORCE)" = true ]; then \
+		echo "FORCE is true, rebuilding current SHA"; \
+		$(CALYPSO_BUILD_CMD); \
+		echo "$(CALYPSO_CURRENT_HASH)" > calypso-hash; \
+	elif [ "$(CALYPSO_CURRENT_HASH)" != "$(CALYPSO_CACHED_HASH)" ]; then \
+		echo " SHA mismatch, building with current SHA"; \
+		$(CALYPSO_BUILD_CMD); \
+		echo "$(CALYPSO_CURRENT_HASH)" > calypso-hash; \
+	else \
+		echo "SHA is up-to-date. Skipping rebuild"; \
+	fi; \
+	echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
 # Run Calypso server
 calypso-dev: 
@@ -98,17 +137,20 @@ calypso-dev:
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
 
 # Build desktop bundle
-build-desktop:
+build-desktop: rebuild-deps
+	@echo "Building Desktop..."
 ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
 endif
 
-	NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)$/webpack.config.js
+	$(DESKTOP_BUILD_CMD)
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
 # Package App
 package:
+	@echo "Packaging app..."
+
 	@npx electron-builder build -$(BUILD_PLATFORM)
 
 	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
@@ -119,24 +161,18 @@ build: build-source package
 # Perform checks
 checks: check-node-version-parity secret
 
-
 # Check for secret and confirm proper clientid for production release
+SECRETS := ./calypso/config/secrets.json
 secret:
-ifneq (,$(wildcard $(CALYPSO_DIR)$/config$/secrets.json))
+ifneq (,$(wildcard $(SECRETS)))
 ifeq (release,$(CONFIG_ENV))
-ifneq (43452,$(shell node -p "require('$(CALYPSO_DIR)$/config$/secrets.json').desktop_oauth_client_id"))
-	$(error "desktop_oauth_client_id" must be "43452" in $(CALYPSO_DIR)$/config$/secrets.json)
+ifneq (43452,$(shell node -p "require('$(SECRETS)').desktop_oauth_client_id"))
+	$(error "desktop_oauth_client_id" must be "43452" in $(SECRETS))
 endif
 endif
 else 
-	$(error $(CALYPSO_DIR)$/config$/secrets.json does not exist)
+	$(error $(SECRETS) does not exist)
 endif
-
-
-# Sed to strip leading v to ensure 'v1.2.3' and '1.2.3' can match.
-# The .nvmrc file may contain either, `node --version` prints with 'v' prefix.
-CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1/p')
-CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 
 # Check that the current node & npm versions are the versions Calypso expects to ensure it is built safely.
 check-node-version-parity:
@@ -154,18 +190,18 @@ test: CONFIG_ENV = test
 test: rebuild-deps
 	@echo "$(CYAN)Building test...$(RESET)"
 
-	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
+	@$(MAKE) desktop/config.json CONFIG_ENV=$(CONFIG_ENV)
 	
-	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --mode production --config .$/webpack.config.test.js
-	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
+	@NODE_PATH=calypso:server/calypso:client npx webpack --mode production --config ./webpack.config.test.js
+	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 ./build/desktop-test.js
 
 distclean: clean
 	@cd calypso; npm run distclean
-	@rm -rf .$/node_modules
+	@rm -rf ./node_modules
 
 clean:
 	@cd calypso; npm run clean
-	@rm -rf .$/release
-	@rm -rf .$/build
+	@rm -rf ./release
+	@rm -rf ./build
 
 .PHONY: test build-source
