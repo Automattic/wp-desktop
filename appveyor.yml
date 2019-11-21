@@ -1,0 +1,41 @@
+environment:
+  # Add GNU tools (MSYS2) and Docker to PATH
+  PATH: C:\msys64\usr\bin;$(PATH)
+  CSC_ENC_KEY:
+    secure: ef2yQX3A9dZPQzS6r7oY7pUtzK/ICiUUDZZsh/K7eT59a4BVdxqCfIZU812MmqQHK/iC4cYLdTW+tWHrq9bJquzQgHGjgB0cTBwS9KUjyOg=
+
+image: Visual Studio 2017
+
+# Questions:
+  # - verify other steps in the Circle config. (Side note: Can we add these to the Makefile instead?
+  # - how is download link on website updated?
+
+branches:
+  except:
+    - gh-pages
+
+install:
+  - git submodule init
+  - git submodule update
+  - ps: Install-Product node $(cat calypso/.nvmrc)
+  - npm install
+
+before_build:
+    - openssl aes-256-cbc -md md5 -d -in ./resource/calypso/secrets.json.enc -out ./calypso/config/secrets.json -k "%CSC_ENC_KEY%"
+    - openssl aes-256-cbc -md md5 -d -in ./resource/certificates/win.p12.enc -out ./resource/certificates/win.p12 -k "%CSC_ENC_KEY%"
+build_script:
+    - make build
+
+after_build:
+    - ps: tar -zcvf release/win-unpacked-x64.tar.gz release/win-unpacked
+    - ps: tar -zcvf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
+    - ps: rm -rf release/github
+    - ps: rm -rf release/win-unpacked
+    - ps: rm -rf release/win-ia32-unpacked/
+
+artifacts:
+  - path: release
+
+cache:
+  - node_modules
+  - calypso/node_modules
