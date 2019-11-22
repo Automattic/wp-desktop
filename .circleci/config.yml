@@ -357,7 +357,9 @@ workflows:
       - build:
           filters:
             branches:
-              ignore: /tests\/.*/
+              ignore: 
+                - /tests\/.*/
+                - test/electron-upgrade-v4.2.9-windows-appveyor
             tags:
               only: /.*/
       - linux:
@@ -365,7 +367,9 @@ workflows:
           - build
           filters:
             branches:
-              ignore: /tests\/.*/
+              ignore: 
+                - /tests\/.*/
+                - test/electron-upgrade-v4.2.9-windows-appveyor
             tags:
               only: /.*/
       - mac:
@@ -373,7 +377,9 @@ workflows:
           - build
           filters:
             branches:
-              ignore: /tests\/.*/
+              ignore: 
+                - /tests\/.*/
+                - test/electron-upgrade-v4.2.9-windows-appveyor
             tags:
               only: /.*/
       - artifacts:
@@ -382,6 +388,8 @@ workflows:
             - mac
           filters:
             branches:
-              ignore: /tests\/.*/
+              ignore: 
+                - /tests\/.*/
+                - test/electron-upgrade-v4.2.9-windows-appveyor
             tags:
               only: /.*/
