@@ -10,7 +10,7 @@ RESET = `tput sgr0`
 CALYPSO_DIR := $(THIS_DIR)/calypso
 
 ifeq ($(OS),Windows_NT)
-	CHECKMARK = >>>
+	CHECKMARK = OK
 else
 	CHECKMARK = ✓
 endif
@@ -37,14 +37,14 @@ ifeq ($(OS),Windows_NT)
 	# Use --mount instead of -v to avoid MSYS path mangling.
 	CALYPSO_BUILD_CMD := docker run --rm -it --name node-docker \
 		--mount type=bind,source="$(THIS_DIR)",target=//usr/src/wp-desktop \
-		--memory 8192m \
 		-w //usr/src/wp-desktop \
+		--memory 8192m \
 		-u node node:$(CURRENT_NODE_VERSION) \
 		//bin/bash -c "cd calypso; npm install; $(CALYPSO_BUILD); exit"
 	DESKTOP_BUILD_CMD := docker run --rm -it --name node-docker \
 		--mount type=bind,source="$(THIS_DIR)",target=//usr/src/wp-desktop \
-		--memory 8192m \
 		-w //usr/src/wp-desktop \
+		--memory 8192m \
 		-u node node:$(CURRENT_NODE_VERSION) \
 		//bin/bash -c "$(DESKTOP_BUILD); exit"
 else
