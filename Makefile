@@ -169,3 +169,8 @@ clean:
 	@rm -rf .$/build
 
 .PHONY: test build-source
+
+apply-patch:
+	@echo "Applying module patches..."
+
+	patch "./node_modules/electron-updater/out/MacUpdater.js" "./resource/macos/electron-updater.patch" 

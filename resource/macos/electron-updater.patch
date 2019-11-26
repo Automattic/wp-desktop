@@ -1,0 +1,9 @@
+184,189c184
+<               _this.nativeUpdater.setFeedURL({
+<                 url: getServerUrl(),
+<                 headers: {
+<                   "Cache-Control": "no-cache"
+<                 }
+<               });
+---
+>               _this.nativeUpdater.setFeedURL( getServerUrl(), { "Cache-Control": "no-cache" } );

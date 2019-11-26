@@ -34,6 +34,14 @@ process.env.CALYPSO_ENV = config.calypso_config;
 // Set app config path
 app.setPath( 'userData', path.join( app.getPath( 'appData' ), config.appPathName ) );
 
+app.isPackaged = ( () => {
+	const execFile = path.basename( process.execPath ).toLowerCase();
+	if ( process.platform === 'win32' ) {
+		return execFile !== 'electron.exe'
+	}
+	return execFile !== 'electron'
+} )()
+
 // If debug is enabled then setup the debug target
 if ( Settings.isDebug() ) {
 	process.env.DEBUG_COLORS = config.debug.colors;

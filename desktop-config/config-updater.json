@@ -10,6 +10,7 @@
 		"downloadUrl": "https://github.com/Automattic/wp-desktop/releases",
 		"apiUrl": "https://api.github.com/repos/Automattic/wp-desktop/releases",
 		"delay": 2000,
-		"interval": 600000
+		"interval": 600000,
+		"updaterCacheDirName": "WordPress.com/__update__"
 	}
 }
