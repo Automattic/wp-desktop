@@ -14,6 +14,7 @@ branches:
     - gh-pages
 
 install:
+  - docker build -t build-env resource/appveyor/
   - set PATH=C:\msys64\usr\bin;%PATH%
   - set PATH=%LOCALAPPDATA%\nvs;%PATH%
   - git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs %LOCALAPPDATA%\nvs
@@ -29,7 +30,7 @@ before_build:
 
 build_script:
     - make desktop/config.json CONFIG_ENV=release
-    - docker run --rm -it --name node-docker -v C:\projects\:/projects --memory 5g node:%NODEJS_VERSION% /bin/bash -c "pushd /projects/wp-desktop/calypso && npm ci && CALYPSO_ENV=desktop MINIFY_JS=true NODE_ARGS=--max_old_space_size=2048 npm run -s build && popd && NODE_PATH=calypso/server:calypso/client CALYPSO_SERVER=true npx webpack --config webpack.config.js"
+    - docker run --rm --name build-env -v C:\projects\:/projects --memory 5g build-env /bin/bash -c "pushd calypso && npm ci && npm run -s build && popd && npx webpack --config webpack.config.js"
     - make package
 
 after_build:
