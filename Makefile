@@ -118,7 +118,7 @@ calypso-dev:
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
 
 # Build desktop bundle
-build-desktop:
+build-desktop: rebuild-deps
 	@echo "Building Desktop..."
 ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"

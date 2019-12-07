@@ -29,7 +29,7 @@ before_build:
 
 build_script:
     - make desktop/config.json CONFIG_ENV=release
-    - docker run --rm -v C:\projects\:/projects --memory 7g node:%NODEJS_VERSION% /bin/bash -c "pushd projects/wp-desktop/calypso; npm ci; CALYPSO_ENV=desktop MINIFY_JS=true NODE_ARGS=--max_old_space_size=8192 npm run -s build; popd; NODE_PATH=calypso/server:calypso/client CALYPSO_SERVER=true npx webpack --config webpack.config.js"
+    - docker run --rm -it --name node-docker -v C:\projects\:/projects --memory 5g node:%NODEJS_VERSION% /bin/bash -c "pushd /projects/wp-desktop/calypso && npm ci && CALYPSO_ENV=desktop MINIFY_JS=true NODE_ARGS=--max_old_space_size=2048 npm run -s build && popd && NODE_PATH=calypso/server:calypso/client CALYPSO_SERVER=true npx webpack --config webpack.config.js"
     - make package
 
 after_build:
