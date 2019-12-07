@@ -1,5 +1,7 @@
-image: Visual Studio 2019
+image: Windows Server 2019
 version: '{build}'
+
+clone_folder: D:\wp-desktop
 
 environment:
   NVS_VERSION: "1.2.0"
@@ -14,14 +16,20 @@ branches:
     - gh-pages
 
 install:
+  - set PROJECT_DIR=%CD%
+
+  - cinst make
+
+  - docker-switch-linux
   - docker build -t build-env resource/appveyor/
-  - set PATH=C:\msys64\usr\bin;%PATH%
+
   - set PATH=%LOCALAPPDATA%\nvs;%PATH%
   - git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs %LOCALAPPDATA%\nvs
   - nvs add %NODEJS_VERSION%
   - nvs use %NODEJS_VERSION%
-  - set PROJECT_DIR=%CD%
+  
   - git submodule update --init --recursive
+  - npm install --global --production windows-build-tools --vs2015
   - npm ci
 
 before_build:
@@ -30,7 +38,7 @@ before_build:
 
 build_script:
     - make desktop/config.json CONFIG_ENV=release
-    - docker run --rm --name build-env -v C:\projects\:/projects --memory 5g build-env /bin/bash -c "pushd calypso && npm ci && npm run -s build && popd && npx webpack --config webpack.config.js"
+    - docker run --rm --name build-env -v "%APPVEYOR_BUILD_FOLDER%"://wp-desktop -w "//wp-desktop" --memory 5g build-env /bin/bash -c "pushd calypso && npm ci && npm run -s build && popd && npx webpack --config webpack.config.js"
     - make package
 
 after_build:

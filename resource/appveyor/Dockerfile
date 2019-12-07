@@ -1,6 +1,6 @@
 FROM node:10.16.3
 
-WORKDIR /projects/wp-desktop/
+WORKDIR /usr/src/wp-desktop/
 
 ENV NODE_PATH=/calypso/server:/calypso/client
 ENV NODE_ARGS=--max_old_space_size=2048
