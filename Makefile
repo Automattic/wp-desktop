@@ -2,6 +2,8 @@ THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
 NPM_BIN_DIR = $(shell npm bin)
 
+COLON := :
+
 RED = `tput setaf 1`
 GREEN = `tput setaf 2`
 CYAN = `tput setaf 6`
@@ -30,26 +32,29 @@ NODE_ARGS = --max_old_space_size=8192
 CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 
-CALYPSO_BUILD := CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
-DESKTOP_BUILD := NODE_PATH=calypso/server:calypso/client CALYPSO_SERVER=true npx webpack --config webpack.config.js
+DOCKER_IMAGE := wpdesktop-node-v$(CALYPSO_NODE_VERSION)
+DOCKER_HOST_MOUNT := $(THIS_DIR)
+DOCKER_CONT_MOUNT =  /usr/src/wp-desktop
+
+CALYPSO_BUILD := cd calypso && npm ci && npm run -s build
+DESKTOP_BUILD := NODE_PATH=calypso/server$(COLON)calypso/client npx webpack --config webpack.config.js
 
 ifeq ($(OS),Windows_NT)
-	# Use --mount instead of -v to avoid MSYS path mangling.
-	CALYPSO_BUILD_CMD := docker run --rm -it --name node-docker \
-		--mount type=bind,source="$(THIS_DIR)",target=//usr/src/wp-desktop \
-		-w //usr/src/wp-desktop \
-		--memory 8192m \
-		-u node node:$(CURRENT_NODE_VERSION) \
-		//bin/bash -c "cd calypso; npm install; $(CALYPSO_BUILD); exit"
-	DESKTOP_BUILD_CMD := docker run --rm -it --name node-docker \
-		--mount type=bind,source="$(THIS_DIR)",target=//usr/src/wp-desktop \
-		-w //usr/src/wp-desktop \
-		--memory 8192m \
-		-u node node:$(CURRENT_NODE_VERSION) \
-		//bin/bash -c "$(DESKTOP_BUILD); exit"
+	# Need MSYS2_ARG_CONV_EXCL="*" to prevent path replacement here.
+	# (-v host directory needs to be absolute, Windows-style argument)
+	CALYPSO_BUILD_CMD := MSYS2_ARG_CONV_EXCL="*" docker run --rm \
+		-v "$(DOCKER_HOST_MOUNT)":"$(DOCKER_CONT_MOUNT)" \
+		-w "$(DOCKER_CONT_MOUNT)" \
+		--memory 10g --cpus 2 \
+		$(DOCKER_IMAGE) /bin/bash -c "$(CALYPSO_BUILD)"
+	DESKTOP_BUILD_CMD := MSYS2_ARG_CONV_EXCL="*" docker run --rm \
+		-v "$(DOCKER_HOST_MOUNT)":"$(DOCKER_CONT_MOUNT)" \
+		-w "$(DOCKER_CONT_MOUNT)" \
+		--memory 10g --cpus 2 \
+		$(DOCKER_IMAGE) /bin/bash -c "$(DESKTOP_BUILD)"
 else
-	CALYPSO_BUILD_CMD := @cd $(CALYPSO_DIR) && $(CALYPSO_BUILD)
-	DESKTOP_BUILD_CMD := $(DESKTOP_BUILD)
+	CALYPSO_BUILD_CMD := $(CALYPSO_BUILD)
+	DESKTOP_BUILD_CMD := CALYPSO_SERVER=true $(DESKTOP_BUILD)
 endif
 
 # Set default target
@@ -107,6 +112,7 @@ endif
 
 # Build calypso bundle
 build-calypso:
+	@echo $(MSYS2_ARG_CONV_EXCL)
 	$(CALYPSO_BUILD_CMD)
 
 	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
@@ -186,3 +192,21 @@ clean:
 	@rm -rf ./build
 
 .PHONY: test build-source
+
+build-docker: clean-docker
+	docker build --build-arg node_version=$(CALYPSO_NODE_VERSION) -t $(DOCKER_IMAGE) resource/appveyor/
+
+	@echo "$(GREEN)$(CHECKMARK) Docker image built. Windows: Verify sufficient memory in Docker Advanced Settings prior to container use.$(RESET)"
+
+clean-docker:
+	-docker image rm $(DOCKER_IMAGE)
+
+docker-test:
+	-docker container stop $(DOCKER_IMAGE)
+	MSYS2_ARG_CONV_EXCL="*" docker run --rm --name $(DOCKER_IMAGE) -v "$(THIS_DIR)":/usr/src/wp-desktop -w /usr/src/wp-desktop --cpus=2 --memory 10g $(DOCKER_IMAGE)
+
+docker-test-desktop: rebuild-deps
+	-docker container stop $(DOCKER_IMAGE)
+	MSYS2_ARG_CONV_EXCL="*" docker run --rm --name $(DOCKER_IMAGE) -v "$(THIS_DIR)":/usr/src/wp-desktop -w /usr/src/wp-desktop --cpus=2 --memory 10g $(DOCKER_IMAGE) /bin/bash -c "$(DESKTOP_BUILD)"
+
+

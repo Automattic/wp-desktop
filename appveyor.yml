@@ -1,56 +1,56 @@
-image: Windows Server 2019
+image: Visual Studio 2019
 version: '{build}'
 
-clone_folder: D:\wp-desktop
-
-environment:
-  NVS_VERSION: "1.2.0"
-  NODEJS_VERSION: "10.16.3"
-  PYTHON: "C:\Python27\\python.exe"
-  PROJECT_DIR: ""
-  CSC_ENC_KEY:
-    secure: ef2yQX3A9dZPQzS6r7oY7pUtzK/ICiUUDZZsh/K7eT59a4BVdxqCfIZU812MmqQHK/iC4cYLdTW+tWHrq9bJquzQgHGjgB0cTBwS9KUjyOg=
+skip_branch_with_pr: true
 
 branches:
   except:
     - gh-pages
 
+environment:
+  appveyor_build_worker_cloud: azure-westus
+  NVS_VERSION: "1.2.0"
+  PYTHON: "C:\Python27\\python.exe"
+  CSC_ENC_KEY:
+    secure: ef2yQX3A9dZPQzS6r7oY7pUtzK/ICiUUDZZsh/K7eT59a4BVdxqCfIZU812MmqQHK/iC4cYLdTW+tWHrq9bJquzQgHGjgB0cTBwS9KUjyOg=
+  GH_TOKEN:
+    secure: tEkmHMzn7bAyBQRq2wOh04s7M88O0daYVkiZuAcrEn5KBDpDH/en5jTIwKYqoC2d
+
 install:
-  - set PROJECT_DIR=%CD%
+  # TODO: PS script: exit if < 16GB RAM available.
+  - ps: gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
 
-  - cinst make
-
-  - docker-switch-linux
-  - docker build -t build-env resource/appveyor/
-
-  - set PATH=%LOCALAPPDATA%\nvs;%PATH%
-  - git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs %LOCALAPPDATA%\nvs
-  - nvs add %NODEJS_VERSION%
-  - nvs use %NODEJS_VERSION%
-  
   - git submodule update --init --recursive
-  - npm install --global --production windows-build-tools --vs2015
+
+  - set PATH=C:\msys64\usr\bin;%PATH%
+  - set PATH=%LOCALAPPDATA%\nvs;%PATH%
+
+  - git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs %LOCALAPPDATA%\nvs
+  - set /p NODE_VERSION=<calypso\.nvmrc
+  - nvs add %NODE_VERSION%
+  - nvs use %NODE_VERSION%
+  
   - npm ci
 
 before_build:
-    - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in "%PROJECT_DIR%\resource\calypso\secrets.json.enc" -out "%PROJECT_DIR%\calypso\config\secrets.json" -k "%CSC_ENC_KEY%"
-    - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in "%PROJECT_DIR%\resource\certificates\win.p12.enc" -out "%PROJECT_DIR%\resource\certificates\win.p12" -k "%CSC_ENC_KEY%"
+    - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in resource\calypso\secrets.json.enc -out calypso\config\secrets.json -k "%CSC_ENC_KEY%"
+    - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in resource\certificates\win.p12.enc -out resource\certificates\win.p12 -k "%CSC_ENC_KEY%"
 
 build_script:
     - make desktop/config.json CONFIG_ENV=release
-    - docker run --rm --name build-env -v "%APPVEYOR_BUILD_FOLDER%"://wp-desktop -w "//wp-desktop" --memory 5g build-env /bin/bash -c "pushd calypso && npm ci && npm run -s build && popd && npx webpack --config webpack.config.js"
+    - make build-docker
+    - make build-source DOCKER_HOST_MOUNT="%cd%" DOCKER_CONT_MOUNT="/projects/wp-desktop"
     - make package
 
 after_build:
-    - ps: tar -zcvf release/win-unpacked-x64.tar.gz release/win-unpacked
-    - ps: tar -zcvf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
-    - ps: rm -rf release/github
-    - ps: rm -rf release/win-unpacked
-    - ps: rm -rf release/win-ia32-unpacked/
+    - ps: tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
+    - ps: tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
+    - rm -rf release/github
+    - rm -rf release/win-unpacked
+    - rm -rf release/win-ia32-unpacked/
 
 artifacts:
   - path: release
 
 cache:
   - node_modules
-  - calypso/node_modules
