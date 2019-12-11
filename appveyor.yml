@@ -23,16 +23,13 @@ install:
   - ps: gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
 
   - set PATH=C:\msys64\usr\bin;%PATH%
+  - resource\appveyor\init-submodule.bat
 
-  - IF EXIST calypso-hash ( echo "Using built calypso from cache" ) ELSE ( git submodule update --init --recursive )
   - set /p NODE_VERSION=<calypso\.nvmrc
 
-  - set NVS_INSTALL_DIR=%LOCALAPPDATA%\nvs;
-  - set NODE_INSTALL_DIR=%NVS_INSTALL_DIR%\node\%NODE_VERSION%\x64
-  - set PATH=%NVS_INSTALL_DIR%;%PATH%
-
-  - IF NOT EXIST "%NVS_INSTALL_DIR%" ( git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs "%NVS_INSTALL_DIR%" )
-  - IF NOT EXIST "%NODE_INSTALL_DIR%" ( nvs add %NODE_VERSION% )
+  - set PATH=%LOCALAPPDATA%\nvs;%PATH%
+  - git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs %LOCALAPPDATA%\nvs
+  - nvs add %NODE_VERSION%
   - nvs use %NODE_VERSION%
   
   - IF EXIST node_modules ( echo "Using wp-desktop node modules from cache" ) ELSE ( npm ci )
@@ -44,7 +41,7 @@ before_build:
 build_script:
     - make desktop/config.json CONFIG_ENV=release
     - make build-docker
-    - make build-source DOCKER_HOST_MOUNT="%cd%" DOCKER_CONT_MOUNT="/projects/wp-desktop"
+    - make build-source DOCKER_HOST_MOUNT="%cd%" DOCKER_CONT_MOUNT="/projects/wp-desktop" FORCE=false
     - make package
 
 after_build:
@@ -68,5 +65,3 @@ cache:
   - calypso\.nvmrc
   - resource\calypso\secrets.json.enc
   - resource\certificates\win.p12.enc
-  - 'C:\Program Files\nodejs'
-  - '%LOCALAPPDATA%\nvs\node\%NODE_VERSION%\x64'

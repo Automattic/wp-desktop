@@ -15,16 +15,6 @@ else
 	CHECKMARK = ✓
 endif
 
-SHA_SUM = 
-
-#Ref: https://gist.github.com/sighingnow/deee806603ec9274fd47
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Darwin)
-	SHASUM = shasum -a 256
-else
-	SHASUM = openssl sha256
-endif
-
 # Environment Variables
 CONFIG_ENV = 
 CALYPSO_ENV = desktop
@@ -41,8 +31,8 @@ CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1
 CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 
 # Hash should change with either dependencides or node version.
-CALYPSO_CURRENT_HASH = $(shell cat calypso/package.json calypso/.nvmrc | $(SHASUM) | awk '{printf $$NF}')
-CALYPSO_CACHED_HASH =
+CALYPSO_CURRENT_HASH = $(shell echo $$(git rev-parse @:./calypso) )
+CALYPSO_CACHED_HASH = $(shell echo $$(cat calypso-hash || '') )
 
 DOCKER_IMAGE := wpdesktop-node-v$(CALYPSO_NODE_VERSION)
 DOCKER_HOST_MOUNT := $(THIS_DIR)
@@ -123,11 +113,22 @@ endif
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
-build-calypso: CALYPSO_CACHED_HASH = $(shell cat calypso-hash || '' )
+build-calypso: FORCE = true
 build-calypso:
-	@if [ "$(CALYPSO_CURRENT_HASH)" != "$(CALYPSO_CACHED_HASH)" ]; then \
+	@echo "Building calypso ..."
+	@echo "Prior SHA: $(CALYPSO_CACHED_HASH)"
+	@echo "Current SHA: $(CALYPSO_CURRENT_HASH)"
+
+	@if [ "$(FORCE)" = true ]; then \
 		$(CALYPSO_BUILD_CMD); \
+		echo "FORCE is true, rebuilding current SHA"; \
 		echo "$(CALYPSO_CURRENT_HASH)" > calypso-hash; \
+	elif [ "$(CALYPSO_CURRENT_HASH)" != "$(CALYPSO_CACHED_HASH)" ]; then \
+		$(CALYPSO_BUILD_CMD); \
+		echo "SHA mismatch, building with current SHA"; \
+		echo "$(CALYPSO_CURRENT_HASH)" > calypso-hash; \
+	else \
+		echo "SHA is up-to-date. Skipping rebuild"; \
 	fi; \
 	echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
