@@ -16,19 +16,23 @@ environment:
   GH_TOKEN:
     secure: tEkmHMzn7bAyBQRq2wOh04s7M88O0daYVkiZuAcrEn5KBDpDH/en5jTIwKYqoC2d
   APPVEYOR_SAVE_CACHE_ON_ERROR: true
+  APPVEYOR_CACHE_SKIP_RESTORE: true
 
 install:
   # TODO: PS script: exit if < 16GB RAM available.
   - ps: gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
 
-  - IF EXIST calypso-hash ( echo "Using built calypso from cache" ) ELSE ( git submodule update --init --recursive )
-
   - set PATH=C:\msys64\usr\bin;%PATH%
-  - set PATH=%LOCALAPPDATA%\nvs;%PATH%
 
-  - git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs %LOCALAPPDATA%\nvs
+  - IF EXIST calypso-hash ( echo "Using built calypso from cache" ) ELSE ( git submodule update --init --recursive )
   - set /p NODE_VERSION=<calypso\.nvmrc
-  - nvs add %NODE_VERSION%
+
+  - set NVS_INSTALL_DIR=%LOCALAPPDATA%\nvs;
+  - set NODE_INSTALL_DIR=%NVS_INSTALL_DIR%\node\%NODE_VERSION%\x64
+  - set PATH=%NVS_INSTALL_DIR%;%PATH%
+
+  - IF NOT EXIST "%NVS_INSTALL_DIR%" ( git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs "%NVS_INSTALL_DIR%" )
+  - IF NOT EXIST "%NODE_INSTALL_DIR%" ( nvs add %NODE_VERSION% )
   - nvs use %NODE_VERSION%
   
   - IF EXIST node_modules ( echo "Using wp-desktop node modules from cache" ) ELSE ( npm ci )
@@ -53,13 +57,16 @@ after_build:
 artifacts:
   - path: release
 
-# TODO: Cache NVS for Windows
 cache:
   - node_modules -> package-lock.json
   - calypso-hash
-  - calypso\public -> calypso\package.json
-  - calypso\server -> calypso\package.json
-  - calypso\config -> calypso\package.json
-  - calypso\package.json -> calypso\.nvmrc
-  - calypso\packages -> calypso\package.json
+  - calypso\public
+  - calypso\server
+  - calypso\config
+  - calypso\package.json
+  - calypso\packages
   - calypso\.nvmrc
+  - resource\calypso\secrets.json.enc
+  - resource\certificates\win.p12.enc
+  - 'C:\Program Files\nodejs'
+  - '%LOCALAPPDATA%\nvs\node\%NODE_VERSION%\x64'
