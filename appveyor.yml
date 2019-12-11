@@ -15,12 +15,13 @@ environment:
     secure: ef2yQX3A9dZPQzS6r7oY7pUtzK/ICiUUDZZsh/K7eT59a4BVdxqCfIZU812MmqQHK/iC4cYLdTW+tWHrq9bJquzQgHGjgB0cTBwS9KUjyOg=
   GH_TOKEN:
     secure: tEkmHMzn7bAyBQRq2wOh04s7M88O0daYVkiZuAcrEn5KBDpDH/en5jTIwKYqoC2d
+  APPVEYOR_SAVE_CACHE_ON_ERROR: true
 
 install:
   # TODO: PS script: exit if < 16GB RAM available.
   - ps: gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
 
-  - git submodule update --init --recursive
+  - IF EXIST calypso-hash ( echo "Using built calypso from cache" ) ELSE ( git submodule update --init --recursive )
 
   - set PATH=C:\msys64\usr\bin;%PATH%
   - set PATH=%LOCALAPPDATA%\nvs;%PATH%
@@ -30,7 +31,7 @@ install:
   - nvs add %NODE_VERSION%
   - nvs use %NODE_VERSION%
   
-  - npm ci
+  - IF EXIST node_modules ( echo "Using wp-desktop node modules from cache" ) ELSE ( npm ci )
 
 before_build:
     - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in resource\calypso\secrets.json.enc -out calypso\config\secrets.json -k "%CSC_ENC_KEY%"
@@ -52,5 +53,13 @@ after_build:
 artifacts:
   - path: release
 
+# TODO: Cache NVS for Windows
 cache:
-  - node_modules
+  - node_modules -> package-lock.json
+  - calypso-hash
+  - calypso\public -> calypso\package.json
+  - calypso\server -> calypso\package.json
+  - calypso\config -> calypso\package.json
+  - calypso\package.json -> calypso\.nvmrc
+  - calypso\packages -> calypso\package.json
+  - calypso\.nvmrc

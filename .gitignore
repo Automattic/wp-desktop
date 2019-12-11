@@ -9,3 +9,4 @@ resource/secrets
 build
 dev-app-update.yml
 test/logs/
+calypso-hash

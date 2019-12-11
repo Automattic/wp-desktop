@@ -2,8 +2,6 @@ THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
 NPM_BIN_DIR = $(shell npm bin)
 
-COLON := :
-
 RED = `tput setaf 1`
 GREEN = `tput setaf 2`
 CYAN = `tput setaf 6`
@@ -15,6 +13,16 @@ ifeq ($(OS),Windows_NT)
 	CHECKMARK = OK
 else
 	CHECKMARK = ✓
+endif
+
+SHA_SUM = 
+
+#Ref: https://gist.github.com/sighingnow/deee806603ec9274fd47
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	SHASUM = shasum -a 256
+else
+	SHASUM = openssl sha256
 endif
 
 # Environment Variables
@@ -32,12 +40,16 @@ NODE_ARGS = --max_old_space_size=8192
 CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 
+# Hash should change with either dependencides or node version.
+CALYPSO_CURRENT_HASH = $(shell cat calypso/package.json calypso/.nvmrc | $(SHASUM) | awk '{printf $$NF}')
+CALYPSO_CACHED_HASH =
+
 DOCKER_IMAGE := wpdesktop-node-v$(CALYPSO_NODE_VERSION)
 DOCKER_HOST_MOUNT := $(THIS_DIR)
 DOCKER_CONT_MOUNT =  /usr/src/wp-desktop
 
 CALYPSO_BUILD := cd calypso && npm ci && npm run -s build
-DESKTOP_BUILD := NODE_PATH=calypso/server$(COLON)calypso/client npx webpack --config webpack.config.js
+DESKTOP_BUILD := NODE_PATH=calypso/server:calypso/client npx webpack --config webpack.config.js
 
 ifeq ($(OS),Windows_NT)
 	# Need MSYS2_ARG_CONV_EXCL="*" to prevent path replacement here.
@@ -111,11 +123,13 @@ endif
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
+build-calypso: CALYPSO_CACHED_HASH = $(shell cat calypso-hash || '' )
 build-calypso:
-	@echo $(MSYS2_ARG_CONV_EXCL)
-	$(CALYPSO_BUILD_CMD)
-
-	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
+	@if [ "$(CALYPSO_CURRENT_HASH)" != "$(CALYPSO_CACHED_HASH)" ]; then \
+		$(CALYPSO_BUILD_CMD); \
+		echo "$(CALYPSO_CURRENT_HASH)" > calypso-hash; \
+	fi; \
+	echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
 # Run Calypso server
 calypso-dev: 
@@ -200,13 +214,4 @@ build-docker: clean-docker
 
 clean-docker:
 	-docker image rm $(DOCKER_IMAGE)
-
-docker-test:
-	-docker container stop $(DOCKER_IMAGE)
-	MSYS2_ARG_CONV_EXCL="*" docker run --rm --name $(DOCKER_IMAGE) -v "$(THIS_DIR)":/usr/src/wp-desktop -w /usr/src/wp-desktop --cpus=2 --memory 10g $(DOCKER_IMAGE)
-
-docker-test-desktop: rebuild-deps
-	-docker container stop $(DOCKER_IMAGE)
-	MSYS2_ARG_CONV_EXCL="*" docker run --rm --name $(DOCKER_IMAGE) -v "$(THIS_DIR)":/usr/src/wp-desktop -w /usr/src/wp-desktop --cpus=2 --memory 10g $(DOCKER_IMAGE) /bin/bash -c "$(DESKTOP_BUILD)"
-
 
