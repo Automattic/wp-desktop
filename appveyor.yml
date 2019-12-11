@@ -23,6 +23,7 @@ install:
   - ps: gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
 
   - set PATH=C:\msys64\usr\bin;%PATH%
+  # FIXME: for some reason, cached-sha is not being read in the .bat file.
   - resource\appveyor\init-submodule.bat
 
   - set /p NODE_VERSION=<calypso\.nvmrc
@@ -55,13 +56,11 @@ artifacts:
   - path: release
 
 cache:
-  - node_modules -> package-lock.json
+  - node_modules\**\* -> package-lock.json
   - calypso-hash
-  - calypso\public
-  - calypso\server
-  - calypso\config
+  - calypso\public\**\*
+  - calypso\server\**\*
+  - calypso\config\**\*
   - calypso\package.json
-  - calypso\packages
+  - calypso\packages\**\*
   - calypso\.nvmrc
-  - resource\calypso\secrets.json.enc
-  - resource\certificates\win.p12.enc

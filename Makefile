@@ -113,19 +113,22 @@ endif
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
+# FORCE is true by default and maintains 
+# the current behavior (i.e. always rebuild).
+# Set to false to optimize CI build times.
 build-calypso: FORCE = true
 build-calypso:
-	@echo "Building calypso ..."
+	@echo "Building calypso..."
 	@echo "Prior SHA: $(CALYPSO_CACHED_HASH)"
 	@echo "Current SHA: $(CALYPSO_CURRENT_HASH)"
 
 	@if [ "$(FORCE)" = true ]; then \
-		$(CALYPSO_BUILD_CMD); \
 		echo "FORCE is true, rebuilding current SHA"; \
+		$(CALYPSO_BUILD_CMD); \
 		echo "$(CALYPSO_CURRENT_HASH)" > calypso-hash; \
 	elif [ "$(CALYPSO_CURRENT_HASH)" != "$(CALYPSO_CACHED_HASH)" ]; then \
+		echo " SHA mismatch, building with current SHA"; \
 		$(CALYPSO_BUILD_CMD); \
-		echo "SHA mismatch, building with current SHA"; \
 		echo "$(CALYPSO_CURRENT_HASH)" > calypso-hash; \
 	else \
 		echo "SHA is up-to-date. Skipping rebuild"; \
