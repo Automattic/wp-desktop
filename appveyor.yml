@@ -15,14 +15,10 @@ environment:
     secure: ef2yQX3A9dZPQzS6r7oY7pUtzK/ICiUUDZZsh/K7eT59a4BVdxqCfIZU812MmqQHK/iC4cYLdTW+tWHrq9bJquzQgHGjgB0cTBwS9KUjyOg=
   GH_TOKEN:
     secure: tEkmHMzn7bAyBQRq2wOh04s7M88O0daYVkiZuAcrEn5KBDpDH/en5jTIwKYqoC2d
+  APPVEYOR_CACHE_SKIP_RESTORE: true
 
 install:
-  # TODO: PS script: exit if < 16GB RAM available.
-  - echo "Permissions from freshly cloned:"
-  - icacls package.json # freshly-cloned
-  - echo "Permissions from cache"
-  - icacls calypso-hash # FIXME: from cache - unable to read in init-submodule.bat  
-  
+  # TODO: PS script: exit if < 16GB RAM available.  
   - ps: gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
   - ps: .\resource\appveyor\docker-config.ps1
   - ps: Switch-DockerLinux
@@ -43,8 +39,7 @@ before_build:
     - IF EXIST node_modules ( echo "Using wp-desktop node modules from cache" ) ELSE ( npm ci )
 
     # Extract calypso from cache
-    - ps: if (Test-Path -path calypso-hash ) { ls; ls calypso }
-    # - ps: if (Test-Path -path calypso-hash.tar.gz) { .\win-cache-extract.ps1 }
+    - ps: if (Test-Path -path calypso-hash.tar.gz) { .\win-cache-extract.ps1 }
 
     # Secrets and code-signing certificates
     - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in resource\calypso\secrets.json.enc -out calypso\config\secrets.json -k "%CSC_ENC_KEY%"
@@ -64,17 +59,17 @@ after_build:
     - rm -rf release/win-ia32-unpacked/
 
     # Archive to cache: compress to .tar.gz to preserve file permissions.
-    # - ps: .\win-cache-archive.ps1
+    - ps: .\win-cache-archive.ps1
 
 artifacts:
   - path: release
 
 cache:
   - node_modules -> package-lock.json
-  - calypso-hash
-  - calypso\public
-  - calypso\server
-  - calypso\config
-  - calypso\package.json
-  - calypso\packages
-  - calypso\.nvmrc
+  - calypso-hash.tar.gz
+  - calypso\public.tar.gz
+  - calypso\server.tar.gz
+  - calypso\config.tar.gz
+  - calypso\package.json.tar.gz
+  - calypso\packages.tar.gz
+  - calypso\.nvmrc.tar.gz
