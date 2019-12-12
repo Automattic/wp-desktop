@@ -1,4 +1,5 @@
 calypso-hash
+calypso\client
 calypso\public
 calypso\server
 calypso\config
