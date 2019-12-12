@@ -3,7 +3,8 @@
 for /f %%a in ( 'git rev-parse @:./calypso' ) do set CURRENT_HASH=%%a
 
 IF EXIST calypso-hash ( 
-    for /f %%a in ( calypso-hash ) do set CASHED_HASH=%%a
+    REM FIXME: Cannot read from cached calypso-hash file generated in Docker
+    for /f %%a in ( 'type calypso-hash' ) do set CASHED_HASH=%%a
     
     echo "Calypso cashed SHA: %CASHED_HASH%"
     echo "Calypso current SHA: %CURRENT_HASH%"

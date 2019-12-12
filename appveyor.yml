@@ -15,10 +15,14 @@ environment:
     secure: ef2yQX3A9dZPQzS6r7oY7pUtzK/ICiUUDZZsh/K7eT59a4BVdxqCfIZU812MmqQHK/iC4cYLdTW+tWHrq9bJquzQgHGjgB0cTBwS9KUjyOg=
   GH_TOKEN:
     secure: tEkmHMzn7bAyBQRq2wOh04s7M88O0daYVkiZuAcrEn5KBDpDH/en5jTIwKYqoC2d
-  APPVEYOR_CACHE_SKIP_RESTORE: true
 
 install:
   # TODO: PS script: exit if < 16GB RAM available.
+  - echo "Permissions from freshly cloned:"
+  - icacls package.json # freshly-cloned
+  - echo "Permissions from cache"
+  - icacls calypso-hash # FIXME: from cache - unable to read in init-submodule.bat  
+  
   - ps: gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
   - ps: .\resource\appveyor\docker-config.ps1
   - ps: Switch-DockerLinux
@@ -39,7 +43,7 @@ before_build:
     - IF EXIST node_modules ( echo "Using wp-desktop node modules from cache" ) ELSE ( npm ci )
 
     # Extract calypso from cache
-    - ps: if (Test-Path -path calypso-hash.tar.gz) { ls; ls calypso }
+    - ps: if (Test-Path -path calypso-hash ) { ls; ls calypso }
     # - ps: if (Test-Path -path calypso-hash.tar.gz) { .\win-cache-extract.ps1 }
 
     # Secrets and code-signing certificates
