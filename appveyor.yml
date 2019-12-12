@@ -21,7 +21,9 @@ environment:
 install:
   # TODO: PS script: exit if < 16GB RAM available.
   - ps: gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
-
+  - ps: .\resource\appveyor\docker-config.ps1
+  - ps: Switch-DockerLinux
+  
   - set PATH=C:\msys64\usr\bin;%PATH%
 
   # Init Calypso or defer to cache, get node version
