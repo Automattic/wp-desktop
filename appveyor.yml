@@ -23,9 +23,9 @@ install:
   - ps: gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
 
   - set PATH=C:\msys64\usr\bin;%PATH%
-  # FIXME: for some reason, cached-sha is not being read in the .bat file.
-  - resource\appveyor\init-submodule.bat
 
+  # Init Calypso or defer to cache, get node version
+  - resource\appveyor\init-submodule.bat
   - set /p NODE_VERSION=<calypso\.nvmrc
 
   - set PATH=%LOCALAPPDATA%\nvs;%PATH%
@@ -33,9 +33,14 @@ install:
   - nvs add %NODE_VERSION%
   - nvs use %NODE_VERSION%
   
-  - IF EXIST node_modules ( echo "Using wp-desktop node modules from cache" ) ELSE ( npm ci )
-
 before_build:
+    # Init desktop node_modules or defer to cache
+    - IF EXIST node_modules ( echo "Using wp-desktop node modules from cache" ) ELSE ( npm ci )
+
+    # Extract calypso from cache
+    - ps: if (Test-Path -path calypso-hash.tar.gz) { .\win-cache-extract.ps1 }
+
+    # Secrets and code-signing certificates
     - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in resource\calypso\secrets.json.enc -out calypso\config\secrets.json -k "%CSC_ENC_KEY%"
     - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in resource\certificates\win.p12.enc -out resource\certificates\win.p12 -k "%CSC_ENC_KEY%"
 
@@ -52,15 +57,18 @@ after_build:
     - rm -rf release/win-unpacked
     - rm -rf release/win-ia32-unpacked/
 
+    # Archive to cache: compress to .tar.gz to preserve file permissions.
+    - ps: .\win-cache-archive.ps1
+
 artifacts:
   - path: release
 
 cache:
-  - node_modules\**\* -> package-lock.json
-  - calypso-hash
-  - calypso\public\**\*
-  - calypso\server\**\*
-  - calypso\config\**\*
-  - calypso\package.json
-  - calypso\packages\**\*
-  - calypso\.nvmrc
+  - node_modules -> package-lock.json
+  - calypso-hash.tar.gz
+  - calypso\public.tar.gz
+  - calypso\server.tar.gz
+  - calypso\config.tar.gz
+  - calypso\package.json.tar.gz
+  - calypso\packages.tar.gz
+  - calypso\.nvmrc.tar.gz

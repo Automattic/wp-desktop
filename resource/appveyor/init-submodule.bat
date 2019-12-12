@@ -11,10 +11,12 @@ IF EXIST calypso-hash (
     IF "%CASHED_HASH%"=="%CURRENT_HASH%" (
         echo "Using built calypso from cache for SHA: %CASHED_HASH%"
     ) ELSE (
+        rmdir calypso /s /q
         echo "Fetching calypso submodule for SHA: %CURRENT_HASH%"
         git submodule update --init --recursive
     ) 
 ) ELSE (
+    rmdir calypso /s /q
     echo "Fetching calypso submodule for SHA: %CURRENT_HASH%"
     git submodule update --init --recursive
 )
