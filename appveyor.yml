@@ -69,9 +69,9 @@ cache:
   - node_modules -> package-lock.json
   - calypso-hash
   - calypso\client
-  - calypso\public
   - calypso\server
+  - calypso\public
   - calypso\config
-  - calypso\package.json.tar.gz
   - calypso\packages
+  - calypso\package.json
   - calypso\.nvmrc

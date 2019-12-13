@@ -47,12 +47,12 @@ ifeq ($(OS),Windows_NT)
 	CALYPSO_BUILD_CMD := MSYS2_ARG_CONV_EXCL="*" docker run --rm \
 		-v "$(DOCKER_HOST_MOUNT)":"$(DOCKER_CONT_MOUNT)" \
 		-w "$(DOCKER_CONT_MOUNT)" \
-		--memory 10g --cpus 2 \
+		--memory 10g \
 		$(DOCKER_IMAGE) /bin/bash -c "$(CALYPSO_BUILD)"
 	DESKTOP_BUILD_CMD := MSYS2_ARG_CONV_EXCL="*" docker run --rm \
 		-v "$(DOCKER_HOST_MOUNT)":"$(DOCKER_CONT_MOUNT)" \
 		-w "$(DOCKER_CONT_MOUNT)" \
-		--memory 10g --cpus 2 \
+		--memory 10g \
 		$(DOCKER_IMAGE) /bin/bash -c "$(DESKTOP_BUILD)"
 else
 	CALYPSO_BUILD_CMD := $(CALYPSO_BUILD)

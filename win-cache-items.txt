@@ -1,8 +1,8 @@
 calypso-hash
 calypso\client
-calypso\public
 calypso\server
+calypso\public
 calypso\config
-calypso\package.json
 calypso\packages
+calypso\package.json
 calypso\.nvmrc
