@@ -38,22 +38,19 @@ DOCKER_IMAGE := wpdesktop-node-v$(CALYPSO_NODE_VERSION)
 DOCKER_HOST_MOUNT := $(THIS_DIR)
 DOCKER_CONT_MOUNT =  /usr/src/wp-desktop
 
-CALYPSO_BUILD := cd calypso && npm ci && npm run -s build
+CALYPSO_BUILD := cd calypso && npm ci && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
 DESKTOP_BUILD := NODE_PATH=calypso/server:calypso/client npx webpack --config webpack.config.js
 
+# MSYS2_ARG_CONV_EXCL="*" to prevent path replacement here.
+# (-v host directory needs to be absolute, Windows-style argument)
+DOCKER_RUN := MSYS2_ARG_CONV_EXCL="*" docker run --rm \
+	-v "$(DOCKER_HOST_MOUNT)":"$(DOCKER_CONT_MOUNT)" \
+	-w "$(DOCKER_CONT_MOUNT)" \
+	node:$(CALYPSO_NODE_VERSION) /bin/bash -c
+
 ifeq ($(OS),Windows_NT)
-	# Need MSYS2_ARG_CONV_EXCL="*" to prevent path replacement here.
-	# (-v host directory needs to be absolute, Windows-style argument)
-	CALYPSO_BUILD_CMD := MSYS2_ARG_CONV_EXCL="*" docker run --rm \
-		-v "$(DOCKER_HOST_MOUNT)":"$(DOCKER_CONT_MOUNT)" \
-		-w "$(DOCKER_CONT_MOUNT)" \
-		--memory 10g \
-		$(DOCKER_IMAGE) /bin/bash -c "$(CALYPSO_BUILD)"
-	DESKTOP_BUILD_CMD := MSYS2_ARG_CONV_EXCL="*" docker run --rm \
-		-v "$(DOCKER_HOST_MOUNT)":"$(DOCKER_CONT_MOUNT)" \
-		-w "$(DOCKER_CONT_MOUNT)" \
-		--memory 10g \
-		$(DOCKER_IMAGE) /bin/bash -c "$(DESKTOP_BUILD)"
+	CALYPSO_BUILD_CMD := $(DOCKER_RUN) "$(CALYPSO_BUILD)"
+	DESKTOP_BUILD_CMD := $(DOCKER_RUN) "$(DESKTOP_BUILD)"
 else
 	CALYPSO_BUILD_CMD := $(CALYPSO_BUILD)
 	DESKTOP_BUILD_CMD := CALYPSO_SERVER=true $(DESKTOP_BUILD)
@@ -210,12 +207,3 @@ clean:
 	@rm -rf ./build
 
 .PHONY: test build-source
-
-build-docker: clean-docker
-	docker build --build-arg node_version=$(CALYPSO_NODE_VERSION) -t $(DOCKER_IMAGE) resource/appveyor/
-
-	@echo "$(GREEN)$(CHECKMARK) Docker image built. Windows: Verify sufficient memory in Docker Advanced Settings prior to container use.$(RESET)"
-
-clean-docker:
-	-docker image rm $(DOCKER_IMAGE)
-

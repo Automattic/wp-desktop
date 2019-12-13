@@ -26,10 +26,8 @@ install:
   - set PATH=C:\msys64\usr\bin;%PATH%
 
   # Extract calypso from cache
-  # - ps: if (Test-Path -path calypso-hash.tar.gz) { .\win-cache-extract.ps1 }
+  # - ps: if (Test-Path -path calypso-hash) { .\win-cache-extract.ps1 }
 
-  # Init Calypso or defer to cache
-  # - ps: if ( Test-Path calypso-hash ) { type calypso-hash; ls; ls calypso }
   - resource\appveyor\init-submodule.bat
   - set /p NODE_VERSION=<calypso\.nvmrc
 
@@ -47,9 +45,7 @@ before_build:
     - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in resource\certificates\win.p12.enc -out resource\certificates\win.p12 -k "%CSC_ENC_KEY%"
 
 build_script:
-    - make desktop/config.json CONFIG_ENV=release
-    - make build-docker
-    - make build-source DOCKER_HOST_MOUNT="%cd%" DOCKER_CONT_MOUNT="/projects/wp-desktop" FORCE=false
+    - make build-source DOCKER_HOST_MOUNT="%cd%" DOCKER_CONT_MOUNT="/projects/wp-desktop" FORCE=false CONFIG_ENV=release
     - make package
 
 after_build:
@@ -66,12 +62,12 @@ artifacts:
   - path: release
 
 cache:
-  - node_modules -> package-lock.json
-  - calypso-hash
-  - calypso\client
-  - calypso\server
-  - calypso\public
-  - calypso\config
-  - calypso\packages
-  - calypso\package.json
-  - calypso\.nvmrc
+  # FIXME: need calypso-client here as well to cache
+  # - node_modules -> package-lock.json
+  # - calypso-hash
+  # - calypso\server
+  # - calypso\public
+  # - calypso\config
+  # - calypso\packages
+  # - calypso\package.json
+  # - calypso\.nvmrc
