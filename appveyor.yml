@@ -26,10 +26,10 @@ install:
   - set PATH=C:\msys64\usr\bin;%PATH%
 
   # Extract calypso from cache
-  - ps: if (Test-Path -path calypso-hash.tar.gz) { .\win-cache-extract.ps1 }
+  # - ps: if (Test-Path -path calypso-hash.tar.gz) { .\win-cache-extract.ps1 }
 
   # Init Calypso or defer to cache
-  - ps: if ( Test-Path calypso-hash ) { type calypso-hash; ls; ls calypso }
+  # - ps: if ( Test-Path calypso-hash ) { type calypso-hash; ls; ls calypso }
   - resource\appveyor\init-submodule.bat
   - set /p NODE_VERSION=<calypso\.nvmrc
 
@@ -60,18 +60,18 @@ after_build:
     - rm -rf release/win-ia32-unpacked/
 
     # Archive to cache: compress to .tar.gz to preserve file permissions.
-    - ps: .\win-cache-archive.ps1
+    # - ps: .\win-cache-archive.ps1
 
 artifacts:
   - path: release
 
 cache:
   - node_modules -> package-lock.json
-  - calypso-hash.tar.gz
-  - calypso\client.tar.gz
-  - calypso\public.tar.gz
-  - calypso\server.tar.gz
-  - calypso\config.tar.gz
+  - calypso-hash
+  - calypso\client
+  - calypso\public
+  - calypso\server
+  - calypso\config
   - calypso\package.json.tar.gz
-  - calypso\packages.tar.gz
-  - calypso\.nvmrc.tar.gz
+  - calypso\packages
+  - calypso\.nvmrc
