@@ -58,16 +58,17 @@ after_build:
     # Archive to cache: compress to .tar.gz to preserve file permissions.
     # - ps: .\win-cache-archive.ps1
 
-artifacts:
-  - path: release
+# artifacts:
+#   - path: release
 
 cache:
-  # FIXME: need calypso-client here as well to cache
+  # FIXME: need calypso\client here as well to cache
   # - node_modules -> package-lock.json
-  # - calypso-hash
-  # - calypso\server
-  # - calypso\public
-  # - calypso\config
-  # - calypso\packages
-  # - calypso\package.json
-  # - calypso\.nvmrc
+  - calypso\client
+  - calypso-hash
+  - calypso\server
+  - calypso\public
+  - calypso\config
+  - calypso\packages
+  - calypso\package.json
+  - calypso\.nvmrc
