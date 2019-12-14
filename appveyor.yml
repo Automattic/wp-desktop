@@ -15,6 +15,7 @@ environment:
     secure: ef2yQX3A9dZPQzS6r7oY7pUtzK/ICiUUDZZsh/K7eT59a4BVdxqCfIZU812MmqQHK/iC4cYLdTW+tWHrq9bJquzQgHGjgB0cTBwS9KUjyOg=
   GH_TOKEN:
     secure: tEkmHMzn7bAyBQRq2wOh04s7M88O0daYVkiZuAcrEn5KBDpDH/en5jTIwKYqoC2d
+  APPVEYOR_CACHE_SKIP_RESTORE: true
 
 install:
   # TODO: PS script: exit if < 16GB RAM available.  
@@ -27,7 +28,7 @@ install:
   # Extract calypso from cache
   # - ps: if (Test-Path -path calypso-hash) { .\win-cache-extract.ps1 }
 
-  # - resource\appveyor\init-submodule.bat
+  - resource\appveyor\init-submodule.bat
   - set /p NODE_VERSION=<calypso\.nvmrc
 
   - set PATH=%LOCALAPPDATA%\nvs;%PATH%
@@ -62,5 +63,6 @@ after_build:
 
 cache:
   # FIXME: need calypso\client here as well to cache
+  - calypso-hash
   - node_modules -> package-lock.json
   - calypso

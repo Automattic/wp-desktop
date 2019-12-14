@@ -38,8 +38,8 @@ DOCKER_IMAGE := wpdesktop-node-v$(CALYPSO_NODE_VERSION)
 DOCKER_HOST_MOUNT := $(THIS_DIR)
 DOCKER_CONT_MOUNT =  /usr/src/wp-desktop
 
-CALYPSO_BUILD := cd calypso && npm ci && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
-DESKTOP_BUILD := NODE_PATH=calypso/server:calypso/client npx webpack --config webpack.config.js
+CALYPSO_BUILD := ls -l calypso-hash && cd calypso && npm ci && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
+DESKTOP_BUILD := NODE_PATH=calypso/server:calypso/client npx webpack --config webpack.config.js && ls -l calypso-hash
 
 # MSYS2_ARG_CONV_EXCL="*" to prevent path replacement here.
 # (-v host directory needs to be absolute, Windows-style argument)
