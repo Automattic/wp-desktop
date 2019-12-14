@@ -27,7 +27,7 @@ install:
   # Extract calypso from cache
   # - ps: if (Test-Path -path calypso-hash) { .\win-cache-extract.ps1 }
 
-  - resource\appveyor\init-submodule.bat
+  # - resource\appveyor\init-submodule.bat
   - set /p NODE_VERSION=<calypso\.nvmrc
 
   - set PATH=%LOCALAPPDATA%\nvs;%PATH%
