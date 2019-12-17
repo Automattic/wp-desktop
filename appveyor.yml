@@ -28,7 +28,7 @@ install:
   # Extract calypso from cache
   # - ps: if (Test-Path -path calypso-hash) { .\win-cache-extract.ps1 }
 
-  - resource\appveyor\init-submodule.bat
+  - sh ./resource/appveyor/init-submodule.sh
   - set /p NODE_VERSION=<calypso\.nvmrc
 
   - set PATH=%LOCALAPPDATA%\nvs;%PATH%
@@ -63,6 +63,6 @@ after_build:
 
 cache:
   # FIXME: need calypso\client here as well to cache
-  - calypso-hash
   - node_modules -> package-lock.json
+  - calypso-hash
   - calypso
