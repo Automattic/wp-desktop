@@ -8,8 +8,10 @@ branches:
     - gh-pages
 
 environment:
+  # Use AppVeyor "Quad-Core" workers (4 cores, 16GB RAM)
   appveyor_build_worker_cloud: azure-westus
   NVS_VERSION: "1.2.0"
+  # Expose correct Python version to node-gyp
   PYTHON: "C:\Python27\\python.exe"
   CSC_ENC_KEY:
     secure: ef2yQX3A9dZPQzS6r7oY7pUtzK/ICiUUDZZsh/K7eT59a4BVdxqCfIZU812MmqQHK/iC4cYLdTW+tWHrq9bJquzQgHGjgB0cTBwS9KUjyOg=
@@ -17,30 +19,33 @@ environment:
     secure: tEkmHMzn7bAyBQRq2wOh04s7M88O0daYVkiZuAcrEn5KBDpDH/en5jTIwKYqoC2d
 
 install:
+  # Configure and enable Docker in "MobyLinuxVM" mode (more performant)
   - ps: .\resource\appveyor\docker-config.ps1
   - ps: Switch-DockerLinux
-  - cmd: icacls "%cd%" /grant "DockerExchange":M /t
 
+  # Ensure Docker can remove host files (for operations such as "npm ci")
+  - cmd: icacls "%cd%" /grant "DockerExchange":M /t >nul 2>&1
+
+  # Expose MSYS2 binaries to PATH (for "make" and other GNU utilities like cat, tput, etc.)
   - set PATH=C:\msys64\usr\bin;%PATH%
 
+  # Init Calypso or defer to cache
   - sh ./resource/appveyor/init-submodule.sh
-  - set /p NODE_VERSION=<calypso\.nvmrc
 
+  - set /p NODE_VERSION=<calypso\.nvmrc
   - set PATH=%LOCALAPPDATA%\nvs;%PATH%
   - git clone --branch v%NVS_VERSION% --depth 1 https://github.com/jasongin/nvs %LOCALAPPDATA%\nvs
   - nvs add %NODE_VERSION%
   - nvs use %NODE_VERSION%
   
 before_build:
-    # Init desktop node_modules or defer to cache
     - IF EXIST node_modules ( echo "Using wp-desktop node modules from cache" ) ELSE ( npm ci )
 
-    # Secrets and code-signing certificates
-    - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in resource\calypso\secrets.json.enc -out calypso\config\secrets.json -k "%CSC_ENC_KEY%"
-    - C:\OpenSSL-v111-Win32\bin\openssl.exe aes-256-cbc -md md5 -d -in resource\certificates\win.p12.enc -out resource\certificates\win.p12 -k "%CSC_ENC_KEY%"
+    - openssl aes-256-cbc -md md5 -d -in resource\calypso\secrets.json.enc -out calypso\config\secrets.json -k "%CSC_ENC_KEY%"
+    - openssl aes-256-cbc -md md5 -d -in resource\certificates\win.p12.enc -out resource\certificates\win.p12 -k "%CSC_ENC_KEY%"
 
 build_script:
-    - make build-source DOCKER_HOST_MOUNT="%cd%" DOCKER_CONT_MOUNT="/projects/wp-desktop" FORCE=false CONFIG_ENV=release
+    - make build-source DOCKER_HOST_MOUNT="%cd%" DOCKER_CONTAINER_MOUNT="/projects/wp-desktop" FORCE=false CONFIG_ENV=release
     - make package
 
 after_build:
@@ -51,7 +56,7 @@ after_build:
     - rm -rf release/win-ia32-unpacked/
     
 # artifacts:
-# TODO: Uncomment this when ready for prime-time.
+# TODO: Uncomment when ready for prime-time
 #   - path: release
 
 cache:

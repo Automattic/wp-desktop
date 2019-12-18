@@ -36,16 +36,16 @@ CALYPSO_CACHED_HASH = $(shell echo $$(cat calypso-hash || '') )
 
 DOCKER_IMAGE := wpdesktop-node-v$(CALYPSO_NODE_VERSION)
 DOCKER_HOST_MOUNT := $(THIS_DIR)
-DOCKER_CONT_MOUNT =  /usr/src/wp-desktop
+DOCKER_CONTAINER_MOUNT =  /usr/src/wp-desktop
 
 CALYPSO_BUILD := cd calypso && npm ci && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
 DESKTOP_BUILD := NODE_PATH=calypso/server:calypso/client npx webpack --config webpack.config.js && ls -l calypso-hash
 
-# MSYS2_ARG_CONV_EXCL="*" to prevent path replacement here.
-# (-v host directory needs to be absolute, Windows-style argument)
+# MSYS2_ARG_CONV_EXCL="*" to prevent path translation by MSYS
+# (-v host directory needs to be an absolute, Windows-style argument)
 DOCKER_RUN := MSYS2_ARG_CONV_EXCL="*" docker run --rm \
-	-v "$(DOCKER_HOST_MOUNT)":"$(DOCKER_CONT_MOUNT)" \
-	-w "$(DOCKER_CONT_MOUNT)" \
+	-v "$(DOCKER_HOST_MOUNT)":"$(DOCKER_CONTAINER_MOUNT)" \
+	-w "$(DOCKER_CONTAINER_MOUNT)" \
 	node:$(CALYPSO_NODE_VERSION) /bin/bash -c
 
 ifeq ($(OS),Windows_NT)
@@ -110,9 +110,8 @@ endif
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
-# FORCE is true by default and maintains 
-# the current behavior (i.e. always rebuild).
-# Set to false to optimize CI build times.
+# FORCE is true by default and maintains current behavior (i.e. always rebuild)
+# Set to "false" to defer to cache when possible
 build-calypso: FORCE = true
 build-calypso:
 	@echo "Building calypso..."
