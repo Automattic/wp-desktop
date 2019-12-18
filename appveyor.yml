@@ -52,6 +52,7 @@ after_build:
     - rm -rf release/win-ia32-unpacked/
     
 # artifacts:
+# TODO: Uncomment this when ready for prime-time.
 #   - path: release
 
 cache:
