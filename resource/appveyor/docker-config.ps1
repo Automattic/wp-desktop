@@ -1,3 +1,7 @@
+# TODO: Exit if < 16GB RAM available.  
+gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
+
+
 $configPath = "$env:AppData\Docker\settings.json"
 
 $dockerConfig = Get-Content $configPath | ConvertFrom-Json

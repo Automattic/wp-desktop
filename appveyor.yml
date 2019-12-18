@@ -18,15 +18,11 @@ environment:
   APPVEYOR_CACHE_SKIP_RESTORE: true
 
 install:
-  # TODO: PS script: exit if < 16GB RAM available.  
-  - ps: gcim Win32_OperatingSystem | % { "Total Visible Memory Size - $([int]($_.TotalVisibleMemorySize/1mb)) Gb" }
   - ps: .\resource\appveyor\docker-config.ps1
   - ps: Switch-DockerLinux
+  - cmd: icacls "%cd%" /grant "DockerExchange":M /t
 
   - set PATH=C:\msys64\usr\bin;%PATH%
-
-  # Extract calypso from cache
-  # - ps: if (Test-Path -path calypso-hash) { .\win-cache-extract.ps1 }
 
   - sh ./resource/appveyor/init-submodule.sh
   - set /p NODE_VERSION=<calypso\.nvmrc
@@ -54,15 +50,11 @@ after_build:
     - rm -rf release/github
     - rm -rf release/win-unpacked
     - rm -rf release/win-ia32-unpacked/
-
-    # Archive to cache: compress to .tar.gz to preserve file permissions.
-    # - ps: .\win-cache-archive.ps1
-
+    
 # artifacts:
 #   - path: release
 
 cache:
-  # FIXME: need calypso\client here as well to cache
   - node_modules -> package-lock.json
   - calypso-hash
   - calypso
