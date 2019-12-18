@@ -1,7 +1,0 @@
-calypso-hash
-calypso\server
-calypso\public
-calypso\config
-calypso\packages
-calypso\package.json
-calypso\.nvmrc
