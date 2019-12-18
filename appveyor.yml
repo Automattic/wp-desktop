@@ -15,7 +15,6 @@ environment:
     secure: ef2yQX3A9dZPQzS6r7oY7pUtzK/ICiUUDZZsh/K7eT59a4BVdxqCfIZU812MmqQHK/iC4cYLdTW+tWHrq9bJquzQgHGjgB0cTBwS9KUjyOg=
   GH_TOKEN:
     secure: tEkmHMzn7bAyBQRq2wOh04s7M88O0daYVkiZuAcrEn5KBDpDH/en5jTIwKYqoC2d
-  APPVEYOR_CACHE_SKIP_RESTORE: true
 
 install:
   - ps: .\resource\appveyor\docker-config.ps1
