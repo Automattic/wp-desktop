@@ -200,7 +200,7 @@ references:
 jobs:
   build:
     docker:
-      - image: circleci/node:10.14.0-browsers
+      - image: circleci/node:10.18.0-browsers
     working_directory: ~/wp-desktop
     environment:
       CONFIG_ENV: release
@@ -231,7 +231,7 @@ jobs:
 
   linux:
     docker:
-      - image: circleci/node:10.14.0-browsers
+      - image: circleci/node:10.18.0-browsers
     working_directory: ~/wp-desktop
     steps:
       - checkout
