@@ -365,8 +365,8 @@ jobs:
                   killall touristd
                   killall UserNotificationCenter
                   export BINARY_PATH="./release/mac/WordPress.com.app/Contents/MacOS/WordPress.com"
-                  #./node_modules/.bin/chromedriver >/dev/null 2>&1 &
-                  #./node_modules/.bin/mocha test/tests/e2e.js
+                  ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
+                  ./node_modules/.bin/mocha test/tests/e2e.js
       - run:
           name: Release cleanup
           command: |
