@@ -26,6 +26,7 @@ references:
         nvm install "$NODE_VERSION"
         nvm alias default "$NODE_VERSION"
         nvm use "$NODE_VERSION"
+        cp calypso/.nvmrc .
   save_nvm: &save_nvm
     save_cache:
       name: Saving NVM cache
