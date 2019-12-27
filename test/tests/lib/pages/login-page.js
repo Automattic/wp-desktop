@@ -15,6 +15,8 @@ class LoginPage extends AsyncBaseContainer {
 		const passwordSelector = By.name( 'password' );
 		const submitSelector = By.css( 'button.is-primary' );
 
+		await this.hideGdprBanner();
+
 		await driverHelper.waitTillPresentAndDisplayed( driver, userNameSelector );
 		await driverHelper.setWhenSettable( driver, userNameSelector, username );
 
@@ -23,6 +25,20 @@ class LoginPage extends AsyncBaseContainer {
 		} );
 		await driverHelper.clickWhenClickable( driver, submitSelector );
 		await driver.sleep( 1000 );
+	}
+
+	async hideGdprBanner() {
+		//TODO: Move to AsyncBaseContainer?
+		const gdprBanner = By.css( '.gdpr-banner' );
+		const gdprBannerButton = By.css( '.gdpr-banner__acknowledge-button' );
+		if ( await driverHelper.isElementPresent( this.driver, gdprBanner ) ) {
+			return await driverHelper.clickWhenClickable( this.driver, gdprBannerButton );
+		}
+	}
+
+	async openCreateAccountPage() {
+		const element = By.css( '.auth__links a' );
+		return await driverHelper.clickWhenClickable( this.driver, element );
 	}
 }
 
