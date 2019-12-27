@@ -3,6 +3,7 @@ const webdriver = require( 'selenium-webdriver' );
 const chrome = require( 'selenium-webdriver/chrome' );
 const EditorPage = require( './lib/pages/editor-page' );
 const LoginPage = require( './lib/pages/login-page' );
+const SignupStepsPage = require( './lib/pages/signup-steps-page' );
 const PostEditorToolbarComponent = require( './lib/components/post-editor-toolbar-component' );
 const NavBarComponent = require( './lib/components/nav-bar-component' );
 const ProfilePage = require( './lib/pages/profile-page' );
@@ -21,8 +22,8 @@ const driverConfig = new webdriver.Builder()
 		chromeOptions: {
 			// Here is the path to your Electron binary.
 			binary: process.env.BINARY_PATH,
-			args: [ '--disable-renderer-backgrounding', '--disable-http-cache', '--start-maximized' ]
-		}
+			args: [ '--disable-renderer-backgrounding', '--disable-http-cache', '--start-maximized' ],
+		},
 	} )
 	.forBrowser( 'electron' );
 
@@ -68,11 +69,7 @@ describe( 'Publish a New Post', function() {
 		await editorPage.enterContent( blogPostQuote + '\n' );
 
 		let errorShown = await editorPage.errorDisplayed();
-		return assert.strictEqual(
-			errorShown,
-			false,
-			'There is an error shown on the editor page!'
-		);
+		return assert.strictEqual( errorShown, false, 'There is an error shown on the editor page!' );
 	} );
 
 	step( 'Can publish and view content', async function() {
@@ -97,7 +94,7 @@ describe( 'Publish a New Post', function() {
 } );
 
 // TODO: Fixme: This test is failing with the latest Calypso, but manually testing the sequence actually works.
-/*describe( 'Can Log Out', function() {
+describe( 'Can Log Out', function() {
 	this.timeout( 30000 );
 
 	step( 'Can view profile to log out', async function() {
@@ -107,13 +104,70 @@ describe( 'Publish a New Post', function() {
 
 	step( 'Can logout from profile page', async function() {
 		const profilePage = await ProfilePage.Expect( driver );
+		await driver.sleep( 3000 );
 		await profilePage.clickSignOut();
 	} );
 
 	step( 'Can see app login page after logging out', async function() {
 		return await LoginPage.Expect( driver );
 	} );
-} );*/
+} );
+
+describe( 'Can Sign up', function() {
+	this.timeout( 30000 );
+	const blogName = dataHelper.getNewBlogName();
+	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
+
+	step( 'Can navigate to Create account', async function() {
+		//remove banner if present
+		//go to create account
+		let loginPage = await LoginPage.Expect( driver );
+		await loginPage.hideGdprBanner();
+		await loginPage.openCreateAccountPage();
+		return await SignupStepsPage.Expect( driver );
+	} );
+
+	step( 'Can see the "Site Topic" page, and enter the site topic', async function() {
+		//submit site topic details
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		await signupStepsPage.aboutSite();
+	} );
+
+	step( 'Choose a theme page', async function() {
+		//select theme
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		await signupStepsPage.selectTheme();
+	} );
+
+	step( 'Can search for a blog name, can see and select a free .wordpress address', async function() {
+		//enter address
+		//select free domain
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		await signupStepsPage.selectDomain( blogName, expectedBlogAddresses );
+
+	} );
+
+	step( 'Can see the plans page and pick the free plan', async function() {
+		//select free plan
+	} );
+
+	step( 'Can see the account page and enter account details', async function() {
+		//enter account details and submit
+	} );
+
+	step( 'Can then see the sign up processing page which will finish automatically move along', async function() {
+		//continueAlong
+	} );
+
+	step( 'Can then see the onboarding checklist', async function() {
+		//Can then see the onboarding checklist
+	} );
+
+	// step( 'Can delete our newly created account', async function() {
+	// 	//MISSING FROM DESKTOP APP?
+	// 	//delete account
+	// } );
+} );
 
 after( async function() {
 	this.timeout( 30000 );
