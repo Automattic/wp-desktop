@@ -104,7 +104,6 @@ describe( 'Can Log Out', function() {
 
 	step( 'Can logout from profile page', async function() {
 		const profilePage = await ProfilePage.Expect( driver );
-		await driver.sleep( 3000 );
 		await profilePage.clickSignOut();
 	} );
 

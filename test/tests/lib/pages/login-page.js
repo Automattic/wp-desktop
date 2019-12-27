@@ -24,7 +24,7 @@ class LoginPage extends AsyncBaseContainer {
 			secureValue: true,
 		} );
 		await driverHelper.clickWhenClickable( driver, submitSelector );
-		await driver.sleep( 1000 );
+		return await driver.sleep( 1000 );
 	}
 
 	async hideGdprBanner() {
