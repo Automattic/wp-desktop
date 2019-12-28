@@ -43,12 +43,12 @@ describe( 'User Can log in', function() {
 
 	step( 'Can log in', async function() {
 		let loginPage = new LoginPage( driver );
-		await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
+		return await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
 	} );
 
 	step( 'Can see Reader Page after logging in', async function() {
 		await ReaderPage.Expect( driver );
-		loggedInUrl = driver.getCurrentUrl();
+		return loggedInUrl = await driver.getCurrentUrl();
 	} );
 } );
 
@@ -60,7 +60,7 @@ describe( 'Publish a New Post', function() {
 
 	step( 'Can navigate to post editor', async function() {
 		const navbarComponent = await NavBarComponent.Expect( driver );
-		await navbarComponent.clickCreateNewPost();
+		return await navbarComponent.clickCreateNewPost();
 	} );
 
 	step( 'Can enter post title and content', async function() {
@@ -81,7 +81,7 @@ describe( 'Publish a New Post', function() {
 	step( 'Can see correct post title', async function() {
 		const viewPostPage = await ViewPostPage.Expect( driver );
 		let postTitle = await viewPostPage.postTitle();
-		assert.strictEqual(
+		return assert.strictEqual(
 			postTitle.toLowerCase(),
 			blogPostTitle.toLowerCase(),
 			'The published blog post title is not correct'
@@ -89,7 +89,7 @@ describe( 'Publish a New Post', function() {
 	} );
 
 	step( 'Can return to reader', async function() {
-		await driver.get( loggedInUrl );
+		return await driver.get( loggedInUrl );
 	} );
 } );
 
@@ -99,12 +99,12 @@ describe( 'Can Log Out', function() {
 
 	step( 'Can view profile to log out', async function() {
 		let navbarComponent = await NavBarComponent.Expect( driver );
-		await navbarComponent.clickProfileLink();
+		return await navbarComponent.clickProfileLink();
 	} );
 
 	step( 'Can logout from profile page', async function() {
 		const profilePage = await ProfilePage.Expect( driver );
-		await profilePage.clickSignOut();
+		return await profilePage.clickSignOut();
 	} );
 
 	step( 'Can see app login page after logging out', async function() {
@@ -129,20 +129,20 @@ describe( 'Can Sign up', function() {
 	step( 'Can see the "Site Topic" page, and enter the site topic', async function() {
 		//submit site topic details
 		const signupStepsPage = await SignupStepsPage.Expect( driver );
-		await signupStepsPage.aboutSite();
+		return await signupStepsPage.aboutSite();
 	} );
 
 	step( 'Choose a theme page', async function() {
 		//select theme
 		const signupStepsPage = await SignupStepsPage.Expect( driver );
-		await signupStepsPage.selectTheme();
+		return await signupStepsPage.selectTheme();
 	} );
 
 	step( 'Can search for a blog name, can see and select a free .wordpress address', async function() {
 		//enter address
 		//select free domain
 		const signupStepsPage = await SignupStepsPage.Expect( driver );
-		await signupStepsPage.selectDomain( blogName, expectedBlogAddresses );
+		return await signupStepsPage.selectDomain( blogName, expectedBlogAddresses );
 
 	} );
 
