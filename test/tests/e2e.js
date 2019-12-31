@@ -21,8 +21,8 @@ const driverConfig = new webdriver.Builder()
 		chromeOptions: {
 			// Here is the path to your Electron binary.
 			binary: process.env.BINARY_PATH,
-			args: [ '--disable-renderer-backgrounding', '--disable-http-cache', '--start-maximized' ]
-		}
+			args: [ '--disable-renderer-backgrounding', '--disable-http-cache', '--start-maximized' ],
+		},
 	} )
 	.forBrowser( 'electron' );
 
@@ -34,6 +34,7 @@ before( async function() {
 	this.timeout( 30000 );
 	await tempDriver.quit();
 	driver = await driverConfig.build();
+	await driver.manage().deleteAllCookies();
 	return await driver.sleep( 2000 );
 } );
 
@@ -41,7 +42,7 @@ describe( 'User Can log in', function() {
 	this.timeout( 30000 );
 
 	step( 'Can log in', async function() {
-		let loginPage = await new LoginPage( driver );
+		let loginPage = await LoginPage.Expect( driver );
 		return await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
 	} );
 
@@ -68,11 +69,7 @@ describe( 'Publish a New Post', function() {
 		await editorPage.enterContent( blogPostQuote + '\n' );
 
 		let errorShown = await editorPage.errorDisplayed();
-		return assert.strictEqual(
-			errorShown,
-			false,
-			'There is an error shown on the editor page!'
-		);
+		return assert.strictEqual( errorShown, false, 'There is an error shown on the editor page!' );
 	} );
 
 	step( 'Can publish and view content', async function() {
