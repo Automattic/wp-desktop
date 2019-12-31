@@ -34,12 +34,16 @@ before( async function() {
 	this.timeout( 30000 );
 	await tempDriver.quit();
 	driver = await driverConfig.build();
-	await driver.manage().deleteAllCookies();
 	return await driver.sleep( 2000 );
 } );
 
 describe( 'User Can log in', function() {
 	this.timeout( 30000 );
+
+	step( 'Delete all cookies', async function() {
+		await driver.manage().deleteAllCookies();
+		return await driver.sleep( 1000 );
+	} );
 
 	step( 'Can log in', async function() {
 		let loginPage = await LoginPage.Expect( driver );
