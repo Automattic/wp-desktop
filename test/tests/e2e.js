@@ -41,7 +41,7 @@ describe( 'User Can log in', function() {
 	this.timeout( 30000 );
 
 	step( 'Can log in', async function() {
-		let loginPage = new LoginPage( driver );
+		let loginPage = await new LoginPage( driver );
 		return await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
 	} );
 
