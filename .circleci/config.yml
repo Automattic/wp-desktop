@@ -206,7 +206,7 @@ jobs:
     environment:
       CONFIG_ENV: release
       MINIFY_JS: true
-      NODE_ARGS: --max_old_space_size=2048
+      NODE_ARGS: --max_old_space_size=3072
     steps:
       - checkout
       - *install_linux_dependencies
