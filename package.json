@@ -34,7 +34,7 @@
     "@babel/plugin-proposal-nullish-coalescing-operator": "7.4.4",
     "@babel/plugin-proposal-optional-chaining": "7.6.0",
     "@babel/plugin-syntax-dynamic-import": "7.0.0",
-    "@babel/preset-env": "7.1.0",
+    "@babel/preset-env": "7.4.2",
     "@babel/preset-react": "7.0.0",
     "@babel/preset-typescript": "7.3.3",
     "asana-phrase": "0.0.8",
@@ -73,6 +73,7 @@
   },
   "dependencies": {
     "acorn": "6.1.1",
+    "core-js": "3.6.1",
     "debug": "2.6.8",
     "electron-fetch": "1.2.1",
     "electron-spellchecker": "github:nsakaimbo/electron-spellchecker-prebuilt#electron-spellchecker-v1.1.2-prebuild",
