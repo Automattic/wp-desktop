@@ -26,6 +26,7 @@ references:
         nvm install "$NODE_VERSION"
         nvm alias default "$NODE_VERSION"
         nvm use "$NODE_VERSION"
+        cp calypso/.nvmrc .
   save_nvm: &save_nvm
     save_cache:
       name: Saving NVM cache
@@ -200,12 +201,12 @@ references:
 jobs:
   build:
     docker:
-      - image: circleci/node:10.14.0-browsers
+      - image: circleci/node:12.13.1-browsers
     working_directory: ~/wp-desktop
     environment:
       CONFIG_ENV: release
       MINIFY_JS: true
-      NODE_ARGS: --max_old_space_size=2048
+      NODE_ARGS: --max_old_space_size=3072
     steps:
       - checkout
       - *install_linux_dependencies
@@ -231,7 +232,7 @@ jobs:
 
   linux:
     docker:
-      - image: circleci/node:10.14.0-browsers
+      - image: circleci/node:12.13.1-browsers
     working_directory: ~/wp-desktop
     steps:
       - checkout
