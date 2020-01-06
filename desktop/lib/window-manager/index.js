@@ -72,7 +72,7 @@ function openWindow( windowName ) {
 
 			windows[windowName].handle = new BrowserWindow( Config[settings.config] );
 			windows[windowName].handle.setMenuBarVisibility( false );
-			windows[windowName].handle.webContents.session.setProxy( 'direct://', function() {
+			windows[windowName].handle.webContents.session.setProxy( { proxyRules: 'direct://' }, function() {
 				windows[windowName].handle.loadURL( Config.server_url + ':' + Config.server_port + '/desktop/' + settings.file );
 			} );
 
