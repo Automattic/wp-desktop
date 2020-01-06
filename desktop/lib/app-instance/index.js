@@ -25,13 +25,11 @@ AppInstance.prototype.anotherInstanceStarted = function() {
 };
 
 AppInstance.prototype.isSingleInstance = function() {
-	let shouldQuit;
+	const gotTheLock = app.requestSingleInstanceLock()
 
-	shouldQuit = app.makeSingleInstance( this.anotherInstanceStarted.bind( this ) );
-
-	if ( shouldQuit ) {
+	if ( !gotTheLock ) {
 		debug( 'App is already running, quitting' );
-		app.exit();
+		app.quit();
 		return false;
 	}
 
