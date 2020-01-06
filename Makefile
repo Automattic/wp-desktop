@@ -169,9 +169,3 @@ clean:
 	@rm -rf .$/build
 
 .PHONY: test build-source
-
-apply-patches:
-	@echo "$(CYAN) Applying patches...$(RESET)"
-
-	patch -p1 < ./resource/macos/macPackager-patch.diff
-	patch -p1 < ./resource/macos/scheme-patch.diff 

@@ -16,7 +16,7 @@
   "main": "build/desktop.js",
   "scripts": {
     "preinstall": "make check-node-version-parity",
-    "postinstall": "make apply-patches && make rebuild-deps",
+    "postinstall": "make rebuild-deps",
     "setup": "npm run install-if-deps-outdated && ( check-node-version --package || exit 0 ) && cd ./calypso && node ./bin/install-if-deps-outdated.js",
     "build:app": "make build CONFIG_ENV=release NODE_ENV=production CALYPSO_ENV=desktop",
     "install-if-deps-outdated": "node calypso/bin/install-if-deps-outdated.js",
