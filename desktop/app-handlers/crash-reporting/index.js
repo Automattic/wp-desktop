@@ -22,7 +22,7 @@ module.exports = function() {
 				productName: Config.description,
 				companyName: Config.author,
 				submitURL: Config.crash_reporter.url,
-				autoSubmit: true
+				uploadToServer: true
 			} );
 		} );
 	}
