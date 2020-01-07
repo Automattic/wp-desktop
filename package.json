@@ -21,7 +21,7 @@
     "build:app": "make build CONFIG_ENV=release NODE_ENV=production CALYPSO_ENV=desktop",
     "install-if-deps-outdated": "node calypso/bin/install-if-deps-outdated.js",
     "dev": "make start CONFIG_ENV=development NODE_ENV=development CALYPSO_ENV=desktop-development",
-    "e2e": "mocha test/tests/e2e.js --timeout 20000"
+    "e2e": "node ./desktop/bin/run-e2e-tests.js"
   },
   "keywords": [
     "desktop",
