@@ -12,7 +12,7 @@ const ViewPostPage = require( './lib/pages/view-post-page' );
 const dataHelper = require( './lib/data-helper' );
 let options = new chrome.Options();
 options.addArguments(
-	'user-agent=Mozilla/5.0 (wp-e2e-tests) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Electron/1.7.15 Safari/537.36'
+	'user-agent=Mozilla/5.0 (wp-e2e-tests) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.128 Electron/4.2.9 Safari/537.36'
 );
 const driverConfig = new webdriver.Builder()
 	.usingServer( 'http://localhost:9515' )
