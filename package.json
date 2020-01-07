@@ -15,7 +15,7 @@
   "homepage": "https://desktop.wordpress.com/",
   "main": "build/desktop.js",
   "scripts": {
-    "preinstall": "make check-node-version-parity",
+    "preinstall": "make check-node-version-parity && make check-electron-version-parity",
     "postinstall": "make rebuild-deps",
     "setup": "npm run install-if-deps-outdated && ( check-node-version --package || exit 0 ) && cd ./calypso && node ./bin/install-if-deps-outdated.js",
     "build:app": "make build CONFIG_ENV=release NODE_ENV=production CALYPSO_ENV=desktop",
@@ -75,7 +75,7 @@
     "acorn": "6.1.1",
     "debug": "2.6.8",
     "electron-fetch": "1.2.1",
-    "electron-spellchecker": "github:nsakaimbo/electron-spellchecker-prebuilt#electron-spellchecker-v1.1.2-prebuild",
+    "electron-spellchecker": "1.1.2",
     "electron-updater": "4.0.0",
     "express": "4.15.3",
     "js-yaml": "3.12.0",
