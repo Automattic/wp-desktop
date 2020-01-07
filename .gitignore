@@ -10,3 +10,4 @@ build
 dev-app-update.yml
 resource/certificates/mac.p12
 resource/certificates/win.p12
+test/logs/

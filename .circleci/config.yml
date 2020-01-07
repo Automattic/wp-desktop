@@ -357,9 +357,19 @@ jobs:
           command: |
                   killall touristd
                   killall UserNotificationCenter
-                  export BINARY_PATH="./release/mac/WordPress.com.app/Contents/MacOS/WordPress.com"
-                  ./node_modules/.bin/chromedriver >/dev/null 2>&1 &
+
+                  LOGDIR=$(echo "$(pwd)/test/logs")
+                  mkdir -p "$LOGDIR"
+                  APPLOG=$(echo "$LOGDIR/app.log")
+                  DRIVERLOG=$(echo "$LOGDIR/chromedriver.log")
+
+                  pushd "release/mac/WordPress.com.app/Contents/MacOS" 
+                  eval './WordPress.com --disable-renderer-backgrounding --disable-http-cache --start-maximized --remote-debugging-port=9222 > "$APPLOG" 2>&1 &' && sleep 5
+                  popd
+                  
+                  ./node_modules/.bin/chromedriver --port=9515 --verbose > "$DRIVERLOG" 2>&1 &
                   ./node_modules/.bin/mocha test/tests/e2e.js
+                  osascript -e 'quit app "WordPress.com"'
       - run:
           name: Release cleanup
           command: |
@@ -372,6 +382,8 @@ jobs:
             - release
       - store_artifacts:
           path: screenshots/
+      - store_artifacts:
+          path: test/logs/
 
   artifacts:
     docker:
