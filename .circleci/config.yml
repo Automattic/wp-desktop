@@ -67,7 +67,7 @@ references:
       name: Install linux dev dependencies
       command: |
         sudo apt-get update
-        sudo apt-get -y install libxkbfile-dev libxss-dev uuid-runtime
+        sudo apt-get -y install libxkbfile-dev libxss-dev libxext-dev libx11-dev uuid-runtime
   app_cache_paths: &app_cache_paths
     - calypso-hash
     - build
