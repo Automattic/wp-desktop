@@ -13,7 +13,7 @@ THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
 NPM_BIN_DIR = $(shell npm bin)
 
 NPMRC_ELECTRON_VERSION := $(shell npm config get target)
-PACKAGE_ELECTRON_VERSION := $(shell node -e "const electronVersion = require('./package.json').devDependencies.electron; console.log( electronVersion)")
+PACKAGE_ELECTRON_VERSION := $(shell node -e "const electronVersion = require('./package.json').devDependencies.electron; console.log( electronVersion )")
 
 RED = `tput setaf 1`
 GREEN = `tput setaf 2`
