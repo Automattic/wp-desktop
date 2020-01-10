@@ -115,7 +115,6 @@ describe( 'Can Log Out', function() {
 		return await LoginPage.Expect( driver );
 	} );
 } );
-} );
 
 describe( 'Can Sign up', function() {
 	this.timeout( 30000 );
