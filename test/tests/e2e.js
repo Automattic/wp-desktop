@@ -9,6 +9,7 @@ const NavBarComponent = require( './lib/components/nav-bar-component' );
 const ProfilePage = require( './lib/pages/profile-page' );
 const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
+const ChecklistPage = require( './lib/pages/checklist-page' );
 
 const dataHelper = require( './lib/data-helper' );
 let options = new chrome.Options();
@@ -120,10 +121,9 @@ describe( 'Can Sign up', function() {
 	this.timeout( 30000 );
 	const blogName = dataHelper.getNewBlogName();
 	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
+	const emailAddress = blogName + process.env.E2E_MAILOSAUR_INBOX;
 
 	step( 'Can navigate to Create account', async function() {
-		//remove banner if present
-		//go to create account
 		let loginPage = await LoginPage.Expect( driver );
 		await loginPage.hideGdprBanner();
 		await loginPage.openCreateAccountPage();
@@ -142,33 +142,36 @@ describe( 'Can Sign up', function() {
 		return await signupStepsPage.selectTheme();
 	} );
 
-	step( 'Can search for a blog name, can see and select a free .wordpress address', async function() {
-		//enter address
-		//select free domain
-		const signupStepsPage = await SignupStepsPage.Expect( driver );
-		return await signupStepsPage.selectDomain( blogName, expectedBlogAddresses );
-
-	} );
+	step(
+		'Can search for a blog name, can see and select a free .wordpress address',
+		async function() {
+			const signupStepsPage = await SignupStepsPage.Expect( driver );
+			return await signupStepsPage.selectDomain( blogName, expectedBlogAddresses );
+		}
+	);
 
 	step( 'Can see the plans page and pick the free plan', async function() {
-		//select free plan
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		return await signupStepsPage.selectFreePlan();
 	} );
 
-	step( 'Can see the account page and enter account details', async function() {
-		//enter account details and submit
-	} );
-
-	step( 'Can then see the sign up processing page which will finish automatically move along', async function() {
-		//continueAlong
+	step( 'Can see the account page, enter account details and submit', async function() {
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		return await signupStepsPage.enterAccountDetailsAndSubmit(
+			emailAddress,
+			blogName,
+			process.env.E2EPASSWORD
+		);
 	} );
 
 	step( 'Can then see the onboarding checklist', async function() {
-		//Can then see the onboarding checklist
+		const checklistPage = await ChecklistPage.Expect( driver );
+		return await checklistPage.isChecklistPresent();
 	} );
 
+	// 	TODO:delete account
 	// step( 'Can delete our newly created account', async function() {
 	// 	//MISSING FROM DESKTOP APP?
-	// 	//delete account
 	// } );
 } );
 
