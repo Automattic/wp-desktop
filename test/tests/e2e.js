@@ -41,8 +41,13 @@ before( async function() {
 describe( 'User Can log in', function() {
 	this.timeout( 30000 );
 
+	step( 'Delete all cookies', async function() {
+		await driver.manage().deleteAllCookies();
+		return await driver.sleep( 1000 );
+	} );
+
 	step( 'Can log in', async function() {
-		let loginPage = new LoginPage( driver );
+		let loginPage = await LoginPage.Expect( driver );
 		return await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
 	} );
 
@@ -93,7 +98,6 @@ describe( 'Publish a New Post', function() {
 	} );
 } );
 
-// TODO: Fixme: This test is failing with the latest Calypso, but manually testing the sequence actually works.
 describe( 'Can Log Out', function() {
 	this.timeout( 30000 );
 
@@ -110,6 +114,7 @@ describe( 'Can Log Out', function() {
 	step( 'Can see app login page after logging out', async function() {
 		return await LoginPage.Expect( driver );
 	} );
+} );
 } );
 
 describe( 'Can Sign up', function() {
