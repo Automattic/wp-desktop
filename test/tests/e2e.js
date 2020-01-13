@@ -122,6 +122,8 @@ describe( 'Can Sign up', function() {
 	const blogName = dataHelper.getNewBlogName();
 	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
 	const emailAddress = blogName + process.env.E2E_MAILOSAUR_INBOX;
+	// temp log
+	console.log( emailAddress );
 
 	step( 'Can navigate to Create account', async function() {
 		let loginPage = await LoginPage.Expect( driver );
