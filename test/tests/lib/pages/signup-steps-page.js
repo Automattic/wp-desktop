@@ -26,6 +26,8 @@ class SignupStepsPage extends AsyncBaseContainer {
 
 		await driverHelper.clickWhenClickable( this.driver, shareCheckbox );
 		await driverHelper.selectElementByText( this.driver, comfortableScale, '3' );
+		// temp sleep
+		await this.driver.sleep( 3000 );
 		return await driverHelper.clickWhenClickable( this.driver, submitButton );
 	}
 
@@ -48,7 +50,8 @@ class SignupStepsPage extends AsyncBaseContainer {
 			this.driver,
 			By.css( '.domain-suggestion__content' )
 		);
-		// await this.driver.sleep( 10000 );
+		// temp sleep
+		await this.driver.sleep( 3000 );
 
 		// const actualAddress = await this.freeBlogAddress( domainName );
 		// TODO: compare domains
