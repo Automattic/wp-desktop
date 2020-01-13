@@ -17,14 +17,14 @@ class SignupStepsPage extends AsyncBaseContainer {
 		const siteTopicForm = By.css( '#siteTopic' );
 		const aboutSite = 'about e2eflowtesting desktop app';
 
-		// const shareCheckbox = By.css( '#share' );
+		const shareCheckbox = By.css( '#share' );
 		const comfortableScale = By.css( '.segmented-control__text' );
 		const submitButton = By.css( '.about__submit-wrapper .is-primary' );
 
 		await driverHelper.setWhenSettable( this.driver, siteNameForm, siteName );
 		await driverHelper.setWhenSettable( this.driver, siteTopicForm, aboutSite );
 
-		// await driverHelper.clickWhenClickable( this.driver, shareCheckbox );
+		await driverHelper.clickWhenClickable( this.driver, shareCheckbox );
 		await driverHelper.selectElementByText( this.driver, comfortableScale, '3' );
 		return await driverHelper.clickWhenClickable( this.driver, submitButton );
 	}
@@ -44,7 +44,11 @@ class SignupStepsPage extends AsyncBaseContainer {
 			By.css( '.register-domain-step__search' )
 		);
 		await driverHelper.setWhenSettable( this.driver, searchDomainField, domainName );
-		await driverHelper.waitTillPresentAndDisplayed( this.driver, By.css( '.domain-suggestion' ) );
+		await driverHelper.waitTillPresentAndDisplayed(
+			this.driver,
+			By.css( '.domain-suggestion__content' )
+		);
+		// await this.driver.sleep( 10000 );
 
 		const actualAddress = await this.freeBlogAddress( domainName );
 		// TODO: compare domains
@@ -55,19 +59,24 @@ class SignupStepsPage extends AsyncBaseContainer {
 		return await this.selectFreeAddress();
 	}
 
-	async freeBlogAddress( domainName ) {
-		const freeBlogAddressSelector = By.css( `[data-e2e-domain="${ domainName }.wordpress.com"]` );
-		return await this.driver.findElement( freeBlogAddressSelector ).getText();
-	}
+	// async freeBlogAddress( domainName ) {
+	// 	const freeBlogAddressSelector = By.css( `[data-e2e-domain="${ domainName }.wordpress.com"]` );
+	// 	return await this.driver.findElement( freeBlogAddressSelector ).getText();
+	// }
 
 	async selectFreeAddress() {
-		const freeAddressSelector = By.css(
-			'.domain-search-results__domain-suggestions > .domain-suggestion.is-clickable'
-		);
-		return await driverHelper.clickWhenClickable(
+		// const freeAddressSelector = By.css(
+		// 	'.domain-search-results__domain-suggestions > .domain-suggestion.is-clickable'
+		// );
+		// return await driverHelper.clickWhenClickable(
+		// 	this.driver,
+		// 	freeAddressSelector,
+		// 	this.explicitWaitMS
+		// );
+		return await driverHelper.selectElementByText(
 			this.driver,
-			freeAddressSelector,
-			this.explicitWaitMS
+			By.css( '.domain-product-price__price' ),
+			'Free'
 		);
 	}
 
