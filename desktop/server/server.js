@@ -26,7 +26,7 @@ function showFailure( app ) {
 }
 
 function startServer( running_cb ) {
-	var boot = require( 'boot' );
+	var boot = require( 'server/boot' );
 	var http = require( 'http' );
 	var server = http.createServer( boot() );
 

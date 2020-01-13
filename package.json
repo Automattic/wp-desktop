@@ -103,10 +103,7 @@
         "filter": [
           "public/**/*",
           "!public/**/*.css.map",
-          "server/pages/**/*",
-          "!server/pages/test",
-          "!server/pages/README.md",
-          "server/bundler/assets*.json",
+          "client/server/bundler/assets*.json",
           "config/*(secrets|_shared|desktop).json"
         ]
       }
