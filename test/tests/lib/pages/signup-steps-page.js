@@ -50,7 +50,7 @@ class SignupStepsPage extends AsyncBaseContainer {
 		);
 		// await this.driver.sleep( 10000 );
 
-		const actualAddress = await this.freeBlogAddress( domainName );
+		// const actualAddress = await this.freeBlogAddress( domainName );
 		// TODO: compare domains
 		// assert(
 		// 	expectedDomain.indexOf( actualAddress ) > -1,
