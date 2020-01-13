@@ -116,7 +116,10 @@
       "category": "public.app-category.social-networking",
       "entitlements": "./resource/macos/entitlements.mac.plist",
       "entitlementsInherit": "./resource/macos/entitlements.mac.inherit.plist",
-      "hardenedRuntime": true
+      "hardenedRuntime": true,
+      "extendInfo": {
+        "LSFileQuarantineEnabled": true
+      }
     },
     "dmg": {
       "title": "WordPress.com Installer",
