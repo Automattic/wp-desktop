@@ -74,7 +74,7 @@ references:
     - resource/certificates/win.p12
     - resource/certificates/mac.p12
     - calypso/public
-    - calypso/server
+    - calypso/client/server
     - calypso/config
     - calypso/package.json
     - calypso/packages
