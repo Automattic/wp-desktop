@@ -16,7 +16,7 @@ module.exports = {
 			{
 				include: path.join( __dirname, 'calypso', 'client/sections.js' ),
 				use: {
-					loader: path.join( __dirname, 'calypso', 'server', 'bundler', 'sections-loader' ),
+					loader: path.join( __dirname, 'calypso', 'client', 'server', 'bundler', 'sections-loader' ),
 					options: { forceRequire: true, onlyIsomorphic: true },
 				},
 			},
@@ -75,9 +75,7 @@ module.exports = {
 
 		// These are Calypso server modules we don't need, so let's not bundle them
 		'webpack.config',
-		'bundler/hot-reloader',
-		'devdocs/search-index',
-		'devdocs/components-usage-stats.json',
+		'server/devdocs/search-index',
 	],
 	resolve: {
 		extensions: [ '.json', '.js', '.jsx', '.ts', '.tsx' ],
@@ -85,10 +83,12 @@ module.exports = {
 			'node_modules',
 			path.join( __dirname, 'calypso', 'node_modules' ),
 			path.join( __dirname, 'node_modules' ),
-			path.join( __dirname, 'calypso', 'server' ),
 			path.join( __dirname, 'calypso', 'client' ),
 			path.join( __dirname, 'desktop' ),
 		],
+		alias: {
+			config: 'server/config',
+		},
 	},
 	plugins: [
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]abtest$/, 'lodash/noop' ), // Depends on BOM
