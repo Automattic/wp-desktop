@@ -127,7 +127,7 @@ describe( 'Can Sign up', function() {
 
 	step( 'Clear local storage', async function() {
 		await driver.executeScript( 'window.localStorage.clear();' );
-		return await driver.sleep( 30000 );
+		return await driver.sleep( 3000 );
 	} );
 
 	step( 'Can navigate to Create account', async function() {
