@@ -36,15 +36,17 @@ before( async function() {
 	this.timeout( 30000 );
 	await tempDriver.quit();
 	driver = await driverConfig.build();
-	return await driver.sleep( 2000 );
+	await driver.sleep( 2000 );
+	await driver.executeScript( 'window.localStorage.clear();' );
+	return await driver.sleep( 3000 );
 } );
 
 describe( 'User Can log in', function() {
 	this.timeout( 30000 );
 
-	step( 'Delete all cookies', async function() {
-		await driver.manage().deleteAllCookies();
-		return await driver.sleep( 1000 );
+	step( 'Clear local storage', async function() {
+		await driver.executeScript( 'window.localStorage.clear();' );
+		return await driver.sleep( 3000 );
 	} );
 
 	step( 'Can log in', async function() {
@@ -122,8 +124,11 @@ describe( 'Can Sign up', function() {
 	const blogName = dataHelper.getNewBlogName();
 	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
 	const emailAddress = blogName + process.env.E2E_MAILOSAUR_INBOX;
-	// temp log
-	console.log( emailAddress );
+
+	step( 'Clear local storage', async function() {
+		await driver.executeScript( 'window.localStorage.clear();' );
+		return await driver.sleep( 30000 );
+	} );
 
 	step( 'Can navigate to Create account', async function() {
 		let loginPage = await LoginPage.Expect( driver );
@@ -133,13 +138,11 @@ describe( 'Can Sign up', function() {
 	} );
 
 	step( 'Can see the "Site Topic" page, and enter the site topic', async function() {
-		//submit site topic details
 		const signupStepsPage = await SignupStepsPage.Expect( driver );
 		return await signupStepsPage.aboutSite();
 	} );
 
 	step( 'Choose a theme page', async function() {
-		//select theme
 		const signupStepsPage = await SignupStepsPage.Expect( driver );
 		return await signupStepsPage.selectTheme();
 	} );
