@@ -1,3 +1,5 @@
+require( '@automattic/calypso-polyfills' );
+
 /**
  * Internal dependencies
  */
