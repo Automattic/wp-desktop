@@ -1,6 +1,5 @@
 /** @format */
 
-const { assert } = require( 'assert' );
 const { By } = require( 'selenium-webdriver' );
 const AsyncBaseContainer = require( '../async-base-container' );
 const driverHelper = require( '../driver-helper' );
@@ -26,8 +25,7 @@ class SignupStepsPage extends AsyncBaseContainer {
 
 		await driverHelper.clickWhenClickable( this.driver, shareCheckbox );
 		await driverHelper.selectElementByText( this.driver, comfortableScale, '3' );
-		// temp sleep
-		await this.driver.sleep( 3000 );
+
 		return await driverHelper.clickWhenClickable( this.driver, submitButton );
 	}
 
@@ -38,7 +36,7 @@ class SignupStepsPage extends AsyncBaseContainer {
 		await driverHelper.clickWhenClickable( this.driver, themeSelector );
 	}
 
-	async selectDomain( domainName, expectedDomain ) {
+	async selectDomain( domainName ) {
 		const searchDomainField = By.css( '.search__input' );
 
 		await driverHelper.waitTillPresentAndDisplayed(
@@ -50,8 +48,6 @@ class SignupStepsPage extends AsyncBaseContainer {
 			this.driver,
 			By.css( '.domain-suggestion__content' )
 		);
-		// temp sleep
-		await this.driver.sleep( 3000 );
 
 		// const actualAddress = await this.freeBlogAddress( domainName );
 		// TODO: compare domains
@@ -62,20 +58,7 @@ class SignupStepsPage extends AsyncBaseContainer {
 		return await this.selectFreeAddress();
 	}
 
-	// async freeBlogAddress( domainName ) {
-	// 	const freeBlogAddressSelector = By.css( `[data-e2e-domain="${ domainName }.wordpress.com"]` );
-	// 	return await this.driver.findElement( freeBlogAddressSelector ).getText();
-	// }
-
 	async selectFreeAddress() {
-		// const freeAddressSelector = By.css(
-		// 	'.domain-search-results__domain-suggestions > .domain-suggestion.is-clickable'
-		// );
-		// return await driverHelper.clickWhenClickable(
-		// 	this.driver,
-		// 	freeAddressSelector,
-		// 	this.explicitWaitMS
-		// );
 		return await driverHelper.selectElementByText(
 			this.driver,
 			By.css( '.domain-product-price__price' ),

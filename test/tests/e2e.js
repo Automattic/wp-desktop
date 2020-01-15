@@ -36,9 +36,7 @@ before( async function() {
 	this.timeout( 30000 );
 	await tempDriver.quit();
 	driver = await driverConfig.build();
-	await driver.sleep( 2000 );
-	await driver.executeScript( 'window.localStorage.clear();' );
-	return await driver.sleep( 3000 );
+	return await driver.sleep( 2000 );
 } );
 
 describe( 'User Can log in', function() {
@@ -151,7 +149,7 @@ describe( 'Can Sign up', function() {
 		'Can search for a blog name, can see and select a free .wordpress address',
 		async function() {
 			const signupStepsPage = await SignupStepsPage.Expect( driver );
-			return await signupStepsPage.selectDomain( blogName, expectedBlogAddresses );
+			return await signupStepsPage.selectDomain( blogName );
 		}
 	);
 
