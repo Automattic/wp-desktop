@@ -33,9 +33,14 @@ module.exports = {
 				test: /\.js$/,
 				loader: 'babel-loader',
 				include: filepath => {
-					// is it the chalk module? Then transpile it, too
+					// is it one of the npm dependencies we want to transpile?
 					const lastIndex = filepath.lastIndexOf( '/node_modules/' );
-					return lastIndex !== -1 && filepath.startsWith( '/node_modules/chalk/', lastIndex );
+					if ( lastIndex === -1 ) {
+						return false;
+					}
+					return [ 'chalk', '@automattic/calypso-polyfills' ].some( pkg =>
+						filepath.startsWith( `/node_modules/${ pkg }/`, lastIndex )
+					);
 				},
 			},
 			{
