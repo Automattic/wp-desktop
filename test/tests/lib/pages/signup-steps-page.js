@@ -101,10 +101,12 @@ class SignupStepsPage extends AsyncBaseContainer {
 			secureValue: true,
 		} );
 
-		return await driverHelper.clickWhenClickable(
+		await driverHelper.clickWhenClickable(
 			this.driver,
 			By.css( 'button.signup-form__submit' )
 		);
+
+		return await this.driver.sleep( 5000 );
 	}
 }
 
