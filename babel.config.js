@@ -2,7 +2,10 @@ const electronVersion = require( 'electron/package.json' ).version;
 
 module.exports = {
 	presets: [
-		[ '@babel/env', { targets: { electron: electronVersion }, useBuiltIns: 'usage', corejs: '3.6.1' } ],
+		[
+			'@babel/env',
+			{ targets: { electron: electronVersion }, useBuiltIns: 'entry', corejs: '3.6' },
+		],
 		'@babel/react',
 		'@babel/preset-typescript',
 	],
