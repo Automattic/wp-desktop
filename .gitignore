@@ -8,3 +8,5 @@ publish/node_modules/
 resource/secrets
 build
 dev-app-update.yml
+resource/certificates/mac.p12
+resource/certificates/win.p12
