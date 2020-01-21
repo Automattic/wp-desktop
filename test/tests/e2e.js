@@ -42,9 +42,15 @@ before( async function() {
 describe( 'User Can log in', function() {
 	this.timeout( 30000 );
 
+<<<<<<< HEAD
 	step( 'Clear local storage', async function() {
 		await driver.executeScript( 'window.localStorage.clear();' );
 		return await driver.sleep( 3000 );
+=======
+	step( 'Delete all cookies', async function() {
+		await driver.manage().deleteAllCookies();
+		return await driver.sleep( 1000 );
+>>>>>>> 124c942... [e2e] Fix logout issue in e2e tests (#732)
 	} );
 
 	step( 'Can log in', async function() {
