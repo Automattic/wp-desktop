@@ -171,11 +171,6 @@ describe( 'Can Sign up', function() {
 		const checklistPage = await ChecklistPage.Expect( driver );
 		return await checklistPage.isChecklistPresent();
 	} );
-
-	// 	TODO:delete account
-	// step( 'Can delete our newly created account', async function() {
-	// 	//MISSING FROM DESKTOP APP?
-	// } );
 } );
 
 after( async function() {
