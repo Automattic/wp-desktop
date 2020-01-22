@@ -49,12 +49,6 @@ class SignupStepsPage extends AsyncBaseContainer {
 			By.css( '.domain-suggestion__content' )
 		);
 
-		// const actualAddress = await this.freeBlogAddress( domainName );
-		// TODO: compare domains
-		// assert(
-		// 	expectedDomain.indexOf( actualAddress ) > -1,
-		// 	`The displayed free blog address: '${ actualAddress }' was not the expected addresses: '${ expectedDomain }'`
-		// );
 		return await this.selectFreeAddress();
 	}
 
@@ -84,10 +78,7 @@ class SignupStepsPage extends AsyncBaseContainer {
 			secureValue: true,
 		} );
 
-		await driverHelper.clickWhenClickable(
-			this.driver,
-			By.css( 'button.signup-form__submit' )
-		);
+		await driverHelper.clickWhenClickable( this.driver, By.css( 'button.signup-form__submit' ) );
 
 		return await this.driver.sleep( 5000 );
 	}
