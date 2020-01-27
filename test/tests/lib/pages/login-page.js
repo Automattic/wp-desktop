@@ -28,6 +28,7 @@ class LoginPage extends AsyncBaseContainer {
 	}
 
 	async hideGdprBanner() {
+		//TODO: Move to AsyncBaseContainer?
 		const gdprBannerButton = By.css( '.gdpr-banner__acknowledge-button' );
 		try {
 			await driverHelper.waitTillPresentAndDisplayed( this.driver, gdprBannerButton, 5000 );
