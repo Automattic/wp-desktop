@@ -1,4 +1,7 @@
-version: 2
+version: 2.1
+
+orbs:
+  win: circleci/windows@2.2.0
 
 references:
   restore_nvm: &restore_nvm
@@ -268,50 +271,64 @@ jobs:
           root: ~/wp-desktop
           paths:
             - release
-
+  
   windows:
-    macos:
-      xcode: "10.1.0"
-    shell: /bin/bash --login
-    working_directory: /Users/distiller/wp-desktop
-    steps:
+    executor: 
+      name: win/default
+    working_directory: C:\Users\circleci\wp-desktop
+    environment:
+      CSC_LINK: .\resource\certificates\win.p12
+      CSC_FOR_PULL_REQUEST: true # don't do this in production
+    steps: 
       - checkout
       - attach_workspace:
-          at: /Users/distiller/wp-desktop
-      - *restore_nvm
-      - *setup_nvm
-      - *save_nvm
-      - *npm_restore_cache
+          at: C:\Users\circleci\wp-desktop
+      - run:
+          name: Install make
+          command: cinst make
+      - run:
+          name: Install node version
+          command: |
+                  $NODE_VERSION = Get-Content .\calypso\.nvmrc
+                  nvm install $NODE_VERSION
+                  nvm use $NODE_VERSION
       - run:
           name: Npm install
           command: |
-            source $HOME/.nvm/nvm.sh
-            nvm use
-            npm ci
-      - *npm_save_cache
+                # The release of nodejs currently being used by Calypso includes a buggy version 
+                # of node-gyp for Windows. This workaround unblocks Windows builds until Calypso node 
+                # includes node-gyp >= 6.0.1, at which point this snippet and node-gyp in wp-desktop 
+                # devDependencies can be reverted.
+                # Ref: https://github.com/nodejs/node-gyp/issues/1933
+                npm config set node_gyp "$(Get-Location)\node_modules\node-gyp\bin\node-gyp.js"
+                npm ci
       - run:
-          name: Build Windows
-          environment:
-            WIN_CSC_LINK: resource/certificates/win.p12
-            CSC_FOR_PULL_REQUEST: true # don't do this in production
-            USE_HARD_LINKS: "false" # must be string
+          name: Build windows
           command: |
-                  set +e
-                  source $HOME/.nvm/nvm.sh
-                  nvm use
-                  make package BUILD_PLATFORM=w
+                # Workaround for Sign Tool "private key filter" bug in Circle's Windows image.
+                # Ref: https://travis-ci.community/t/codesigning-on-windows/
+                # 
+                # Fix: Import .p12 into the local certificate store. Sign Tool will use 
+                # package.json's `certificateSubjectName` to find the imported cert.
+                Import-PfxCertificate -FilePath $env:CSC_LINK -CertStoreLocation Cert:\LocalMachine\Root -Password (ConvertTo-SecureString -String $env:WIN_CSC_KEY_PASSWORD -AsPlainText -Force)
+
+                # $env:CSC_KEY_PASSWORD=$env:WIN_CSC_KEY_PASSWORD
+                make package
+      - run:
+          name: Archive win-unpacked directories
+          command: |
+                tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
+                tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
       - run:
           name: Release cleanup
           command: |
-                  set +e
-                  tar -zcvf release/win-unpacked-x64.tar.gz release/win-unpacked
-                  tar -zcvf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
-                  rm -rf release/github
-                  rm -rf release/win-unpacked
-                  rm -rf release/win-ia32-unpacked/
+                rm -rf release/github
+                rm -rf release/win-unpacked
+                rm -rf release/win-ia32-unpacked/
+          shell: bash.exe
       - persist_to_workspace:
-          root: /Users/distiller/wp-desktop
-          paths:
+          root: C:\Users\circleci\wp-desktop
+          paths: 
             - release
 
   mac:

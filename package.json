@@ -145,7 +145,8 @@
           "ia32"
         ]
       },
-      "icon": "./resource/image/win/wordpress.ico"
+      "icon": "./resource/image/win/wordpress.ico",
+      "certificateSubjectName": "Automattic, Inc."
     },
     "nsis": {
       "oneClick": false
