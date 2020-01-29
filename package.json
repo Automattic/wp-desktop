@@ -51,7 +51,7 @@
     "electron-mocha": "2.3.1",
     "electron-notarize": "^0.1.1",
     "electron-packager": "7.7.0",
-    "electron-rebuild": "1.8.2",
+    "electron-rebuild": "1.10.0",
     "eslint": "2.13.1",
     "eslint-plugin-react": "5.2.2",
     "ffmpeg-static": "2.4.0",
