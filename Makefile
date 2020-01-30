@@ -130,7 +130,7 @@ package:
 build: build-source package
 
 # Perform checks
-checks: check-node-version-parity check-electron-version-parity secret
+checks: check-version-parity secret
 
 # Check for secret and confirm proper clientid for production release
 SECRETS := ./calypso/config/secrets.json
@@ -149,6 +149,9 @@ endif
 # The .nvmrc file may contain either, `node --version` prints with 'v' prefix.
 CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
+
+.PHONY: check-version-parity
+check-version-parity: check-node-version-parity check-electron-version-parity
 
 # Check that the current node & npm versions are the versions Calypso expects to ensure it is built safely.
 check-node-version-parity:
