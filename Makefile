@@ -46,7 +46,7 @@ NODE_ARGS = --max_old_space_size=8192
 # Build sources
 # TODO: run tasks parallel when in dev mode
 build-source: checks desktop/config.json build-calypso build-desktop
-	@echo "$(GREEN)$(CHECKMARK) All components built$(RESET)"
+	@echo "$(CYAN)$(CHECKMARK) All parts built$(RESET)"
 
 # Start app
 start: rebuild-deps
@@ -91,7 +91,7 @@ else
 endif
 	@node -e "const base = require('$(BASE_CONFIG)'); let env; try { env = require('$(TARGET_CONFIG)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
 	
-	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
+	@echo "$(CYAN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
 build-calypso: 
@@ -99,7 +99,7 @@ build-calypso:
 
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
 
-	@echo "$(GREEN)$(CHECKMARK) Calypso built$(RESET)"
+	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
 # Run Calypso server
 calypso-dev: 
@@ -116,7 +116,7 @@ endif
 
 	NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client CALYPSO_SERVER=true npx webpack --config $(THIS_DIR)$/webpack.config.js
 
-	@echo "$(GREEN)$(CHECKMARK) Desktop built$(RESET)"
+	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
 # Package App
 package:
@@ -124,7 +124,7 @@ package:
 
 	@npx electron-builder build -$(BUILD_PLATFORM)
 
-	@echo "$(GREEN)$(CHECKMARK) App built$(RESET)"
+	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
 
 # Combined steps for building app 
 build: build-source package
