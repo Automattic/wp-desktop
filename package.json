@@ -1,6 +1,6 @@
 {
   "name": "WordPressDesktop",
-  "version": "4.6.0",
+  "version": "4.7.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
@@ -16,7 +16,7 @@
   "main": "build/desktop.js",
   "scripts": {
     "preinstall": "make check-node-version-parity",
-    "postinstall": "make rebuild-deps",
+    "postinstall": "make apply-patches && make rebuild-deps",
     "setup": "npm run install-if-deps-outdated && ( check-node-version --package || exit 0 ) && cd ./calypso && node ./bin/install-if-deps-outdated.js",
     "build:app": "make build CONFIG_ENV=release NODE_ENV=production CALYPSO_ENV=desktop",
     "install-if-deps-outdated": "node calypso/bin/install-if-deps-outdated.js",
@@ -31,8 +31,10 @@
   "devDependencies": {
     "@babel/core": "7.1.2",
     "@babel/plugin-proposal-class-properties": "7.1.0",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "7.4.4",
+    "@babel/plugin-proposal-optional-chaining": "7.6.0",
     "@babel/plugin-syntax-dynamic-import": "7.0.0",
-    "@babel/preset-env": "7.1.0",
+    "@babel/preset-env": "7.4.2",
     "@babel/preset-react": "7.0.0",
     "@babel/preset-typescript": "7.3.3",
     "asana-phrase": "0.0.8",
@@ -45,9 +47,9 @@
     "concurrently": "3.5.1",
     "electron": "1.7.16",
     "electron-builder": "20.32.0",
-    "electron-notarize": "^0.1.1",
     "electron-chromedriver": "1.8.0",
     "electron-mocha": "2.3.1",
+    "electron-notarize": "^0.1.1",
     "electron-packager": "7.7.0",
     "electron-rebuild": "1.8.2",
     "eslint": "2.13.1",
@@ -71,9 +73,10 @@
   },
   "dependencies": {
     "acorn": "6.1.1",
+    "core-js": "3.6.1",
     "debug": "2.6.8",
     "electron-fetch": "1.2.1",
-    "electron-spellchecker": "github:ssbc/electron-spellchecker-prebuilt",
+    "electron-spellchecker": "github:nsakaimbo/electron-spellchecker-prebuilt#electron-spellchecker-v1.1.2-prebuild",
     "electron-updater": "3.1.2",
     "express": "4.15.3",
     "js-yaml": "3.12.0",
@@ -113,7 +116,10 @@
       "category": "public.app-category.social-networking",
       "entitlements": "./resource/macos/entitlements.mac.plist",
       "entitlementsInherit": "./resource/macos/entitlements.mac.inherit.plist",
-      "hardenedRuntime": true
+      "hardenedRuntime": true,
+      "extendInfo": {
+        "LSFileQuarantineEnabled": true
+      }
     },
     "dmg": {
       "title": "WordPress.com Installer",

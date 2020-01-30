@@ -26,6 +26,7 @@ references:
         nvm install "$NODE_VERSION"
         nvm alias default "$NODE_VERSION"
         nvm use "$NODE_VERSION"
+        cp calypso/.nvmrc .
   save_nvm: &save_nvm
     save_cache:
       name: Saving NVM cache
@@ -43,13 +44,13 @@ references:
     restore_cache:
       name: Restore npm cache
       keys:
-        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
+        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/package-lock.json" }}
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
   npm_save_cache: &npm_save_cache
     save_cache:
       name: Save npm cache
-      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/npm-shrinkwrap.json" }}
+      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/package-lock.json" }}
       paths:
         - ~/.npm
   npm_install: &npm_install
@@ -59,8 +60,6 @@ references:
               source $HOME/.nvm/nvm.sh
               nvm use
               npm ci
-              patch -p1 < ./resource/macos/macPackager-patch.diff
-              patch -p1 < ./resource/macos/scheme-patch.diff
               cd calypso
               npm ci
   install_linux_dependencies: &install_linux_dependencies
@@ -79,7 +78,7 @@ references:
     - calypso/config
     - calypso/package.json
     - calypso/packages
-    - calypso/npm-shrinkwrap.json
+    - calypso/package-lock.json
     - calypso/.nvmrc
   setup_calypso: &setup_calypso
     run:
@@ -202,12 +201,12 @@ references:
 jobs:
   build:
     docker:
-      - image: circleci/node:10.14.0-browsers
+      - image: circleci/node:12.13.1-browsers
     working_directory: ~/wp-desktop
     environment:
       CONFIG_ENV: release
       MINIFY_JS: true
-      NODE_ARGS: --max_old_space_size=2048
+      NODE_ARGS: --max_old_space_size=3072
     steps:
       - checkout
       - *install_linux_dependencies
@@ -233,7 +232,7 @@ jobs:
 
   linux:
     docker:
-      - image: circleci/node:10.14.0-browsers
+      - image: circleci/node:12.13.1-browsers
     working_directory: ~/wp-desktop
     steps:
       - checkout
@@ -250,8 +249,6 @@ jobs:
             source $HOME/.nvm/nvm.sh
             nvm use
             npm ci
-            patch -p1 < ./resource/macos/macPackager-patch.diff
-            patch -p1 < ./resource/macos/scheme-patch.diff
       - *npm_save_cache
       - run:
           name: Build Linux
@@ -274,7 +271,7 @@ jobs:
 
   windows:
     macos:
-      xcode: "9.0"
+      xcode: "10.1.0"
     shell: /bin/bash --login
     working_directory: /Users/distiller/wp-desktop
     steps:
@@ -291,8 +288,6 @@ jobs:
             source $HOME/.nvm/nvm.sh
             nvm use
             npm ci
-            patch -p1 < ./resource/macos/macPackager-patch.diff
-            patch -p1 < ./resource/macos/scheme-patch.diff
       - *npm_save_cache
       - run:
           name: Build Windows
@@ -338,8 +333,6 @@ jobs:
             source $HOME/.nvm/nvm.sh
             nvm use
             npm ci
-            patch -p1 < ./resource/macos/macPackager-patch.diff
-            patch -p1 < ./resource/macos/scheme-patch.diff
       - *npm_save_cache
       - run:
           name: Build Mac

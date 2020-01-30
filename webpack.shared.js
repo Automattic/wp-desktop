@@ -30,6 +30,15 @@ module.exports = {
 				exclude: /node_modules/,
 			},
 			{
+				test: /\.js$/,
+				loader: 'babel-loader',
+				include: filepath => {
+					// is it the chalk module? Then transpile it, too
+					const lastIndex = filepath.lastIndexOf( '/node_modules/' );
+					return lastIndex !== -1 && filepath.startsWith( '/node_modules/chalk/', lastIndex );
+				},
+			},
+			{
 				test: /\.(sc|sa|c)ss$/,
 				loader: 'ignore-loader',
 			},
