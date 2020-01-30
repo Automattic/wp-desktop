@@ -95,7 +95,7 @@ endif
 
 # Build calypso bundle
 build-calypso: 
-	@echo "Building calypso..."
+	$(info Building calypso... )
 
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
 
@@ -109,7 +109,7 @@ calypso-dev:
 
 # Build desktop bundle
 build-desktop: rebuild-deps
-	@echo "Building Desktop..."
+	$(info Building Desktop... )
 ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
 endif
@@ -120,7 +120,7 @@ endif
 
 # Package App
 package:
-	@echo "Packaging app..."
+	$(info Packaging app... )
 
 	@npx electron-builder build -$(BUILD_PLATFORM)
 
