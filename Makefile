@@ -79,8 +79,8 @@ dev: DEBUG = desktop:*
 dev: 
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
-BASE_CONFIG := ./desktop-config/config-base.json
-TARGET_CONFIG := ./desktop-config/config-$(CONFIG_ENV).json
+BASE_CONFIG := $(THIS_DIR)/desktop-config/config-base.json
+TARGET_CONFIG := $(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
 
 .PHONY: desktop/config.json
 desktop/config.json:
@@ -133,7 +133,7 @@ build: build-source package
 checks: check-version-parity secret
 
 # Check for secret and confirm proper clientid for production release
-SECRETS := ./calypso/config/secrets.json
+SECRETS := $(CALYPSO_DIR)/config/secrets.json
 secret:
 ifneq (,$(wildcard $(SECRETS)))
 ifeq (release,$(CONFIG_ENV))
