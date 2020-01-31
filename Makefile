@@ -91,7 +91,7 @@ else
 endif
 	@node -e "const base = require('$(BASE_CONFIG)'); let env; try { env = require('$(TARGET_CONFIG)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
 	
-	@echo "$(CYAN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
+	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
 build-calypso: 
