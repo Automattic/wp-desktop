@@ -24,11 +24,7 @@ RESET = `tput sgr0`
 
 CALYPSO_DIR := $(THIS_DIR)/calypso
 
-ifeq ($(OS),Windows_NT)
-	CHECKMARK = OK
-else
-	CHECKMARK = ✓
-endif
+CHECKMARK = OK
 
 # Environment Variables
 CONFIG_ENV = 
