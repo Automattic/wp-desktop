@@ -1,6 +1,8 @@
-
 const { ipcRenderer, remote } = require( 'electron' );
 const { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } = require( 'electron-spellchecker' );
+const { Observable } = require( 'rxjs/Observable' );
+require( 'rxjs/add/observable/from' ); // necessary for providing Observable.from() to Observable (see usage below)
+
 const debugModule = require( 'debug' );
 
 const desktop = remote.getGlobal( 'desktop' );
@@ -8,30 +10,38 @@ const debug = debugModule( 'desktop:preload' )
 
 debug( 'Setting up preload script' );
 
-// TODO: We can enable/disable the spellchecker without a restart by toggling spellcheck="false" in the DOM
-// In this case, we intialize the spellchecker by default
-
-// TODO: Extend ContextMenuBuilder class to get better control of features e.g. limiting spellcheck suggestions to 3
-let contextMenuBuilder = new ContextMenuBuilder( );
-let contextMenuListener = new ContextMenuListener( ( info ) => {
-	// override config to prevent copy image and open link
-	info.hasImageContents = false;
-	info.linkURL = null;
-
-	contextMenuBuilder.showPopupMenu( info );
-} );
-
 if ( desktop.settings.getSetting( 'spellcheck-enabled' ) ) {
-	debug( 'Initialzing spellchecker' );
+	debug( 'Initializing spellchecker' );
 
 	window.spellCheckHandler = new SpellCheckHandler();
-	window.spellCheckHandler.switchLanguage( window.navigator.language );
 
-	window.onload = () => {
-		window.spellCheckHandler.attachToInput();
-	}
+	// Ensure the iframe has been loaded before attaching the spellchecker
+	// Ref: https://github.com/electron/electron/issues/21324
+	window.addEventListener( 'editor-iframe-loaded', () => {
+		debug( 'Editor iframe loaded, attaching spellchecker' );
 
-	contextMenuBuilder.spellCheckHandler = window.spellCheckHandler;
+		// The current implementation of the spellchecker (v2.2.1)
+		// assumes that content in the document body is being actively
+		// edited when attachToInput is called.
+		//
+		// https://github.com/electron-userland/electron-spellchecker/blob/7227d61415c47dfa247828da3b62bbb3330095aa/src/spell-check-handler.js#L206
+		//
+		// The Calypso editor doesn't satisfy this assumption when a post
+		// (either existing or new) is loaded. As a workaround, we inject
+		// a dummy observable to prevent the method from exiting before
+		// the user begins to make edits.
+		const dummy$ = Observable.from( [] );
+		window.spellCheckHandler.attachToInput( dummy$ );
+		window.spellCheckHandler.switchLanguage( window.navigator.language );
+	} )
+
+	let contextMenuBuilder = new ContextMenuBuilder( window.spellCheckHandler );
+	let contextMenuListener = new ContextMenuListener( ( info ) => {
+	// override config to prevent copy image and open link
+		info.hasImageContents = false;
+		info.linkURL = null;
+		contextMenuBuilder.showPopupMenu( info );
+	} );
 } else {
 	debug( 'Skipping spellchecker initialization' );
 }
