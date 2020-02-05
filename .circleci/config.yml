@@ -473,8 +473,8 @@ parameters:
     type: string
     default: "" 
   pullRequestNum:
-    type: string
-    default: "" 
+    type: integer 
+    default: 0 
   calypsoProject:
     type: string
     default: ""
