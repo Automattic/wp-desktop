@@ -212,6 +212,8 @@ jobs:
       NODE_ARGS: --max_old_space_size=3072
       BRANCHNAME: << pipeline.git.branch >>
       CALYPSO_HASH: << pipeline.parameters.CALYPSO_HASH >>
+      sha: << pipeline.parameters.sha >>
+      calypsoProject: << pipeline.parameters.calypsoProject >>
     steps:
       - checkout
       - *install_linux_dependencies
