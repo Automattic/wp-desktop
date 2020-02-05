@@ -472,9 +472,6 @@ parameters:
   sha:
     type: string
     default: "" 
-  pullRequestNum:
-    type: integer 
-    default: 0 
   calypsoProject:
     type: string
     default: ""
