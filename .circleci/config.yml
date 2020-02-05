@@ -210,6 +210,8 @@ jobs:
       CONFIG_ENV: release
       MINIFY_JS: true
       NODE_ARGS: --max_old_space_size=3072
+      BRANCHNAME: << pipeline.git.branch >>
+      CALYPSO_HASH: << pipeline.parameters.CALYPSO_HASH >>
     steps:
       - checkout
       - *install_linux_dependencies
@@ -457,3 +459,20 @@ workflows:
               ignore: /tests\/.*/
             tags:
               only: /.*/
+
+# Circle API v2 build trigger parameters
+# Ref: https://circleci.com/docs/2.0/pipeline-variables/
+# Ref: https://circleci.com/docs/2.0/reusing-config/#parameter-syntax
+parameters:
+  CALYPSO_HASH:
+    type: string
+    default: "" 
+  sha:
+    type: string
+    default: "" 
+  pullRequestNum:
+    type: string
+    default: "" 
+  calypsoProject:
+    type: string
+    default: ""
