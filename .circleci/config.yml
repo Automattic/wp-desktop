@@ -201,6 +201,20 @@ references:
           }
         }'
 
+# Circle API v2 build trigger parameters
+# Ref: https://circleci.com/docs/2.0/pipeline-variables/
+# Ref: https://circleci.com/docs/2.0/reusing-config/#parameter-syntax
+parameters:
+  CALYPSO_HASH:
+    type: string
+    default: ""
+  sha:
+    type: string
+    default: ""
+  calypsoProject:
+    type: string
+    default: ""
+
 jobs:
   build:
     docker:
@@ -217,9 +231,6 @@ jobs:
     steps:
       - checkout
       - *install_linux_dependencies
-      - run:
-          command: |
-            echo $CALYPSO_HASH
       - *setup_calypso
       - *calypso_prepare_cache
       - *calypso_restore_cache
@@ -462,17 +473,3 @@ workflows:
               ignore: /tests\/.*/
             tags:
               only: /.*/
-
-# Circle API v2 build trigger parameters
-# Ref: https://circleci.com/docs/2.0/pipeline-variables/
-# Ref: https://circleci.com/docs/2.0/reusing-config/#parameter-syntax
-parameters:
-  CALYPSO_HASH:
-    type: string
-    default: "" 
-  sha:
-    type: string
-    default: "" 
-  calypsoProject:
-    type: string
-    default: ""
