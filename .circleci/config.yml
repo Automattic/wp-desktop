@@ -219,7 +219,7 @@ jobs:
       - *install_linux_dependencies
       - run:
           command: |
-            echo ${CALYPSO_HASH}
+            echo $CALYPSO_HASH
       - *setup_calypso
       - *calypso_prepare_cache
       - *calypso_restore_cache
