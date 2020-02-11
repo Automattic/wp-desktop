@@ -437,6 +437,8 @@ workflows:
     jobs:
       - build:
           filters:
+            branches:
+              ignore: /tests\/.*/
             tags:
               only: /.*/
       - windows:
