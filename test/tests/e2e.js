@@ -54,6 +54,7 @@ describe( 'User Can log in', function() {
 
 	step( 'Can see Reader Page after logging in', async function() {
 		await ReaderPage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return loggedInUrl = await driver.getCurrentUrl();
 	} );
 } );
@@ -66,11 +67,13 @@ describe( 'Publish a New Post', function() {
 
 	step( 'Can navigate to post editor', async function() {
 		const navbarComponent = await NavBarComponent.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return await navbarComponent.clickCreateNewPost();
 	} );
 
 	step( 'Can enter post title and content', async function() {
 		const editorPage = await EditorPage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		await editorPage.enterTitle( blogPostTitle );
 		await editorPage.enterContent( blogPostQuote + '\n' );
 
@@ -86,6 +89,7 @@ describe( 'Publish a New Post', function() {
 
 	step( 'Can see correct post title', async function() {
 		const viewPostPage = await ViewPostPage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		let postTitle = await viewPostPage.postTitle();
 		return assert.strictEqual(
 			postTitle.toLowerCase(),
@@ -104,15 +108,18 @@ describe( 'Can Log Out', function() {
 
 	step( 'Can view profile to log out', async function() {
 		let navbarComponent = await NavBarComponent.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return await navbarComponent.clickProfileLink();
 	} );
 
 	step( 'Can logout from profile page', async function() {
 		const profilePage = await ProfilePage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return await profilePage.clickSignOut();
 	} );
 
 	step( 'Can see app login page after logging out', async function() {
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return await LoginPage.Expect( driver );
 	} );
 } );
@@ -130,6 +137,7 @@ describe( 'Can Sign up', function() {
 
 	step( 'Can navigate to Create account', async function() {
 		let loginPage = await LoginPage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		await loginPage.hideGdprBanner();
 		await loginPage.openCreateAccountPage();
 		return await SignupStepsPage.Expect( driver );
