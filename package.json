@@ -121,6 +121,7 @@
     },
     "dmg": {
       "title": "WordPress.com Installer",
+      "iconSize": 150,
       "contents": [
         {
           "x": 486,
