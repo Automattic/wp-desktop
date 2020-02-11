@@ -48,6 +48,7 @@ describe( 'User Can log in', function() {
 
 	step( 'Can log in', async function() {
 		let loginPage = await LoginPage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
 	} );
 
