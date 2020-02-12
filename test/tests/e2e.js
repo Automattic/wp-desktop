@@ -130,6 +130,9 @@ describe( 'Can Sign up', function() {
 	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
 	const emailAddress = blogName + process.env.E2E_MAILOSAUR_INBOX;
 
+	const sandboxCookieValue = '6209480420ff2c6ad3d7e3adfda3dadd';
+	const currencyValue = 'USD';
+
 	step( 'Clear local storage', async function() {
 		await driver.executeScript( 'window.localStorage.clear();' );
 		return await driver.sleep( 3000 );
@@ -140,7 +143,9 @@ describe( 'Can Sign up', function() {
 		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		await loginPage.hideGdprBanner();
 		await loginPage.openCreateAccountPage();
-		return await SignupStepsPage.Expect( driver );
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		await signupStepsPage.setSandboxModeForPayments( sandboxCookieValue );
+		return await signupStepsPage.setCurrencyForPayments( currencyValue );
 	} );
 
 	step( 'Can see the "Site Topic" page, and enter the site topic', async function() {
@@ -163,6 +168,7 @@ describe( 'Can Sign up', function() {
 
 	step( 'Can see the plans page and pick the free plan', async function() {
 		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		// TODO: Select Business plan
 		return await signupStepsPage.selectFreePlan();
 	} );
 
@@ -173,6 +179,10 @@ describe( 'Can Sign up', function() {
 			blogName,
 			process.env.E2EPASSWORD
 		);
+	} );
+
+	step( 'Can enter and submit test payment details', async function() {
+		// TODO: Finish payment
 	} );
 
 	step( 'Can then see the onboarding checklist', async function() {
