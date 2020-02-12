@@ -13,6 +13,9 @@ parameters:
   calypsoProject:
     type: string
     default: ""
+  isCalypsoCanaryRun:
+    type: boolean
+    default: false
 
 orbs:
   win: circleci/windows@2.2.0
@@ -437,6 +440,8 @@ workflows:
     jobs:
       - build:
           filters:
+            branches:
+              ignore: /tests\/.*/
             tags:
               only: /.*/
       - windows:
@@ -473,3 +478,10 @@ workflows:
               ignore: /tests\/.*/
             tags:
               only: /.*/
+  calypso-canary:
+    when: << pipeline.parameters.isCalypsoCanaryRun >>
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /tests\/.*/
