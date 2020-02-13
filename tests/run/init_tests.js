@@ -1,9 +1,9 @@
 const { exec } = require( 'child_process' );
-const { MOCHA, E2E } = require( './paths' );
+const { E2E } = require( './paths' );
 
 function initTests() {
     const args = '--timeout 20000';
-    const cmd = `node "${MOCHA}" "${E2E}" ${args}`;
+    const cmd = `npx mocha "${E2E}" ${args}`;
 
     return new Promise( ( resolve, reject ) => {
         let tests = exec( cmd, ( error, stdout, stderr ) => {
