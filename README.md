@@ -21,6 +21,11 @@ Need more detailed instructions? [We have them.](docs/install.md)
 
 The app is split between Electron code and Calypso code, and so the [development guide](docs/development.md) may help you find where to change stuff.
 
+# Running The End-To-End Test Suite
+
+1. Set the environment variables `E2EUSERNAME`, `E2EPASSWORD` and `E2E_MAILOSAUR_INBOX`.
+2. Use `npm run e2e` or `make e2e` to invoke the test suite.
+
 # Building & Packaging a Release
 
 While running the app locally in a development environment is great, you will eventually need to [build a release version](docs/release.md) you can share.
