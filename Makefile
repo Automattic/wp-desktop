@@ -192,21 +192,6 @@ clean:
 
 .PHONY: test build-source
 
-E2E_TIMESTAMP := $(shell date "+%Y-%m-%dT%H-%M-%S").000Z
-E2E_LOG_DIR := $(THIS_DIR)/test/logs/$(E2E_TIMESTAMP)
-E2E_APP_LOG := $(E2E_LOG_DIR)/app-$(E2E_TIMESTAMP).log
-E2E_DRIVER_LOG := $(E2E_LOG_DIR)/chromedriver-$(E2E_TIMESTAMP).log
-E2E_ELECTRON_START_ARGS :=--disable-renderer-backgrounding --disable-http-cache --start-maximized --remote-debugging-port=9222
-E2E_START_ELECTRON_CMD := ./release/mac/WordPress.com.app/Contents/MacOS/WordPress.com $(E2E_ELECTRON_START_ARGS) >$(E2E_APP_LOG) 2>&1
-E2E_START_CHROMEDRIVER_CMD := npx chromedriver --port=9515 --verbose >$(E2E_DRIVER_LOG) 2>&1
-E2E_START_MOCHA_CMD := npx mocha test/tests/e2e.js --timeout 20000
-
 .PHONY:
 e2e:
-	$(info Running e2e tests: $(E2E_TIMESTAMP))
-
-	@mkdir -p "$(E2E_LOG_DIR)"
-
-	($(E2E_START_ELECTRON_CMD)) | \
-	(sleep 5 && $(E2E_START_CHROMEDRIVER_CMD)) | \
-	(sleep 5 && $(E2E_START_MOCHA_CMD))
+	@npm run e2e
