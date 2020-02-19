@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 const { promisify } = require( 'util' );
 const { initApp } = require( './init_app' );
 const { initLogs } = require( './init_logs' );
