@@ -5,6 +5,7 @@ const { initApp } = require( './init_app' );
 const { initLogs } = require( './init_logs' );
 const { initTests } = require( './init_tests' );
 const { initDriver } = require( './init_driver' );
+const { checkCredentials } = require( './checks' );
 
 let app;
 let driver;
@@ -27,34 +28,10 @@ function handleExit() {
     }
 }
 
-function usernameExists() {
-    return ( process.env.E2EUSERNAME && process.env.E2EUSERNAME !== '' ) ? true : false;
-}
-
-function passwordExists() {
-    return ( process.env.E2EPASSWORD && process.env.E2EPASSWORD !== '' ) ? true : false;
-}
-
-function emailExists() {
-    return ( process.env.E2E_MAILOSAUR_INBOX && process.env.E2E_MAILOSAUR_INBOX !== '' ? true : false )
-} 
-
 async function run() {
-    if ( !usernameExists() ) {
-        console.log( 'Environment variable E2EUSERNAME not set, exiting.' );
-        process.exit();
-    }
-    if ( !passwordExists() ) {
-        console.log( 'Environment variable E2EPASSWORD not set, exiting.' );
-        process.exit();
-    }
-
-    if ( !emailExists() ) {
-        console.log('Environment variable E2E_MAILOSAUR_INBOX not set, exiting');
-        process.exit();
-    }
-
     try {
+        checkCredentials();
+
         const timestamp = ( new Date() ).toJSON().replace( /:/g, '-' );
         const { appLog, driverLog } = initLogs( timestamp );
 
