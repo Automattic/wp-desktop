@@ -2,7 +2,7 @@
 
 const path = require( 'path' );
 const { promisify } = require( 'util' );
-const { exec, spawn } = require( 'child_process' );
+const { execSync, spawn } = require( 'child_process' );
 const { existsSync, openSync, mkdirSync } = require( 'fs' );
 
 const PROJECT_DIR = path.join( __dirname, '../../' );
@@ -31,24 +31,6 @@ function initLogs( timestamp ) {
     }
 
     return { appLog, driverLog };
-}
-
-function initTests() {
-    const tests = path.join( PROJECT_DIR, 'test', 'tests', 'e2e.js' );
-    const cmd = `npx mocha ${ tests } --timeout 20000`;
-
-    return new Promise( ( resolve, reject ) => {
-        let tests = exec( cmd, ( error, stdout, stderr ) => {
-            if ( error ) {
-                reject( error );
-                return
-            } else {
-                resolve( stdout? stdout : stderr );
-            }
-        } );
-        tests.stdout.pipe( process.stdout );
-        tests.stderr.pipe( process.stderr );
-    } );
 }
 
 const delay = promisify( setTimeout );
@@ -98,7 +80,8 @@ async function run() {
             '--verbose',
         ], driverLog );
 
-        await initTests();
+        const tests = path.join( PROJECT_DIR, 'test', 'tests', 'e2e.js' );
+        execSync( `npx mocha ${ tests } --timeout 20000`, { stdio: 'inherit' } );
     }
     catch ( err ) {
         console.error( err );
