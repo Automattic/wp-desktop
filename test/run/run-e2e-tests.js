@@ -1,15 +1,60 @@
 #!/usr/bin/env node
 
+const path = require( 'path' );
 const { promisify } = require( 'util' );
-const { initApp } = require( './init_app' );
-const { initLogs } = require( './init_logs' );
-const { initTests } = require( './init_tests' );
-const { initDriver } = require( './init_driver' );
+const { exec, spawn } = require( 'child_process' );
+const { existsSync, openSync, mkdirSync } = require( 'fs' );
+
+const PROJECT_DIR = path.join( __dirname, '../../' );
+const BUILT_APP_DIR = path.join( PROJECT_DIR, 'release', 'mac', 'WordPress.com.app', 'Contents', 'MacOS' );
+
+function spawnDetached( cwd, command, args, output ) {
+    const app = spawn( command, args, { stdio: [ 'ignore', output, output ], detached: true, cwd } );
+    app.on( 'error', err => {
+        throw `failed to initialize command "${ command }": "${ err }"`;
+    } );
+    return app;
+}
+
+function initLogs( timestamp ) {
+    const dir = path.join( PROJECT_DIR, 'test', 'logs', `${ timestamp }` );
+
+    if ( !existsSync( dir ) ) {
+        mkdirSync( dir, { recursive: true } );
+    }
+
+    const appLog = openSync( path.join( dir, `app-${ timestamp }.log` ), 'a' );
+    const driverLog = openSync( path.join( dir, `chromedriver-${ timestamp }.log` ), 'a' );
+
+    if ( !appLog || !driverLog ) {
+        throw 'failed to initialize logs';
+    }
+
+    return { appLog, driverLog };
+}
+
+function initTests() {
+    const tests = path.join( PROJECT_DIR, 'test', 'tests', 'e2e.js' );
+    const cmd = `npx mocha ${ tests } --timeout 20000`;
+
+    return new Promise( ( resolve, reject ) => {
+        let tests = exec( cmd, ( error, stdout, stderr ) => {
+            if ( error ) {
+                reject( error );
+                return
+            } else {
+                resolve( stdout? stdout : stderr );
+            }
+        } );
+        tests.stdout.pipe( process.stdout );
+        tests.stderr.pipe( process.stderr );
+    } );
+}
+
+const delay = promisify( setTimeout );
 
 let app;
 let driver;
-
-const delay = promisify( setTimeout );
 
 // Handle both user-initiated (SIGINT) and normal termination.
 process.on( 'SIGINT', function() {
@@ -39,10 +84,19 @@ async function run() {
         const timestamp = ( new Date() ).toJSON().replace( /:/g, '-' );
         const { appLog, driverLog } = initLogs( timestamp );
 
-        app = initApp( appLog );
+        app = spawnDetached( BUILT_APP_DIR, './WordPress.com', [
+            '--disable-renderer-backgrounding',
+            '--disable-http-cache',
+            '--start-maximized',
+            '--remote-debugging-port=9222',
+        ], appLog );
         await delay( 5000 );
 
-        driver = initDriver( driverLog );
+        driver = spawnDetached( PROJECT_DIR, 'npx', [
+            'chromedriver',
+            '--port=9515',
+            '--verbose',
+        ], driverLog );
 
         await initTests();
     }
