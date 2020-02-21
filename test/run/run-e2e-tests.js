@@ -5,7 +5,6 @@ const { initApp } = require( './init_app' );
 const { initLogs } = require( './init_logs' );
 const { initTests } = require( './init_tests' );
 const { initDriver } = require( './init_driver' );
-const { checkCredentials } = require( './checks' );
 
 let app;
 let driver;
@@ -30,7 +29,11 @@ function handleExit() {
 
 async function run() {
     try {
-        checkCredentials();
+        const requiredENVs = [ 'E2EUSERNAME', 'E2EPASSWORD', 'E2E_MAILOSAUR_INBOX' ];
+        const missingENVs = requiredENVs.filter( name => ! process.env[name] || process.env[name] === '' );
+        if ( missingENVs.length ) {
+            throw `Missing non-empty ENV for: ${ missingENVs.join( ', ' ) }`;
+        }
 
         const timestamp = ( new Date() ).toJSON().replace( /:/g, '-' );
         const { appLog, driverLog } = initLogs( timestamp );
