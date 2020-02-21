@@ -36,13 +36,6 @@ const delay = promisify( setTimeout );
 let app;
 let driver;
 
-// Handle both user-initiated (SIGINT) and normal termination.
-process.on( 'SIGINT', function() {
-    handleExit();
-    process.exit();
-} );
-
-process.on( 'exit', handleExit );
 function handleExit() {
     if ( driver ) {
         driver.kill();
@@ -51,6 +44,14 @@ function handleExit() {
         app.kill();
     }
 }
+
+// Handle both user-initiated (SIGINT) and normal termination.
+process.on( 'SIGINT', function() {
+    handleExit();
+    process.exit();
+} );
+
+process.on( 'exit', handleExit );
 
 async function run() {
     try {
