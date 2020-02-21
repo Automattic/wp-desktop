@@ -2,8 +2,8 @@
 
 const path = require( 'path' );
 const { promisify } = require( 'util' );
+const { openSync, mkdirSync } = require( 'fs' );
 const { execSync, spawn } = require( 'child_process' );
-const { existsSync, openSync, mkdirSync } = require( 'fs' );
 
 const PROJECT_DIR = path.join( __dirname, '../../' );
 const BUILT_APP_DIR = path.join( PROJECT_DIR, 'release', 'mac', 'WordPress.com.app', 'Contents', 'MacOS' );
@@ -19,9 +19,7 @@ function spawnDetached( cwd, command, args, output ) {
 function initLogs( timestamp ) {
     const dir = path.join( PROJECT_DIR, 'test', 'logs', `${ timestamp }` );
 
-    if ( !existsSync( dir ) ) {
-        mkdirSync( dir, { recursive: true } );
-    }
+    mkdirSync( dir, { recursive: true } );
 
     const appLog = openSync( path.join( dir, `app-${ timestamp }.log` ), 'a' );
     const driverLog = openSync( path.join( dir, `chromedriver-${ timestamp }.log` ), 'a' );
