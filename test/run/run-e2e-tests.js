@@ -35,6 +35,7 @@ async function run() {
             throw `Missing non-empty ENV for: ${ missingENVs.join( ', ' ) }`;
         }
 
+        // Replace `:` with `-` to format timestamp as YYYY-MM-DDTHH-MM-SS.mmmZ
         const timestamp = ( new Date() ).toJSON().replace( /:/g, '-' );
         const { appLog, driverLog } = initLogs( timestamp );
 
