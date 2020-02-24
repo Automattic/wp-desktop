@@ -191,3 +191,7 @@ clean:
 	@rm -rf .$/build
 
 .PHONY: test build-source
+
+.PHONY:
+e2e:
+	@npm run e2e
