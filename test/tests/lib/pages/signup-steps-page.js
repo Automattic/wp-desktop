@@ -89,6 +89,21 @@ class SignupStepsPage extends AsyncBaseContainer {
 
 		return await this.driver.sleep( 5000 );
 	}
+
+	async setSandboxModeForPayments( sandboxCookieValue ) {
+		const setCookieCode = function( sandboxValue ) {
+			window.document.cookie = 'store_sandbox=' + sandboxValue + ';domain=.wordpress.com';
+		};
+		await this.driver.executeScript( setCookieCode, sandboxCookieValue );
+		return true;
+	}
+
+	async setCurrencyForPayments( currency ) {
+		const setCookieCode = function( currencyValue ) {
+			window.document.cookie = 'landingpage_currency=' + currencyValue + ';domain=.wordpress.com';
+		};
+		return await this.driver.executeScript( setCookieCode, currency );
+	}
 }
 
 module.exports = SignupStepsPage;

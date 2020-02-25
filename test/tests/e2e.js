@@ -50,11 +50,13 @@ describe( 'User Can log in', function() {
 
 	step( 'Can log in', async function() {
 		let loginPage = await LoginPage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return await loginPage.login( process.env.E2EUSERNAME, process.env.E2EPASSWORD );
 	} );
 
 	step( 'Can see Reader Page after logging in', async function() {
 		await ReaderPage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return loggedInUrl = await driver.getCurrentUrl();
 	} );
 } );
@@ -67,11 +69,13 @@ describe( 'Publish a New Post', function() {
 
 	step( 'Can navigate to post editor', async function() {
 		const navbarComponent = await NavBarComponent.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return await navbarComponent.clickCreateNewPost();
 	} );
 
 	step( 'Can enter post title and content', async function() {
 		const editorPage = await EditorPage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		await editorPage.enterTitle( blogPostTitle );
 		await editorPage.enterContent( blogPostQuote + '\n' );
 
@@ -87,6 +91,7 @@ describe( 'Publish a New Post', function() {
 
 	step( 'Can see correct post title', async function() {
 		const viewPostPage = await ViewPostPage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		let postTitle = await viewPostPage.postTitle();
 		return assert.strictEqual(
 			postTitle.toLowerCase(),
@@ -105,15 +110,18 @@ describe( 'Can Log Out', function() {
 
 	step( 'Can view profile to log out', async function() {
 		let navbarComponent = await NavBarComponent.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return await navbarComponent.clickProfileLink();
 	} );
 
 	step( 'Can logout from profile page', async function() {
 		const profilePage = await ProfilePage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return await profilePage.clickSignOut();
 	} );
 
 	step( 'Can see app login page after logging out', async function() {
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		return await LoginPage.Expect( driver );
 	} );
 } );
@@ -123,6 +131,9 @@ describe( 'Can Sign up', function() {
 	const blogName = dataHelper.getNewBlogName();
 	const emailAddress = blogName + '@e2edesktop.test';
 
+	const sandboxCookieValue = '6209480420ff2c6ad3d7e3adfda3dadd';
+	const currencyValue = 'USD';
+
 	step( 'Clear local storage', async function() {
 		await driver.executeScript( 'window.localStorage.clear();' );
 		return await driver.sleep( 3000 );
@@ -130,9 +141,12 @@ describe( 'Can Sign up', function() {
 
 	step( 'Can navigate to Create account', async function() {
 		let loginPage = await LoginPage.Expect( driver );
+		console.log( 'CURRENT URL: ' + await driver.getCurrentUrl() );
 		await loginPage.hideGdprBanner();
 		await loginPage.openCreateAccountPage();
-		return await SignupStepsPage.Expect( driver );
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		await signupStepsPage.setSandboxModeForPayments( sandboxCookieValue );
+		return await signupStepsPage.setCurrencyForPayments( currencyValue );
 	} );
 
 	step( 'Can see the "Site Topic" page, and enter the site topic', async function() {

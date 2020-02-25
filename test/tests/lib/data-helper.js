@@ -29,3 +29,14 @@ exports.getExpectedFreeAddresses = async function( searchTerm ) {
 	} );
 };
 
+exports.getTestCreditCardDetails = async function() {
+	return {
+		cardHolder: 'End To End Testing',
+		cardType: 'VISA',
+		cardNumber: '4242 4242 4242 4242', // https://stripe.com/docs/testing#cards
+		cardExpiry: '02 / 28',
+		cardCVV: '300',
+		cardCountryCode: 'TR', // using Turkey to force Stripe as payment processor
+		cardPostCode: '4000',
+	};
+};
