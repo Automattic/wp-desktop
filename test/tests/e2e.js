@@ -121,8 +121,7 @@ describe( 'Can Log Out', function() {
 describe( 'Can Sign up', function() {
 	this.timeout( 30000 );
 	const blogName = dataHelper.getNewBlogName();
-	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
-	const emailAddress = blogName + process.env.E2E_MAILOSAUR_INBOX;
+	const emailAddress = blogName + '@e2edesktop.test';
 
 	step( 'Clear local storage', async function() {
 		await driver.executeScript( 'window.localStorage.clear();' );
