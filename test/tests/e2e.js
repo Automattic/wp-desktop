@@ -173,8 +173,14 @@ describe( 'Can Sign up', function() {
 	} );
 
 	step( 'Can then choose My Home and see the onboarding checklist', async function() {
+		console.log( '>>>sad' );
+		const navbarComponent = await NavBarComponent.Expect( driver );
+		await driver.sleep( 2000 );
+		await navbarComponent.openSidebar();
 		const sidebarComponent = await SidebarComponent.Expect( driver );
+		await driver.sleep( 2000 );
 		await sidebarComponent.selectMyHome();
+		await driver.sleep( 2000 );
 		const checklistPage = await ChecklistPage.Expect( driver );
 		return await checklistPage.isChecklistPresent();
 	} );
