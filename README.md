@@ -23,7 +23,7 @@ The app is split between Electron code and Calypso code, and so the [development
 
 # Running The End-To-End Test Suite
 
-1. Set the environment variables `E2EUSERNAME`, `E2EPASSWORD` and `E2E_MAILOSAUR_INBOX`.
+1. Set the environment variables `E2EUSERNAME` and `E2EPASSWORD`.
 2. Use `npm run e2e` or `make e2e` to invoke the test suite.
 
 # Building & Packaging a Release
