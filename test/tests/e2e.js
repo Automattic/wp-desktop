@@ -116,7 +116,7 @@ describe( 'Can Log Out', function() {
 	} );
 } );
 
-describe.skip( 'Can Sign up', function() {
+describe( 'Can Sign up', function() {
 	this.timeout( 30000 );
 	const blogName = dataHelper.getNewBlogName();
 	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
