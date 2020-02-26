@@ -116,61 +116,61 @@ describe( 'Can Log Out', function() {
 	} );
 } );
 
-// describe( 'Can Sign up', function() {
-// 	this.timeout( 30000 );
-// 	const blogName = dataHelper.getNewBlogName();
-// 	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
-// 	const emailAddress = blogName + process.env.E2E_MAILOSAUR_INBOX;
+describe( 'Can Sign up', function() {
+	this.timeout( 30000 );
+	const blogName = dataHelper.getNewBlogName();
+	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
+	const emailAddress = blogName + process.env.E2E_MAILOSAUR_INBOX;
 
-// 	step( 'Clear local storage', async function() {
-// 		await driver.executeScript( 'window.localStorage.clear();' );
-// 		return await driver.sleep( 3000 );
-// 	} );
+	step( 'Clear local storage', async function() {
+		await driver.executeScript( 'window.localStorage.clear();' );
+		return await driver.sleep( 3000 );
+	} );
 
-// 	step( 'Can navigate to Create account', async function() {
-// 		let loginPage = await LoginPage.Expect( driver );
-// 		await loginPage.hideGdprBanner();
-// 		await loginPage.openCreateAccountPage();
-// 		return await SignupStepsPage.Expect( driver );
-// 	} );
+	step( 'Can navigate to Create account', async function() {
+		let loginPage = await LoginPage.Expect( driver );
+		await loginPage.hideGdprBanner();
+		await loginPage.openCreateAccountPage();
+		return await SignupStepsPage.Expect( driver );
+	} );
 
-// 	step( 'Can see the "Site Topic" page, and enter the site topic', async function() {
-// 		const signupStepsPage = await SignupStepsPage.Expect( driver );
-// 		return await signupStepsPage.aboutSite();
-// 	} );
+	step( 'Can see the "Site Topic" page, and enter the site topic', async function() {
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		return await signupStepsPage.aboutSite();
+	} );
 
-// 	step( 'Choose a theme page', async function() {
-// 		const signupStepsPage = await SignupStepsPage.Expect( driver );
-// 		return await signupStepsPage.selectTheme();
-// 	} );
+	step( 'Choose a theme page', async function() {
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		return await signupStepsPage.selectTheme();
+	} );
 
-// 	step(
-// 		'Can search for a blog name, can see and select a free .wordpress address',
-// 		async function() {
-// 			const signupStepsPage = await SignupStepsPage.Expect( driver );
-// 			return await signupStepsPage.selectDomain( blogName );
-// 		}
-// 	);
+	step(
+		'Can search for a blog name, can see and select a free .wordpress address',
+		async function() {
+			const signupStepsPage = await SignupStepsPage.Expect( driver );
+			return await signupStepsPage.selectDomain( blogName );
+		}
+	);
 
-// 	step( 'Can see the plans page and pick the free plan', async function() {
-// 		const signupStepsPage = await SignupStepsPage.Expect( driver );
-// 		return await signupStepsPage.selectFreePlan();
-// 	} );
+	step( 'Can see the plans page and pick the free plan', async function() {
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		return await signupStepsPage.selectFreePlan();
+	} );
 
-// 	step( 'Can see the account page, enter account details and submit', async function() {
-// 		const signupStepsPage = await SignupStepsPage.Expect( driver );
-// 		return await signupStepsPage.enterAccountDetailsAndSubmit(
-// 			emailAddress,
-// 			blogName,
-// 			process.env.E2EPASSWORD
-// 		);
-// 	} );
+	step( 'Can see the account page, enter account details and submit', async function() {
+		const signupStepsPage = await SignupStepsPage.Expect( driver );
+		return await signupStepsPage.enterAccountDetailsAndSubmit(
+			emailAddress,
+			blogName,
+			process.env.E2EPASSWORD
+		);
+	} );
 
-// 	step( 'Can then see the onboarding checklist', async function() {
-// 		const checklistPage = await ChecklistPage.Expect( driver );
-// 		return await checklistPage.isChecklistPresent();
-// 	} );
-// } );
+	step( 'Can then see the onboarding checklist', async function() {
+		const checklistPage = await ChecklistPage.Expect( driver );
+		return await checklistPage.isChecklistPresent();
+	} );
+} );
 
 after( async function() {
 	this.timeout( 30000 );
