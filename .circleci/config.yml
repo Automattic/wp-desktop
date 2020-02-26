@@ -387,24 +387,24 @@ jobs:
       #             source $HOME/.nvm/nvm.sh
       #             nvm use
       #             make test TEST_PRODUCTION_BINARY=true
-      # - run:
-      #     name: e2e Tests
-      #     command: |
-      #             killall touristd
-      #             killall UserNotificationCenter
+      - run:
+          name: e2e Tests
+          command: |
+                  killall touristd
+                  killall UserNotificationCenter
 
-      #             LOGDIR=$(echo "$(pwd)/test/logs")
-      #             mkdir -p "$LOGDIR"
-      #             APPLOG=$(echo "$LOGDIR/app.log")
-      #             DRIVERLOG=$(echo "$LOGDIR/chromedriver.log")
+                  LOGDIR=$(echo "$(pwd)/test/logs")
+                  mkdir -p "$LOGDIR"
+                  APPLOG=$(echo "$LOGDIR/app.log")
+                  DRIVERLOG=$(echo "$LOGDIR/chromedriver.log")
 
-      #             pushd "release/mac/WordPress.com.app/Contents/MacOS" 
-      #             eval './WordPress.com --disable-renderer-backgrounding --disable-http-cache --start-maximized --remote-debugging-port=9222 > "$APPLOG" 2>&1 &' && sleep 5
-      #             popd
+                  pushd "release/mac/WordPress.com.app/Contents/MacOS" 
+                  eval './WordPress.com --disable-renderer-backgrounding --disable-http-cache --start-maximized --remote-debugging-port=9222 > "$APPLOG" 2>&1 &' && sleep 5
+                  popd
                   
-      #             ./node_modules/.bin/chromedriver --port=9515 --verbose > "$DRIVERLOG" 2>&1 &
-      #             ./node_modules/.bin/mocha test/tests/e2e.js
-      #             osascript -e 'quit app "WordPress.com"'
+                  ./node_modules/.bin/chromedriver --port=9515 --verbose > "$DRIVERLOG" 2>&1 &
+                  ./node_modules/.bin/mocha test/tests/e2e.js
+                  osascript -e 'quit app "WordPress.com"'
       - run:
           name: Release cleanup
           command: |
