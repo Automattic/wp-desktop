@@ -57,7 +57,7 @@ describe( 'User Can log in', function() {
 	} );
 } );
 
-describe( 'Publish a New Post', function() {
+describe.skip( 'Publish a New Post', function() {
 	this.timeout( 30000 );
 	const blogPostTitle = dataHelper.randomPhrase();
 	const blogPostQuote =
@@ -116,7 +116,7 @@ describe( 'Can Log Out', function() {
 	} );
 } );
 
-describe( 'Can Sign up', function() {
+describe.skip( 'Can Sign up', function() {
 	this.timeout( 30000 );
 	const blogName = dataHelper.getNewBlogName();
 	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
