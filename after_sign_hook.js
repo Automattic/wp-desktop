@@ -3,14 +3,11 @@ const path = require('path');
 var electron_notarize = require('electron-notarize');
 
 module.exports = async function(params) {
-	// Only notarize the app on Mac OS only.
-	for (var key of params.platformToTargets.keys()) {
-		if (key.name !== 'mac') {
-			return;
-		}
-	}
-
-  console.log('afterSign hook triggered');
+  // Only notarize the app on Mac OS only.
+  if (params.electronPlatformName !== 'darwin') {
+    return;
+  }
+  console.log('afterSign hook triggered', params);
 
   if (!process.env.CIRCLE_TAG || process.env.CIRCLE_TAG.length === 0) {
     console.log('Not on a tag. Skipping notarization');
@@ -20,16 +17,18 @@ module.exports = async function(params) {
   // Same appId in electron-builder.
   let appId = 'com.automattic.wordpress';
 
-  let appPath = path.join(
-		params.outDir,
-		`mac/WordPress.com.app`
-	)
+  let appPath = params.appOutDir
+    ? path.join(
+        params.appOutDir,
+        `${params.packager.appInfo.productFilename}.app`
+      )
+    : params.artifactPaths[0].replace(new RegExp('.blockmap'), '');
 
-	if (!fs.existsSync(appPath)) {
+  if (!fs.existsSync(appPath)) {
     throw new Error(`Cannot find application at: ${appPath}`);
   }
 
-	console.log(`Notarizing ${appId} found at ${appPath}`);
+  console.log(`Notarizing ${appId} found at ${appPath}`);
 
   try {
     await electron_notarize.notarize({
@@ -43,5 +42,5 @@ module.exports = async function(params) {
     console.error(error);
   }
 
-  console.log(`Done notarizing ${appPath}`);
+  console.log(`Done notarizing ${appId}`);
 };
