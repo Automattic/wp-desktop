@@ -84,6 +84,7 @@ async function run() {
     }
     catch ( err ) {
         console.error( err );
+        process.exitCode = 1;
     }
     finally {
         // Explicitly call process.exit to ensure that spawned processes are killed.
