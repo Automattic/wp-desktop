@@ -25,17 +25,13 @@ AppInstance.prototype.anotherInstanceStarted = function() {
 };
 
 AppInstance.prototype.isSingleInstance = function() {
-	let shouldQuit;
-
-	shouldQuit = app.makeSingleInstance( this.anotherInstanceStarted.bind( this ) );
-
-	if ( shouldQuit ) {
-		debug( 'App is already running, quitting' );
-		app.exit();
-		return false;
+	if ( app.requestSingleInstanceLock() ) {
+		return true;
 	}
 
-	return true;
+	debug( 'App is already running, quitting' );
+	app.quit();
+	return false;
 };
 
 module.exports = new AppInstance();

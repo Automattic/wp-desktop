@@ -266,3 +266,11 @@ exports.waitForFieldClearable = function( driver, selector ) {
 			}' to be clearable`
 	);
 };
+
+exports.selectElementByText = async function( driver, selector, text ) {
+	const element = async () => {
+		const allElements = await driver.findElements( selector );
+		return await webdriver.promise.filter( allElements, async e => ( await e.getText() ) === text );
+	};
+	return await this.clickWhenClickable( driver, element );
+};

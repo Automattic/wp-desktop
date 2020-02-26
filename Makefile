@@ -1,5 +1,7 @@
+SHELL = /bin/bash
+
 ifeq ($(OS),Windows_NT)
-	FILE_PATH_SEP := \
+	FILE_PATH_SEP := $(strip \)
 	ENV_PATH_SEP := ;
 else
 	FILE_PATH_SEP := /
@@ -12,6 +14,9 @@ THIS_MAKEFILE_PATH := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 THIS_DIR := $(shell cd $(dir $(THIS_MAKEFILE_PATH));pwd)
 NPM_BIN_DIR = $(shell npm bin)
 
+NPMRC_ELECTRON_VERSION := $(shell npm config get target)
+PACKAGE_ELECTRON_VERSION := $(shell node -e "console.log(require('./package.json').devDependencies.electron)")
+
 RED = `tput setaf 1`
 GREEN = `tput setaf 2`
 CYAN = `tput setaf 6`
@@ -19,14 +24,14 @@ RESET = `tput sgr0`
 
 CALYPSO_DIR := $(THIS_DIR)/calypso
 
-CHECKMARK = ✓
+CHECKMARK = OK
 
 # Environment Variables
-CONFIG_ENV = 
+CONFIG_ENV =
 CALYPSO_ENV = desktop
 NODE_ENV = production
-BUILD_PLATFORM = 
-DEBUG = 
+BUILD_PLATFORM =
+DEBUG =
 TEST_PRODUCTION_BINARY = false
 MINIFY_JS = true
 NODE_ARGS = --max_old_space_size=8192
@@ -36,7 +41,7 @@ NODE_ARGS = --max_old_space_size=8192
 
 # Build sources
 # TODO: run tasks parallel when in dev mode
-build-source: checks desktop$/config.json build-calypso build-desktop
+build-source: checks desktop/config.json build-calypso build-desktop
 	@echo "$(CYAN)$(CHECKMARK) All parts built$(RESET)"
 
 # Start app
@@ -57,7 +62,7 @@ dev-server: checks
 	@echo "|                                                |"
 	@echo "+------------------------------------------------+$(RESET)\n\n"
 
-	$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
+	$(MAKE) desktop/config.json CONFIG_ENV=$(CONFIG_ENV)
 
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
@@ -67,38 +72,40 @@ dev-server: checks
 # Start app in dev mode
 dev: NODE_ENV = development
 dev: DEBUG = desktop:*
-dev: 
+dev:
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
-
 BASE_CONFIG := $(THIS_DIR)/desktop-config/config-base.json
-ENV_CONFIG := $(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
+TARGET_CONFIG := $(THIS_DIR)/desktop-config/config-$(CONFIG_ENV).json
 
-.PHONY: desktop$/config.json
-desktop$/config.json:
-ifeq (,$(wildcard $(ENV_CONFIG)))
+.PHONY: desktop/config.json
+desktop/config.json:
+ifeq (,$(wildcard $(TARGET_CONFIG)))
 	$(warning Config file for environment "$(CONFIG_ENV)" does not exist. Ignoring environment.)
 else
 	$(eval EXTENDED = true)
 endif
-	@node -e "const base = require('$(BASE_CONFIG)'); let env; try { env = require('$(ENV_CONFIG)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
-	
+	@node -e "const base = require('$(BASE_CONFIG)'); let env; try { env = require('$(TARGET_CONFIG)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
+
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
-build-calypso: 
+build-calypso:
+	$(info Building calypso... )
+
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
 
 	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
 # Run Calypso server
-calypso-dev: 
+calypso-dev:
 	@echo "$(CYAN)Starting Calypso...$(RESET)"
 
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
 
 # Build desktop bundle
-build-desktop:
+build-desktop: rebuild-deps
+	$(info Building Desktop... )
 ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
 endif
@@ -109,53 +116,68 @@ endif
 
 # Package App
 package:
+	$(info Packaging app... )
+
 	@npx electron-builder build -$(BUILD_PLATFORM)
 
 	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
 
-# Combined steps for building app 
+# Combined steps for building app
 build: build-source package
 
 # Perform checks
-checks: check-node-version-parity secret
-
+checks: check-version-parity secret
 
 # Check for secret and confirm proper clientid for production release
+SECRETS := $(CALYPSO_DIR)/config/secrets.json
 secret:
-ifneq (,$(wildcard $(CALYPSO_DIR)$/config$/secrets.json))
+ifneq (,$(wildcard $(SECRETS)))
 ifeq (release,$(CONFIG_ENV))
-ifneq (43452,$(shell node -p "require('$(CALYPSO_DIR)$/config$/secrets.json').desktop_oauth_client_id"))
-	$(error "desktop_oauth_client_id" must be "43452" in $(CALYPSO_DIR)$/config$/secrets.json)
+ifneq (43452,$(shell node -p "require('$(SECRETS)').desktop_oauth_client_id"))
+	$(error "desktop_oauth_client_id" must be "43452" in $(SECRETS))
 endif
 endif
-else 
-	$(error $(CALYPSO_DIR)$/config$/secrets.json does not exist)
+else
+	$(error $(SECRETS) does not exist)
 endif
-
 
 # Sed to strip leading v to ensure 'v1.2.3' and '1.2.3' can match.
 # The .nvmrc file may contain either, `node --version` prints with 'v' prefix.
 CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 
+.PHONY: check-version-parity
+check-version-parity: check-node-version-parity check-electron-version-parity
+
 # Check that the current node & npm versions are the versions Calypso expects to ensure it is built safely.
 check-node-version-parity:
 ifneq ("$(CALYPSO_NODE_VERSION)", "$(CURRENT_NODE_VERSION)")
 	$(error Please ensure that wp-desktop is using NodeJS $(CALYPSO_NODE_VERSION) to match wp-calypso before continuing. 	Current NodeJS version: $(CURRENT_NODE_VERSION))
-else 
+else
 	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
+endif
+
+# Check that the electron version specified in .npmrc and package.json are consistent.
+# This is to ensure that when native dependencies have an auto-build postinstall script,
+# node-gyp will compile against Electron and not the host environment's node version
+# required by Calypso.
+check-electron-version-parity:
+ifneq ("$(NPMRC_ELECTRON_VERSION)", "$(PACKAGE_ELECTRON_VERSION)")
+	$(error Please ensure that the Electron version in package.json (set to $(PACKAGE_ELECTRON_VERSION)) is consistent with .npmrc (set to $(NPMRC_ELECTRON_VERSION)))
+else
+	@echo $(GREEN)$(CHECKMARK) Electron version in package.json matches .npmrc  \($(PACKAGE_ELECTRON_VERSION)\) $(RESET)
 endif
 
 .PHONY: rebuild-deps
 rebuild-deps:
-	@npx electron-rebuild
+	@npx electron-rebuild -v $(PACKAGE_ELECTRON_VERSION)
 
 test: CONFIG_ENV = test
 test: rebuild-deps
 	@echo "$(CYAN)Building test...$(RESET)"
 
-	@$(MAKE) desktop$/config.json CONFIG_ENV=$(CONFIG_ENV)
-	
+	@$(MAKE) desktop/config.json CONFIG_ENV=$(CONFIG_ENV)
+
 	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --mode production --config .$/webpack.config.test.js
 	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
 
@@ -169,9 +191,3 @@ clean:
 	@rm -rf .$/build
 
 .PHONY: test build-source
-
-apply-patches:
-	@echo "$(CYAN) Applying patches...$(RESET)"
-
-	patch -p1 < ./resource/macos/macPackager-patch.diff
-	patch -p1 < ./resource/macos/scheme-patch.diff 

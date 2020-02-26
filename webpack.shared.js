@@ -16,7 +16,7 @@ module.exports = {
 			{
 				include: path.join( __dirname, 'calypso', 'client/sections.js' ),
 				use: {
-					loader: path.join( __dirname, 'calypso', 'server', 'bundler', 'sections-loader' ),
+					loader: path.join( __dirname, 'calypso', 'client', 'server', 'bundler', 'sections-loader' ),
 					options: { forceRequire: true, onlyIsomorphic: true },
 				},
 			},
@@ -33,9 +33,14 @@ module.exports = {
 				test: /\.js$/,
 				loader: 'babel-loader',
 				include: filepath => {
-					// is it the chalk module? Then transpile it, too
+					// is it one of the npm dependencies we want to transpile?
 					const lastIndex = filepath.lastIndexOf( '/node_modules/' );
-					return lastIndex !== -1 && filepath.startsWith( '/node_modules/chalk/', lastIndex );
+					if ( lastIndex === -1 ) {
+						return false;
+					}
+					return [ 'chalk', '@automattic/calypso-polyfills' ].some( pkg =>
+						filepath.startsWith( `/node_modules/${ pkg }/`, lastIndex )
+					);
 				},
 			},
 			{
@@ -70,9 +75,7 @@ module.exports = {
 
 		// These are Calypso server modules we don't need, so let's not bundle them
 		'webpack.config',
-		'bundler/hot-reloader',
-		'devdocs/search-index',
-		'devdocs/components-usage-stats.json',
+		'server/devdocs/search-index',
 	],
 	resolve: {
 		extensions: [ '.json', '.js', '.jsx', '.ts', '.tsx' ],
@@ -80,10 +83,12 @@ module.exports = {
 			'node_modules',
 			path.join( __dirname, 'calypso', 'node_modules' ),
 			path.join( __dirname, 'node_modules' ),
-			path.join( __dirname, 'calypso', 'server' ),
 			path.join( __dirname, 'calypso', 'client' ),
 			path.join( __dirname, 'desktop' ),
 		],
+		alias: {
+			config: 'server/config',
+		},
 	},
 	plugins: [
 		new webpack.NormalModuleReplacementPlugin( /^lib[\/\\]abtest$/, 'lodash/noop' ), // Depends on BOM

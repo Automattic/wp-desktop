@@ -42,7 +42,7 @@ class EditorPage extends AsyncBaseContainer {
 	}
 
 	async errorDisplayed() {
-		this.driver.sleep( 1000 );
+		await this.driver.sleep( 1000 );
 		return await driverHelper.isElementPresent( this.driver, by.css( '.notice.is-error' ) );
 	}
 }
