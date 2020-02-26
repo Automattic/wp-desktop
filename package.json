@@ -1,6 +1,6 @@
 {
   "name": "WordPressDesktop",
-  "version": "4.7.0",
+  "version": "5.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
@@ -93,6 +93,7 @@
     "appId": "com.automattic.wordpress",
     "asar": false,
     "directories": {
+      "buildResources": "./resource/icons",
       "output": "./release"
     },
     "files": [
@@ -110,7 +111,6 @@
       }
     ],
     "mac": {
-      "icon": "./resource/image/mac/app-icon.icns",
       "category": "public.app-category.social-networking",
       "entitlements": "./resource/macos/entitlements.mac.plist",
       "entitlementsInherit": "./resource/macos/entitlements.mac.inherit.plist",
@@ -121,9 +121,7 @@
     },
     "dmg": {
       "title": "WordPress.com Installer",
-      "icon": "./resource/image/mac/dmg-icon.icns",
       "iconSize": 150,
-      "background": "./resource/image/mac/dmg-background/background.png",
       "contents": [
         {
           "x": 486,
@@ -146,7 +144,6 @@
           "ia32"
         ]
       },
-      "icon": "./resource/image/win/wordpress.ico",
       "certificateSubjectName": "Automattic, Inc."
     },
     "nsis": {
@@ -157,7 +154,6 @@
         "deb",
         "tar.gz"
       ],
-      "icon": "./resource/image/linux/512x512.png",
       "executableName": "wpcom",
       "description": "WordPress.com Desktop Client",
       "synopsis": "WordPress.com Desktop client",
@@ -178,6 +174,7 @@
         "libnss3"
       ]
     },
+    "afterSign": "./after_sign_hook.js",
     "afterAllArtifactBuild": "./after_sign_hook.js"
   }
 }
