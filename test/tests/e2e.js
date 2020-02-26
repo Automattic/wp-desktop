@@ -57,7 +57,7 @@ describe( 'User Can log in', function() {
 	} );
 } );
 
-describe.skip( 'Publish a New Post', function() {
+describe( 'Publish a New Post', function() {
 	this.timeout( 30000 );
 	const blogPostTitle = dataHelper.randomPhrase();
 	const blogPostQuote =
