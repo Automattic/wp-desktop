@@ -57,46 +57,46 @@ describe( 'User Can log in', function() {
 	} );
 } );
 
-// describe( 'Publish a New Post', function() {
-// 	this.timeout( 30000 );
-// 	const blogPostTitle = dataHelper.randomPhrase();
-// 	const blogPostQuote =
-// 		'“Whenever you find yourself on the side of the majority, it is time to pause and reflect.”\n- Mark Twain';
+describe( 'Publish a New Post', function() {
+	this.timeout( 30000 );
+	const blogPostTitle = dataHelper.randomPhrase();
+	const blogPostQuote =
+		'“Whenever you find yourself on the side of the majority, it is time to pause and reflect.”\n- Mark Twain';
 
-// 	step( 'Can navigate to post editor', async function() {
-// 		const navbarComponent = await NavBarComponent.Expect( driver );
-// 		return await navbarComponent.clickCreateNewPost();
-// 	} );
+	step( 'Can navigate to post editor', async function() {
+		const navbarComponent = await NavBarComponent.Expect( driver );
+		return await navbarComponent.clickCreateNewPost();
+	} );
 
-// 	step( 'Can enter post title and content', async function() {
-// 		const editorPage = await EditorPage.Expect( driver );
-// 		await editorPage.enterTitle( blogPostTitle );
-// 		await editorPage.enterContent( blogPostQuote + '\n' );
+	step( 'Can enter post title and content', async function() {
+		const editorPage = await EditorPage.Expect( driver );
+		await editorPage.enterTitle( blogPostTitle );
+		await editorPage.enterContent( blogPostQuote + '\n' );
 
-// 		let errorShown = await editorPage.errorDisplayed();
-// 		return assert.strictEqual( errorShown, false, 'There is an error shown on the editor page!' );
-// 	} );
+		let errorShown = await editorPage.errorDisplayed();
+		return assert.strictEqual( errorShown, false, 'There is an error shown on the editor page!' );
+	} );
 
-// 	step( 'Can publish and view content', async function() {
-// 		const postEditorToolbarComponent = await PostEditorToolbarComponent.Expect( driver );
-// 		await postEditorToolbarComponent.ensureSaved();
-// 		return await postEditorToolbarComponent.publishAndViewContent( { useConfirmStep: true } );
-// 	} );
+	step( 'Can publish and view content', async function() {
+		const postEditorToolbarComponent = await PostEditorToolbarComponent.Expect( driver );
+		await postEditorToolbarComponent.ensureSaved();
+		return await postEditorToolbarComponent.publishAndViewContent( { useConfirmStep: true } );
+	} );
 
-// 	step( 'Can see correct post title', async function() {
-// 		const viewPostPage = await ViewPostPage.Expect( driver );
-// 		let postTitle = await viewPostPage.postTitle();
-// 		return assert.strictEqual(
-// 			postTitle.toLowerCase(),
-// 			blogPostTitle.toLowerCase(),
-// 			'The published blog post title is not correct'
-// 		);
-// 	} );
+	step( 'Can see correct post title', async function() {
+		const viewPostPage = await ViewPostPage.Expect( driver );
+		let postTitle = await viewPostPage.postTitle();
+		return assert.strictEqual(
+			postTitle.toLowerCase(),
+			blogPostTitle.toLowerCase(),
+			'The published blog post title is not correct'
+		);
+	} );
 
-// 	step( 'Can return to reader', async function() {
-// 		return await driver.get( loggedInUrl );
-// 	} );
-// } );
+	step( 'Can return to reader', async function() {
+		return await driver.get( loggedInUrl );
+	} );
+} );
 
 describe( 'Can Log Out', function() {
 	this.timeout( 30000 );
