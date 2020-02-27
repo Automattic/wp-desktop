@@ -22,7 +22,6 @@ class CheckoutPage extends AsyncBaseContainer {
 			this.driver,
 			By.css( '.payment-box__content' )
 		);
-		await this.driver.sleep( 5000 );
 
 		await driverHelper.clickWhenClickable( this.driver, By.css( '.gridicons-trash' ) );
 		await driverHelper.waitTillNotPresent( this.driver, By.css( '.payment-box__content' ) );
