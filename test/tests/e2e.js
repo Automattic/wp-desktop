@@ -166,17 +166,9 @@ describe( 'Can Sign up', function() {
 		);
 	} );
 
-	step( 'Can see checkout page and empty the cart', async function() {
+	step( 'Can see checkout page', async function() {
 		const checkoutPage = await CheckoutPage.Expect( driver );
-		await checkoutPage.isShoppingCartPresent();
-		return await checkoutPage.emptyShoppingCart();
-	} );
-
-	step( 'Can then choose My Home and see the onboarding checklist', async function() {
-		const sidebarComponent = await SidebarComponent.Expect( driver );
-		await sidebarComponent.selectMyHome();
-		const checklistPage = await ChecklistPage.Expect( driver );
-		return await checklistPage.isChecklistPresent();
+		return await checkoutPage.isShoppingCartPresent();
 	} );
 } );
 
