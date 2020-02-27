@@ -40,7 +40,7 @@ before( async function() {
 	return await driver.sleep( 2000 );
 } );
 
-describe.skip( 'User Can log in', function() {
+describe( 'User Can log in', function() {
 	this.timeout( 30000 );
 
 	step( 'Clear local storage', async function() {
@@ -59,7 +59,7 @@ describe.skip( 'User Can log in', function() {
 	} );
 } );
 
-describe.skip( 'Publish a New Post', function() {
+describe( 'Publish a New Post', function() {
 	this.timeout( 30000 );
 	const blogPostTitle = dataHelper.randomPhrase();
 	const blogPostQuote =
@@ -100,7 +100,7 @@ describe.skip( 'Publish a New Post', function() {
 	} );
 } );
 
-describe.skip( 'Can Log Out', function() {
+describe( 'Can Log Out', function() {
 	this.timeout( 30000 );
 
 	step( 'Can view profile to log out', async function() {
