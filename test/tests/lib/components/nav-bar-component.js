@@ -22,17 +22,6 @@ class NavBarComponent extends AsyncBaseContainer {
 			this.explicitWaitMS
 		);
 	}
-
-	async openSidebar() {
-		await this.driver.sleep( 2000 );
-		if (
-			await driverHelper.isEventuallyPresentAndDisplayed( this.driver, by.css( '.gridicons-menu' ) )
-		) {
-			await this.driver.sleep( 2000 );
-			await driverHelper.clickWhenClickable( this.driver, by.css( '.gridicons-menu' ) );
-			return await this.driver.sleep( 2000 );
-		}
-	}
 }
 
 module.exports = NavBarComponent;
