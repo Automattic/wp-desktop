@@ -9,9 +9,7 @@ const NavBarComponent = require( './lib/components/nav-bar-component' );
 const ProfilePage = require( './lib/pages/profile-page' );
 const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
-const ChecklistPage = require( './lib/pages/checklist-page' );
 const CheckoutPage = require( './lib/pages/checkout-page' );
-const SidebarComponent = require( './lib/components/sidebar-component' );
 
 const dataHelper = require( './lib/data-helper' );
 let options = new chrome.Options();
