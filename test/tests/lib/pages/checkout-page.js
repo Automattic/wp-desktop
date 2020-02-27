@@ -6,7 +6,7 @@ const driverHelper = require( '../driver-helper' );
 
 class CheckoutPage extends AsyncBaseContainer {
 	constructor( driver ) {
-		super( driver, By.css( '.checkout__container' ) );
+		super( driver, By.css( '.layout__content' ) );
 	}
 
 	async isShoppingCartPresent() {
