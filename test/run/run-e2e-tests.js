@@ -55,7 +55,7 @@ process.on( 'exit', handleExit );
 
 async function run() {
     try {
-        const requiredENVs = [ 'E2EUSERNAME', 'E2EPASSWORD', 'E2E_MAILOSAUR_INBOX' ];
+        const requiredENVs = [ 'E2EUSERNAME', 'E2EPASSWORD' ];
         const missingENVs = requiredENVs.filter( name => ! process.env[name] || process.env[name] === '' );
         if ( missingENVs.length ) {
             throw `Missing non-empty ENV for: ${ missingENVs.join( ', ' ) }`;
