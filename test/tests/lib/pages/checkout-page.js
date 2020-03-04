@@ -10,11 +10,25 @@ class CheckoutPage extends AsyncBaseContainer {
 	}
 
 	async isShoppingCartPresent() {
-		await driverHelper.waitTillPresentAndDisplayed(
-			this.driver,
-			By.css( '.payment-box__content' )
-		);
-		return await driverHelper.waitTillPresentAndDisplayed( this.driver, By.css( '.cart-item' ) );
+		// temp try/catch block
+		// while A/B test for composite checkout is on
+		try {
+			await driverHelper.waitTillPresentAndDisplayed(
+				this.driver,
+				By.css( '.composite-checkout' )
+			);
+			await driverHelper.waitTillPresentAndDisplayed(
+				this.driver,
+				By.css( '.checkout__payment-methods-step' )
+			);
+		} catch ( e ) {
+			console.log( 'Composite checkout is not displayed. Trying with regular checkout...' );
+			await driverHelper.waitTillPresentAndDisplayed(
+				this.driver,
+				By.css( '.payment-box__content' )
+			);
+			await driverHelper.waitTillPresentAndDisplayed( this.driver, By.css( '.cart-item' ) );
+		}
 	}
 
 	async emptyShoppingCart() {
