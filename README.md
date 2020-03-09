@@ -8,8 +8,10 @@ WordPress.com for Desktop is an [Electron](https://github.com/atom/electron) wra
 
 1. Clone this repository locally
 1. Update the Calypso submodule with:
- - `git submodule init`
- - `git submodule update`
+
+- `git submodule init`
+- `git submodule update`
+
 1. Create a `calypso/config/secrets.json` file and fill it with [secrets](docs/secrets.md)
 1. `npm install` will download all the required packages
 1. `make build` to create the builds
@@ -25,6 +27,16 @@ The app is split between Electron code and Calypso code, and so the [development
 
 1. Set the environment variables `E2EUSERNAME` and `E2EPASSWORD`.
 2. Use `npm run e2e` or `make e2e` to invoke the test suite.
+
+# MacOS Notarization
+
+Per the current [Electron docs](https://www.electron.build/configuration/dmg), DMG signing is disabled by default as it will "lead to unwanted errors in combination with notarization requirements." Only the app bundle is zipped and submitted to Apple for notarization.
+
+## Extracting Published ZIP Archive in MacOS 10.15 (Catalina)
+
+There is a [known bug](https://github.com/electron-userland/electron-builder/issues/4299#issuecomment-544683923) in which extracting notarized contents from a zip archive via double-click will lead to an invalid .app bundle that cannot be opened in macOS 10.15. Instead, the bundled app should be extracted via `ditto`:
+
+`ditto -x -k <zip archive> <destination folder>`
 
 # Building & Packaging a Release
 
