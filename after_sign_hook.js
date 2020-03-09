@@ -1,46 +1,45 @@
-const fs = require('fs');
-const path = require('path');
-var electron_notarize = require('electron-notarize');
+#!/usr/bin/env node
 
-module.exports = async function(params) {
-  // Only notarize the app on Mac OS only.
-  if (params.electronPlatformName !== 'darwin') {
-    return;
-  }
-  console.log('afterSign hook triggered', params);
+const path = require( 'path' );
+const { notarize } = require( 'electron-notarize' );
 
-  if (!process.env.CIRCLE_TAG || process.env.CIRCLE_TAG.length === 0) {
-    console.log('Not on a tag. Skipping notarization');
-    return;
-  }
+const APP_ID = 'com.automattic.wordpress';
+const NOTARIZATION_ASC_PROVIDER = 'AutomatticInc';
+const NOTARIZATION_ID = process.env.NOTARIZATION_ID;
+const NOTARIZATION_PWD = process.env.NOTARIZATION_PWD;
 
-  // Same appId in electron-builder.
-  let appId = 'com.automattic.wordpress';
+const shouldNotarize = process.platform === 'darwin' && !!process.env.CIRCLE_TAG;
 
-  let appPath = params.appOutDir
-    ? path.join(
-        params.appOutDir,
-        `${params.packager.appInfo.productFilename}.app`
-      )
-    : params.artifactPaths[0].replace(new RegExp('.blockmap'), '');
+function elapsed( start ) {
+	const now = new Date();
 
-  if (!fs.existsSync(appPath)) {
-    throw new Error(`Cannot find application at: ${appPath}`);
-  }
+	const ms = Math.abs( now.getTime() - start.getTime() );
+	const diff = new Date( ms );
 
-  console.log(`Notarizing ${appId} found at ${appPath}`);
+	return `${ diff.getMinutes() } minutes, ${ diff.getSeconds() } seconds`;
+}
 
-  try {
-    await electron_notarize.notarize({
-      appBundleId: appId,
-      appPath: appPath,
-      appleId: process.env.NOTARIZATION_ID,
-      appleIdPassword: process.env.NOTARIZATION_PWD,
-      ascProvider: 'AutomatticInc',
-    });
-  } catch (error) {
-    console.error(error);
-  }
+module.exports = async function( context ) {
+	if ( ! shouldNotarize ) {
+		return;
+	}
 
-  console.log(`Done notarizing ${appId}`);
-};
+	try {
+		const app = path.join( context.appOutDir, `${ context.packager.appInfo.productFilename }.app` );
+		const appName = path.basename( app );
+
+		const start = new Date();
+		console.log( `  • notarizing ${ appName }...` );
+		await notarize( {
+			appBundleId: APP_ID,
+			appPath: app,
+			appleId: NOTARIZATION_ID,
+			appleIdPassword: NOTARIZATION_PWD,
+			ascProvider: NOTARIZATION_ASC_PROVIDER,
+		} )
+		console.log( `  • done notarizing ${ appName }, took ${ elapsed( start ) }` );
+	} catch ( error ) {
+		console.log( error.message );
+		throw ( error );
+	}
+}

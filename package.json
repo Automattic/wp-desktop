@@ -174,7 +174,6 @@
         "libnss3"
       ]
     },
-    "afterSign": "./after_sign_hook.js",
-    "afterAllArtifactBuild": "./after_sign_hook.js"
+    "afterSign": "./after_sign_hook.js"
   }
 }
