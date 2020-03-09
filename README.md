@@ -38,6 +38,16 @@ There is a [known bug](https://github.com/electron-userland/electron-builder/iss
 
 `ditto -x -k <zip archive> <destination folder>`
 
+## Verification
+
+Notarization status of an application bundle can be verified via the `codesign`, `stapler` and `spctl` utilities:
+
+`codesign --test-requirement="=notarized" --verify --verbose WordPress.com.app`
+
+`xrun stapler validate WordPress.com.app`
+
+`spctl -a -v WordPress.com.app`
+
 # Building & Packaging a Release
 
 While running the app locally in a development environment is great, you will eventually need to [build a release version](docs/release.md) you can share.
