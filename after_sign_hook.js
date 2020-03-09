@@ -27,18 +27,14 @@ module.exports = async function( context ) {
 	const app = path.join( context.appOutDir, `${ context.packager.appInfo.productFilename }.app` );
 	const appName = path.basename( app );
 
-	try {
-		const start = new Date();
-		console.log( `  • notarizing ${ appName }...` );
-		await notarize( {
-			appBundleId: APP_ID,
-			appPath: app,
-			appleId: NOTARIZATION_ID,
-			appleIdPassword: NOTARIZATION_PWD,
-			ascProvider: NOTARIZATION_ASC_PROVIDER,
-		} )
-		console.log( `  • done notarizing ${ appName }, took ${ elapsed( start ) }` );
-	} catch ( error ) {
-		throw ( error );
-	}
+	const start = new Date();
+	console.log( `  • notarizing ${ appName }...` );
+	await notarize( {
+		appBundleId: APP_ID,
+		appPath: app,
+		appleId: NOTARIZATION_ID,
+		appleIdPassword: NOTARIZATION_PWD,
+		ascProvider: NOTARIZATION_ASC_PROVIDER,
+	} )
+	console.log( `  • done notarizing ${ appName }, took ${ elapsed( start ) }` );
 }
