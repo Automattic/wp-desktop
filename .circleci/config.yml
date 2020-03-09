@@ -292,15 +292,15 @@ jobs:
           root: ~/wp-desktop
           paths:
             - release
-  
+
   windows:
-    executor: 
+    executor:
       name: win/default
     working_directory: C:\Users\circleci\wp-desktop
     environment:
       CSC_LINK: .\resource\certificates\win.p12
       CSC_FOR_PULL_REQUEST: true
-    steps: 
+    steps:
       - checkout
       - attach_workspace:
           at: C:\Users\circleci\wp-desktop
@@ -316,9 +316,9 @@ jobs:
       - run:
           name: Npm install
           command: |
-                # The release of nodejs currently being used by Calypso includes a buggy version 
-                # of node-gyp for Windows. This workaround unblocks Windows builds until Calypso node 
-                # includes node-gyp >= 6.0.1, at which point this snippet and node-gyp in wp-desktop 
+                # The release of nodejs currently being used by Calypso includes a buggy version
+                # of node-gyp for Windows. This workaround unblocks Windows builds until Calypso node
+                # includes node-gyp >= 6.0.1, at which point this snippet and node-gyp in wp-desktop
                 # devDependencies can be reverted.
                 # Ref: https://github.com/nodejs/node-gyp/issues/1933
                 npm config set node_gyp "$(Get-Location)\node_modules\node-gyp\bin\node-gyp.js"
@@ -328,8 +328,8 @@ jobs:
           command: |
                 # Workaround for Sign Tool "private key filter" bug in Circle's Windows image.
                 # Ref: https://travis-ci.community/t/codesigning-on-windows/
-                # 
-                # Fix: Import .p12 into the local certificate store. Sign Tool will use 
+                #
+                # Fix: Import .p12 into the local certificate store. Sign Tool will use
                 # package.json's `certificateSubjectName` to find the imported cert.
                 Import-PfxCertificate -FilePath $env:CSC_LINK -CertStoreLocation Cert:\LocalMachine\Root -Password (ConvertTo-SecureString -String $env:WIN_CSC_KEY_PASSWORD -AsPlainText -Force)
 
@@ -349,7 +349,7 @@ jobs:
           shell: bash.exe
       - persist_to_workspace:
           root: C:\Users\circleci\wp-desktop
-          paths: 
+          paths:
             - release
 
   mac:
@@ -374,6 +374,7 @@ jobs:
       - *npm_save_cache
       - run:
           name: Build Mac
+          no_output_timeout: 30m
           environment:
             CSC_LINK: resource/certificates/mac.p12
             CSC_FOR_PULL_REQUEST: true # don't do this in production
