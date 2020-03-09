@@ -39,7 +39,6 @@ module.exports = async function( context ) {
 		} )
 		console.log( `  • done notarizing ${ appName }, took ${ elapsed( start ) }` );
 	} catch ( error ) {
-		console.log( error.message );
 		throw ( error );
 	}
 }
