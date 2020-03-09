@@ -24,10 +24,10 @@ module.exports = async function( context ) {
 		return;
 	}
 
-	try {
-		const app = path.join( context.appOutDir, `${ context.packager.appInfo.productFilename }.app` );
-		const appName = path.basename( app );
+	const app = path.join( context.appOutDir, `${ context.packager.appInfo.productFilename }.app` );
+	const appName = path.basename( app );
 
+	try {
 		const start = new Date();
 		console.log( `  • notarizing ${ appName }...` );
 		await notarize( {
