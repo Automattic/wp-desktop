@@ -17,10 +17,10 @@ class CheckoutPage extends AsyncBaseContainer {
 				this.driver,
 				By.css( '.composite-checkout' )
 			);
-			await driverHelper.waitTillPresentAndDisplayed(
-				this.driver,
-				By.css( '.checkout__payment-methods-step' )
-			);
+			// await driverHelper.waitTillPresentAndDisplayed(
+			// 	this.driver,
+			// 	By.css( '.checkout__payment-methods-step' )
+			// );
 		} catch ( e ) {
 			console.log( 'Composite checkout is not displayed. Trying with regular checkout...' );
 			await driverHelper.waitTillPresentAndDisplayed(
