@@ -391,13 +391,13 @@ jobs:
       #             source $HOME/.nvm/nvm.sh
       #             nvm use
       #             make test TEST_PRODUCTION_BINARY=true
-      - run:
-          name: e2e Tests
-          command: |
-                  killall touristd
-                  killall UserNotificationCenter
+      # - run:
+      #     name: e2e Tests
+      #     command: |
+      #             killall touristd
+      #             killall UserNotificationCenter
 
-                  make e2e
+      #             make e2e
       - run:
           name: Release cleanup
           command: |
