@@ -30,7 +30,6 @@ CHECKMARK = OK
 CONFIG_ENV = 
 CALYPSO_ENV = desktop
 NODE_ENV = production
-BUILD_PLATFORM = 
 DEBUG = 
 TEST_PRODUCTION_BINARY = false
 MINIFY_JS = true
@@ -118,7 +117,7 @@ endif
 package:
 	$(info Packaging app... )
 
-	@npx electron-builder build -$(BUILD_PLATFORM)
+	@npx electron-builder build
 
 	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
 

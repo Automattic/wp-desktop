@@ -281,7 +281,7 @@ jobs:
           command: |
                   source $HOME/.nvm/nvm.sh
                   nvm use
-                  make package BUILD_PLATFORM=l
+                  make package
       - run:
           name: Release cleanup
           command: |
@@ -382,7 +382,7 @@ jobs:
                   set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
-                  make package BUILD_PLATFORM=m
+                  make package
       # Temporarily disable the test
       # TODO: Fixme – seems to be an issue with `portscanner`
       # - run:
