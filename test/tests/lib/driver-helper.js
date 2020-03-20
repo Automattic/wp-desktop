@@ -24,6 +24,7 @@ exports.clickWhenClickable = async function( driver, selector, waitOverride ) {
 			return driver.findElement( selector ).then(
 				async function( element ) {
 					await self.highlightElement( driver, element );
+					await driver.sleep( 300 );
 					return element.click().then(
 						function() {
 							return true;
@@ -241,6 +242,7 @@ exports.setWhenSettable = function(
 			await self.waitForFieldClearable( driver, selector );
 			const element = await driver.findElement( selector );
 			await self.highlightElement( driver, element );
+			await driver.sleep( 300 );
 			if ( pauseBetweenKeysMS === 0 ) {
 				await element.sendKeys( value );
 			} else {
