@@ -6,13 +6,24 @@ const { forEach } = require( 'lodash' );
 const explicitWaitMS = 20000;
 const by = webdriver.By;
 
-exports.clickWhenClickable = function( driver, selector, waitOverride ) {
+exports.highlightElement = async function( driver, element, color = 'gold' ) {
+	if ( process.env.HIGHLIGHT_ELEMENT === 'true' ) {
+		return await driver.executeScript(
+			`arguments[0].setAttribute('style', 'background: ${color}; border: 3px solid red;');`,
+			element
+		);
+	}
+};
+
+exports.clickWhenClickable = async function( driver, selector, waitOverride ) {
+	let self = this;
 	const timeoutWait = waitOverride ? waitOverride : explicitWaitMS;
 
 	return driver.wait(
 		function() {
 			return driver.findElement( selector ).then(
-				function( element ) {
+				async function( element ) {
+					await self.highlightElement( driver, element );
 					return element.click().then(
 						function() {
 							return true;
@@ -48,11 +59,13 @@ exports.waitTillNotPresent = function( driver, selector, waitOverride ) {
 };
 
 exports.followLinkWhenFollowable = function( driver, selector, waitOverride ) {
+	let self = this;
 	const timeoutWait = waitOverride ? waitOverride : explicitWaitMS;
 	return driver.wait(
 		function() {
 			return driver.findElement( selector ).then(
-				function( element ) {
+				async function( element ) {
+					await self.highlightElement( driver, element );
 					return element.getAttribute( 'href' ).then(
 						function( href ) {
 							driver.get( href );
@@ -74,12 +87,14 @@ exports.followLinkWhenFollowable = function( driver, selector, waitOverride ) {
 };
 
 exports.waitTillPresentAndDisplayed = function( driver, selector, waitOverride ) {
+	let self = this;
 	const timeoutWait = waitOverride ? waitOverride : explicitWaitMS;
 
 	return driver.wait(
 		function() {
 			return driver.findElement( selector ).then(
-				function( element ) {
+				async function( element ) {
+					await self.highlightElement( driver, element, '' );
 					return element.isDisplayed().then(
 						function() {
 							return true;
@@ -102,12 +117,14 @@ exports.waitTillPresentAndDisplayed = function( driver, selector, waitOverride )
 };
 
 exports.isEventuallyPresentAndDisplayed = function( driver, selector, waitOverride ) {
+	let self = this;
 	const timeoutWait = waitOverride ? waitOverride : explicitWaitMS;
 
 	return driver
 		.wait( function() {
 			return driver.findElement( selector ).then(
-				function( element ) {
+				async function( element ) {
+					await self.highlightElement( driver, element, '' );
 					return element.isDisplayed().then(
 						function() {
 							return true;
@@ -133,12 +150,14 @@ exports.isEventuallyPresentAndDisplayed = function( driver, selector, waitOverri
 };
 
 exports.clickIfPresent = function( driver, selector, attempts ) {
+	let self = this;
 	if ( attempts === undefined ) {
 		attempts = 1;
 	}
 	for ( let x = 0; x < attempts; x++ ) {
 		driver.findElement( selector ).then(
-			function( element ) {
+			async function( element ) {
+				await self.highlightElement( driver, element );
 				element.click().then(
 					function() {
 						return true;
@@ -221,6 +240,7 @@ exports.setWhenSettable = function(
 		async function() {
 			await self.waitForFieldClearable( driver, selector );
 			const element = await driver.findElement( selector );
+			await self.highlightElement( driver, element );
 			if ( pauseBetweenKeysMS === 0 ) {
 				await element.sendKeys( value );
 			} else {
@@ -240,10 +260,13 @@ exports.setWhenSettable = function(
 };
 
 exports.waitForFieldClearable = function( driver, selector ) {
+	let self = this;
+
 	return driver.wait(
 		function() {
 			return driver.findElement( selector ).then(
-				element => {
+				async element => {
+					await self.highlightElement( driver, element, '' );
 					return element.clear().then(
 						function() {
 							return element.getAttribute( 'value' ).then( value => {
