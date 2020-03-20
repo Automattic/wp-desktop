@@ -1,5 +1,4 @@
-Debug Tools
-=========
+# Debug Tools
 
 Provides a few tools to debug the app.
 
@@ -10,5 +9,3 @@ Provides a few tools to debug the app.
 Where:
 
 - `message` - a message to display in a dialog
-
-`debug.log( values )` - log anything to a temporary file

@@ -6,7 +6,6 @@
 const electron = require( 'electron' );
 const Tray = electron.Tray;
 const Menu = electron.Menu;
-const debug = require( 'debug' )( 'platform:windows' );
 
 /**
  * Internal dependencies
@@ -17,6 +16,7 @@ const appQuit = require( 'lib/app-quit' );
 const platform = require( 'lib/platform' );
 const menuSetter = require( 'lib/menu-setter' );
 const assets = require( 'lib/assets' );
+const log = require( 'lib/logger' )( 'platform:windows' );
 
 /**
 * Module variables
@@ -39,7 +39,7 @@ function WindowsPlatform( mainWindow ) {
 
 WindowsPlatform.prototype.onClosed = function( ev ) {
 	if ( appQuit.shouldQuitToBackground() ) {
-		debug( 'Window close puts app into background & creates tray' );
+		log.info( 'Window close puts app into background & creates tray' );
 
 		ev.preventDefault();
 
@@ -50,7 +50,7 @@ WindowsPlatform.prototype.onClosed = function( ev ) {
 
 WindowsPlatform.prototype.showBackgroundBubble = function() {
 	if ( Settings.getSettingGroup( false, TRAY_SETTING ) === false ) {
-		debug( 'Showing tray balloon' );
+		log.info( 'Showing tray balloon' );
 
 		Settings.saveSetting( TRAY_SETTING, true );
 

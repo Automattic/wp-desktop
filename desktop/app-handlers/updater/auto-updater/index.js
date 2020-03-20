@@ -5,7 +5,6 @@
  */
 const { app } = require( 'electron' );
 const { autoUpdater } = require( 'electron-updater' )
-const debug = require( 'debug' )( 'desktop:updater:auto' );
 
 /**
  * Internal dependencies
@@ -15,6 +14,7 @@ const Config = require( 'lib/config' );
 const debugTools = require( 'lib/debug-tools' );
 const { bumpStat, sanitizeVersion, getPlatform } = require( 'lib/desktop-analytics' );
 const Updater = require( 'lib/updater' );
+const log = require( 'lib/logger' )( 'desktop:updater:auto' );
 
 const statsPlatform = getPlatform( process.platform )
 const sanitizedVersion = sanitizeVersion( app.getVersion() );
@@ -22,7 +22,7 @@ const sanitizedVersion = sanitizeVersion( app.getVersion() );
 const getStatsString = ( isBeta ) => `${statsPlatform}${isBeta ? '-b' : ''}-${sanitizedVersion}`;
 
 function dialogDebug( message ) {
-	debug( message );
+	log.info( message );
 
 	if ( Config.build === 'updater' ) {
 		debugTools.dialog( message );
@@ -56,17 +56,17 @@ class AutoUpdater extends Updater {
 	}
 
 	onAvailable( info ) {
-		debug( 'New update is available', info.version )
+		log.info( 'New update is available', info.version )
 		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-needs-update` );
 	}
 
 	onNotAvailable() {
-		debug( 'No update is available' )
+		log.info( 'No update is available' )
 		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-no-update` );
 	}
 
 	onDownloaded( info ) {
-		debug( 'Update downloaded', info.version );
+		log.info( 'Update downloaded', info.version );
 
 		this.setVersion( info.version );
 		this.notify();
@@ -92,7 +92,7 @@ class AutoUpdater extends Updater {
 	}
 
 	onError( event ) {
-		debug( 'Update error', event );
+		log.error( 'Update error', event );
 
 		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-update-error` );
 	}

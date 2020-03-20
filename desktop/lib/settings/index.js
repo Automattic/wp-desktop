@@ -37,19 +37,19 @@ Settings.prototype.isDebug = function() {
  */
 Settings.prototype.getSetting = function( setting ) {
 	const value = this._getAll()[setting];
-	const debug = require( 'debug' )( 'desktop:settings' );
+	const log = require( 'lib/logger' )( 'desktop:settings' );
 
 	if ( typeof value === 'undefined' ) {
 		if ( typeof Config.default_settings[setting] !== 'undefined' ) {
-			debug( 'Get default setting for ' + setting + ' = ' + Config.default_settings[setting] );
+			log.info( 'Get default setting for ' + setting + ' = ' + Config.default_settings[setting] );
 			return Config.default_settings[setting];
 		}
 
-		debug( 'Get setting with no defaults for ' + setting );
+		log.info( 'Get setting with no defaults for ' + setting );
 		return false;
 	}
 
-	debug( 'Get setting for ' + setting + ' = ' + value );
+	log.info( 'Get setting for ' + setting + ' = ' + value );
 	return value;
 };
 
@@ -57,19 +57,23 @@ Settings.prototype.getSetting = function( setting ) {
  * Get a group of settings
  */
 Settings.prototype.getSettingGroup = function( existing, group, values ) {
-	const debug = require( 'debug' )( 'desktop:settings' );
+	const log = require( 'lib/logger' )( 'desktop:settings' );
 
-	debug( 'Get settings for ' + group + ' = ' + values );
+	const settingsGroup = this._getAll()[group];
 
-	if ( typeof this._getAll()[group] !== 'undefined' ) {
+	if ( typeof settingsGroup !== 'undefined' ) {
 		if ( values instanceof Array ) {
+			let updated = {};
 			for ( let x = 0; x < values.length; x++ ) {
 				let value = values[x];
-
-				existing[value] = this._getAll()[group][value];
+				existing[value] = settingsGroup[value];
+				updated[value] = settingsGroup[value];
 			}
+
+			log.info( `Updated settings for group '${ group }': `, updated );
 		} else {
-			return this._getAll()[group];
+			log.info( `Get settings for group '${ group }': `, settingsGroup );
+			return settingsGroup;
 		}
 	}
 

@@ -74,7 +74,6 @@
   "dependencies": {
     "@automattic/calypso-polyfills": "1.0.0",
     "acorn": "6.4.1",
-    "debug": "2.6.8",
     "electron-fetch": "1.2.1",
     "electron-spellchecker": "2.2.1",
     "electron-updater": "4.0.0",

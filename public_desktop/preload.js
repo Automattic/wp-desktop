@@ -3,22 +3,41 @@ const { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } = require( 
 const { Observable } = require( 'rxjs/Observable' );
 require( 'rxjs/add/observable/from' ); // necessary for providing Observable.from() to Observable (see usage below)
 
-const debugModule = require( 'debug' );
+// FIXME: The `remote` module is being deprecated and will be excluded
+// from Electron v9.x.
 
+// It is possible to use the `remote` module to directly require the
+// main process logging module. However, this is a security concern and is
+// discouraged. Instead, we post log messages to the main process via ipc.
+const send = ( level, namespace, options, message, meta ) => {
+	ipcRenderer.send( 'log', level, namespace, options, message, meta );
+}
+
+const logger = ( namespace, options ) => {
+	return {
+		error: ( message, meta ) => send( 'error', namespace, options, message, meta ),
+		warn: ( message, meta ) => send( 'warn', namespace, options, message, meta ),
+		info: ( message, meta ) => send( 'info', namespace, options, message, meta ),
+		debug: ( message, meta ) => send( 'debug', namespace, options, message, meta ),
+		silly: ( message, meta ) => send( 'silly', namespace, options, message, meta )
+	}
+}
+window.logger = logger; // expose logger interface to other renderer processes
+
+const log = logger( 'desktop:preload' );
 const desktop = remote.getGlobal( 'desktop' );
-const debug = debugModule( 'desktop:preload' )
 
-debug( 'Setting up preload script' );
+log.debug( 'Setting up preload script' );
 
 if ( desktop.settings.getSetting( 'spellcheck-enabled' ) ) {
-	debug( 'Initializing spellchecker' );
+	log.debug( 'Initializing spellchecker' );
 
 	window.spellCheckHandler = new SpellCheckHandler();
 
 	// Ensure the iframe has been loaded before attaching the spellchecker
 	// Ref: https://github.com/electron/electron/issues/21324
 	window.addEventListener( 'editor-iframe-loaded', () => {
-		debug( 'Editor iframe loaded, attaching spellchecker' );
+		log.debug( 'Editor iframe loaded, attaching spellchecker' );
 
 		// The current implementation of the spellchecker (v2.2.1)
 		// assumes that content in the document body is being actively
@@ -43,7 +62,7 @@ if ( desktop.settings.getSetting( 'spellcheck-enabled' ) ) {
 		contextMenuBuilder.showPopupMenu( info );
 	} );
 } else {
-	debug( 'Skipping spellchecker initialization' );
+	log.debug( 'Skipping spellchecker initialization' );
 }
 
 // WARNING WARNING WARNING
@@ -53,17 +72,7 @@ if ( desktop.settings.getSetting( 'spellcheck-enabled' ) ) {
 // TODO: Either merge this with the `desktop` object or find a way to completely get rid of this
 window.electron = {
 	ipcRenderer,
-	debug: debugModule,
 	getCurrentWindow: remote.getCurrentWindow,
 	getBuild: () => desktop.config.build,
 	isDebug: () => desktop.settings.isDebug(),
-	enableDebug: () => {
-		debugModule.enable( desktop.config.debug.namespace );
-
-		// Link the debug function so it outputs to the console and sends it back to our main process for logging
-		debugModule.log = function() {
-			ipcRenderer.send( 'debug', arguments );
-			console.log.apply( console, arguments );
-		}
-	},
 };

@@ -1,4 +1,4 @@
-const debug = require( 'debug' )( 'desktop:analytics' );
+const log = require( 'lib/logger' )( 'desktop:analytics' );
 const fetch = require( 'electron-fetch' ).default
 
 function buildQuerystring( group, name ) {
@@ -19,9 +19,9 @@ function buildQuerystring( group, name ) {
 
 export async function bumpStat( group, name ) {
 	if ( 'object' === typeof group ) {
-		debug( 'Bumping stats %o', group );
+		log.info( 'Bumping stats %o', group );
 	} else {
-		debug( 'Bumping stat %s:%s', group, name );
+		log.info( 'Bumping stat %s:%s', group, name );
 	}
 
 	const uriComponent = buildQuerystring( group, name );
@@ -29,9 +29,9 @@ export async function bumpStat( group, name ) {
 
 	const resp = await fetch( url );
 	if ( resp.status === 200 ) {
-		debug( 'Sent analytics ping' );
+		log.info( 'Sent analytics ping' );
 	} else {
-		debug( 'Analytics ping failed', resp.status, resp.statusText );
+		log.warn( 'Analytics ping failed', resp.status, resp.statusText );
 	}
 };
 
@@ -56,9 +56,9 @@ export function getPlatform( platform ) {
 // Stats key and value is limited to 32 chars
 function checkLength( key, val ) {
 	if ( key.length > 32 ) {
-		debug( `WARNING: bumpStat() key '${key}' is longer than 32 chars` );
+		log.warn( `bumpStat() key '${key}' is longer than 32 chars` );
 	}
 	if ( val.length > 32 ) {
-		debug( `WARNING: bumpStat() value '${val}' is longer than 32 chars` );
+		log.warn( `bumpStat() value '${val}' is longer than 32 chars` );
 	}
 }
