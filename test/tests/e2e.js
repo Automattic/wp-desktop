@@ -117,7 +117,7 @@ describe( 'Can Log Out', function() {
 } );
 
 describe( 'Can Sign up', function() {
-	this.timeout( 30000 );
+	this.timeout( 90000 );
 	const blogName = dataHelper.getNewBlogName();
 	const emailAddress = blogName + '@e2edesktop.test';
 
