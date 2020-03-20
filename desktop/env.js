@@ -5,22 +5,34 @@
  */
 const path = require( 'path' );
 const app = require( 'electron' ).app;
-const fs = require( 'fs' );
-const dialog = require( 'electron' ).dialog;
+const { existsSync, mkdirSync } = require( 'fs' );
 
 /**
- * Internal dependencies
+ * Initialize core components
  */
+
+const state = require( './lib/state' );
 const config = require( './lib/config' );
+const appData = path.join( app.getPath( 'appData' ), config.appPathName );
+
+// Initialize log directory prior to requiring any modules that log
+const logPath = process.env.WP_DEBUG_LOG ? process.env.WP_DEBUG_LOG : path.join( appData, 'logs', 'wp-desktop.log' );
+if ( ! existsSync( path.dirname( logPath ) ) ) {
+	mkdirSync( path.dirname( logPath ), { recursive: true }, ( err ) => {
+		if ( err ) {
+			err.message = 'Failed to initialize log directory: ' + err.message;
+			throw err;
+		}
+	} );
+}
+state.setLogPath( logPath );
+
+// Initialize settings
 const Settings = require( './lib/settings' );
 
 // Catch-all error handler
 // We hook in very early to catch issues during the startup process
 require( './app-handlers/exceptions' )();
-
-/**
- * Module variables
- */
 
 // if app path set to asar, switch to the dir, not file
 var apppath = app.getAppPath();
@@ -32,22 +44,10 @@ process.chdir( apppath );
 process.env.CALYPSO_ENV = config.calypso_config;
 
 // Set app config path
-app.setPath( 'userData', path.join( app.getPath( 'appData' ), config.appPathName ) );
+app.setPath( 'userData', appData );
 
-// If debug is enabled then setup the debug target
 if ( Settings.isDebug() ) {
-	process.env.DEBUG_COLORS = config.debug.colors;
 	process.env.DEBUG = config.debug.namespace;
-
-	if ( config.debug.log_file ) {
-		const logFile = path.join( app.getPath( 'userData' ), config.debug.log_file );
-
-		if ( config.debug.clear_log && fs.existsSync( logFile ) ) {
-			fs.unlinkSync( logFile );
-		}
-
-		process.env.DEBUG_FD = fs.openSync( logFile, 'a' );
-	}
 }
 
 /**

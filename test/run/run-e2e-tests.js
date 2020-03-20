@@ -10,8 +10,9 @@ const { execSync, spawn } = require( 'child_process' );
 const PROJECT_DIR = path.join( __dirname, '../../' );
 const BUILT_APP_DIR = path.join( PROJECT_DIR, 'release', 'mac', 'WordPress.com.app', 'Contents', 'MacOS' );
 
-function spawnDetached( cwd, command, args, output ) {
-	const app = spawn( command, args, { stdio: [ 'ignore', output, output ], detached: true, cwd } );
+function spawnDetached( cwd, command, args, output, env ) {
+	const stdio = output ? [ 'ignore', output, output ] : null;
+	const app = spawn( command, args, { stdio, detached: true, env, cwd } );
 	app.on( 'error', err => {
 		throw `failed to initialize command "${ command }": "${ err }"`;
 	} );
@@ -23,12 +24,18 @@ function initLogs( timestamp ) {
 
 	mkdirSync( dir, { recursive: true } );
 
-	const appLog = openSync( path.join( dir, `app-${ timestamp }.log` ), 'a' );
-	const driverLog = openSync( path.join( dir, `chromedriver-${ timestamp }.log` ), 'a' );
+	const appLogPath = path.join( dir, `app-${ timestamp }.log` );
+	const driverLogPath = path.join( dir, `chromedriver-${ timestamp }.log` );
 
-	if ( !appLog || !driverLog ) {
+	const appLogFd = openSync( appLogPath, 'a' );
+	const driverLogFd = openSync( driverLogPath, 'a' );
+
+	if ( ! appLogFd || ! driverLogFd ) {
 		throw 'failed to initialize logs';
 	}
+
+	const appLog = { path: appLogPath, fd: appLogFd };
+	const driverLog = { path: driverLogPath, fd: driverLogFd };
 
 	return { appLog, driverLog };
 }
@@ -72,14 +79,14 @@ async function run() {
 			'--disable-http-cache',
 			'--start-maximized',
 			'--remote-debugging-port=9222',
-		], appLog );
+		], null, { WP_DEBUG_LOG: appLog.path } );
 		await delay( 5000 );
 
 		driver = spawnDetached( PROJECT_DIR, 'npx', [
 			'chromedriver',
 			'--port=9515',
 			'--verbose',
-		], driverLog );
+		], driverLog.fd );
 
 		const tests = path.join( PROJECT_DIR, 'test', 'tests', 'e2e.js' );
 		execSync( `npx mocha ${ tests } --timeout 20000`, { stdio: 'inherit' } );
