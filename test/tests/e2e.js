@@ -166,7 +166,8 @@ describe( 'Can Sign up', function() {
 
 	step( 'Can see checkout page', async function() {
 		const checkoutPage = await CheckoutPage.Expect( driver );
-		return await checkoutPage.isShoppingCartPresent();
+		await checkoutPage.isShoppingCartPresent();
+		await driver.sleep( 20000 );
 	} );
 } );
 
