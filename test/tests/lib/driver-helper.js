@@ -96,6 +96,7 @@ exports.waitTillPresentAndDisplayed = function( driver, selector, waitOverride )
 			return driver.findElement( selector ).then(
 				async function( element ) {
 					await self.highlightElement( driver, element, '' );
+					await driver.sleep( 300 );
 					return element.isDisplayed().then(
 						function() {
 							return true;
