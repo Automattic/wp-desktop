@@ -57,6 +57,7 @@ if ( Settings.isDebug() ) {
 const log = require( 'lib/logger' )( 'desktop:boot' );
 log.info( `Booting ${ config.appPathName + ' v' + config.version }` );
 log.info( `App Path: ${ app.getAppPath() }` );
+log.info( `App Data: ${ app.getPath( 'userData' ) }` );
 log.info( 'Server: ' + config.server_url + ':' + config.server_port );
 log.info( 'Settings:', Settings._getAll() );
 
