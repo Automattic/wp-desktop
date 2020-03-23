@@ -21,7 +21,7 @@ export async function bumpStat( group, name ) {
 	if ( 'object' === typeof group ) {
 		log.info( 'Bumping stats %o', group );
 	} else {
-		log.info( 'Bumping stat %s:%s', group, name );
+		log.info( 'Bumping stat,' + `${ group ? ' group: ' + group : ''}` + `${ name ? ' name: ' + name : '' }` );
 	}
 
 	const uriComponent = buildQuerystring( group, name );
