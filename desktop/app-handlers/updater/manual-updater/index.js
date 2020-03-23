@@ -39,7 +39,7 @@ class ManualUpdater extends Updater {
 	async ping() {
 		try {
 			const url = this.apiUrl;
-			log.info( 'Checking for update. Fetching: ', url );
+			log.info( 'Checking for update. Fetching: %s', url );
 			log.info( 'Checking for beta release:', this.beta )
 
 			const releaseResp = await fetch( url, requestOptions );
