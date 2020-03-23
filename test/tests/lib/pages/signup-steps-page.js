@@ -53,6 +53,7 @@ class SignupStepsPage extends AsyncBaseContainer {
 	}
 
 	async selectFreeAddress() {
+		await driverHelper.scrollIntoView( this.driver, By.css( '.domain-suggestion' ) );
 		return await driverHelper.selectElementByText(
 			this.driver,
 			By.css( '.domain-product-price__price' ),

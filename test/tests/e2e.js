@@ -98,7 +98,7 @@ describe( 'Publish a New Post', function() {
 	} );
 } );
 
-describe.skip( 'Can Log Out', function() {
+describe( 'Can Log Out', function() {
 	this.timeout( 30000 );
 
 	step( 'Can view profile to log out', async function() {
@@ -116,8 +116,8 @@ describe.skip( 'Can Log Out', function() {
 	} );
 } );
 
-describe.skip( 'Can Sign up', function() {
-	this.timeout( 30000 );
+describe( 'Can Sign up', function() {
+	this.timeout( 90000 );
 	const blogName = dataHelper.getNewBlogName();
 	const emailAddress = blogName + '@e2edesktop.test';
 
@@ -166,7 +166,7 @@ describe.skip( 'Can Sign up', function() {
 
 	step( 'Can see checkout page', async function() {
 		const checkoutPage = await CheckoutPage.Expect( driver );
-		return await checkoutPage.isShoppingCartPresent();
+		await checkoutPage.isShoppingCartPresent();
 	} );
 } );
 
