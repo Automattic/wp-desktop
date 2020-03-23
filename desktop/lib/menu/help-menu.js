@@ -58,9 +58,9 @@ module.exports = function( mainWindow ) {
 			type: 'separator',
 		},
 		{
-			label: 'Get activity logs',
+			label: 'Get application logs',
 			click: function() {
-				log.info( 'User selected \'Get Activity Logs\'...' );
+				log.info( 'User selected \'Get application logs\'...' );
 				zipLogs( mainWindow );
 			}
 		}
