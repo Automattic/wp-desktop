@@ -9,7 +9,7 @@ module.exports = {
 	 */
 	_populated: false,
 	/**
-	 * Populates the private data '_namespaces' as an array with the different namespaces from the LOG_NAMESPACES
+	 * Populates the private data '_namespaces' as an array with the different namespaces from the DEBUG
 	 * environment variable. It splits the data with ',' as separator.
 	 * @private
 	 */
