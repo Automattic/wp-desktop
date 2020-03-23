@@ -55,6 +55,9 @@ module.exports = function( mainWindow ) {
 			}
 		},
 		{
+			type: 'separator',
+		},
+		{
 			label: 'Get activity logs',
 			click: function() {
 				log.info( 'User selected \'Get Activity Logs\'...' );
