@@ -39,8 +39,20 @@ const localDateTime = () => {
 }
 
 module.exports = async function( window ) {
-	const onZipped = async ( file ) => {
-		await dialog.showMessageBox( window, {
+	const onZipped = ( file ) => {
+		return function() {
+			dialog.showMessageBox( window, {
+				type: 'info',
+				buttons: [ 'OK' ],
+				title: 'Logs saved to your desktop',
+				message: 'Logs saved to your desktop' +
+					'\n\n' +
+					`${path.basename( file )}`,
+				detail: 'For help with an issue, please contact help@wordpress.com and share your logs.'
+			} )
+		}
+	}
+
 			type: 'info',
 			buttons: [ 'OK' ],
 			title: 'Logs saved to your desktop',
