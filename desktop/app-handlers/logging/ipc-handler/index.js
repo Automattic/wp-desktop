@@ -10,21 +10,21 @@ module.exports = {
      * JSON object that stores references to loggers initialized
      * by calls from the renderer process over IPC (keyed by `namespace`).
      */
-	_loggers: {},
+	loggers: {},
 
     /**
      * Gets the logging object for the provided `namespace` (and creates a logger
      * if one doesn't exist). Logger references are tracked in the private
-     * `_loggers` object and keyed by `namespace`.
+     * `loggers` object and keyed by `namespace`.
      * @param {String} namespace Namespace of the logger to be used or initialized.
      * @param {Any} options Logger configuration.
 	 * @returns {Object} Logger instance.
      */
-	_getLogger: function( namespace, options ) {
-		let logger = this._loggers[namespace];
+	getLogger: function( namespace, options ) {
+		let logger = this.loggers[namespace];
 		if ( !logger ) {
 			logger = require( 'lib/logger' )( namespace, options );
-			this._loggers[namespace] = logger;
+			this.loggers[namespace] = logger;
 		}
 		return logger;
 	},
@@ -35,7 +35,7 @@ module.exports = {
      */
 	listen: function() {
 		ipc.on( 'log', ( _, level, namespace, options, message, meta ) => {
-			const logger = this._getLogger( namespace, options );
+			const logger = this.getLogger( namespace, options );
 
 			switch ( level ) {
 				case 'error':
