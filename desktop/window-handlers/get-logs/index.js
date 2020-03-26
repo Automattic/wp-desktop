@@ -52,7 +52,7 @@ module.exports = async function( window ) {
 	}
 
 	const onError = async ( error ) => {
-		await dialog.showErrorBox(
+		dialog.showErrorBox(
 			'Error zipping activity logs.' +
 			'\n\n' +
 			'Please contact help@wordpress.com and mention the error details below:' +
