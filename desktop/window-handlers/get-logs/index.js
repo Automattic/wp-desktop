@@ -53,26 +53,18 @@ module.exports = async function( window ) {
 		}
 	}
 
+	const onError = ( error ) => {
+		dialog.showMessageBox( window, {
 			type: 'info',
 			buttons: [ 'OK' ],
-			title: 'Logs saved to your desktop',
-			message: 'Logs saved to your desktop' +
+			title: 'Error getting application logs',
+			message: 'Error getting application logs',
+			detail: 'Please contact help@wordpress.com and mention the error details below:' +
 				'\n\n' +
-				`${ path.basename( file ) }`,
-			detail: 'For help with an issue, please contact help@wordpress.com and share your logs.'
+				error.stack +
+				'\n\n' +
+				'System info: ' + JSON.stringify( system.getVersionData() )
 		} )
-	}
-
-	const onError = async ( error ) => {
-		dialog.showErrorBox(
-			'Error zipping activity logs.' +
-			'\n\n' +
-			'Please contact help@wordpress.com and mention the error details below:' +
-			'\n\n' +
-			error.stack +
-			'\n\n' +
-			'System info: ' + JSON.stringify( system.getVersionData() )
-		)
 	}
 
 	try {
