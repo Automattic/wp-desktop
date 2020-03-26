@@ -19,9 +19,7 @@ const log = require( 'lib/logger' )( 'desktop:get-logs' );
  */
 const logPath = state.getLogPath();
 
-function pad( n ) {
-	return n < 10 ? '0' + n : n;
-}
+const pad = n => `${n}`.padStart( 2, '0' );
 
 const localDateTime = () => {
 	const now = new Date();
