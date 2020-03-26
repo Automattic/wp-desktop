@@ -18,7 +18,7 @@ const appData = path.join( app.getPath( 'appData' ), config.appPathName );
 // Initialize log directory prior to requiring any modules that log
 const logPath = process.env.WP_DEBUG_LOG ? process.env.WP_DEBUG_LOG : path.join( appData, 'logs', 'wp-desktop.log' );
 mkdirSync( path.dirname( logPath ), { recursive: true }, ( err ) => {
-	if ( err ) {
+	if ( err && err.code !== 'EEXIST' ) {
 		err.message = 'Failed to initialize log directory: ' + err.message;
 		throw err;
 	}
