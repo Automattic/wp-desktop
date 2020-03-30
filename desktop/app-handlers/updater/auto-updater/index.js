@@ -92,7 +92,7 @@ class AutoUpdater extends Updater {
 	}
 
 	onError( event ) {
-		log.error( 'Update error', event );
+		log.error( 'Update error: ', event );
 
 		bumpStat( 'wpcom-desktop-update', `${getStatsString( this.beta )}-update-error` );
 	}
