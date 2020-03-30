@@ -39,21 +39,19 @@ const localDateTime = () => {
 }
 
 module.exports = async function( window ) {
-	const onZipped = ( file ) => {
-		return function() {
-			dialog.showMessageBox( window, {
-				type: 'info',
-				buttons: [ 'OK' ],
-				title: 'Logs saved to your desktop',
-				message: 'Logs saved to your desktop' +
+	const onZipped = ( file ) => function() {
+		dialog.showMessageBox( window, {
+			type: 'info',
+			buttons: [ 'OK' ],
+			title: 'Logs saved to your desktop',
+			message: 'Logs saved to your desktop' +
 					'\n\n' +
 					`${path.basename( file )}`,
-				detail: 'For help with an issue, please contact help@wordpress.com and share your logs.'
-			} )
-		}
+			detail: 'For help with an issue, please contact help@wordpress.com and share your logs.'
+		} )
 	}
 
-	const onError = ( error ) => {
+	const onError = ( error ) =>
 		dialog.showMessageBox( window, {
 			type: 'info',
 			buttons: [ 'OK' ],
@@ -65,7 +63,6 @@ module.exports = async function( window ) {
 				'\n\n' +
 				'System info: ' + JSON.stringify( system.getVersionData() )
 		} )
-	}
 
 	try {
 		const timestamp = localDateTime();
