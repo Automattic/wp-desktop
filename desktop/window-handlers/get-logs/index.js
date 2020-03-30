@@ -43,8 +43,8 @@ module.exports = async function( window ) {
 		dialog.showMessageBox( window, {
 			type: 'info',
 			buttons: [ 'OK' ],
-			title: 'Logs saved to your desktop',
-			message: 'Logs saved to your desktop' +
+			title: 'Application logs saved to your desktop',
+			message: 'Application logs saved to your desktop' +
 					'\n\n' +
 					`${path.basename( file )}`,
 			detail: 'For help with an issue, please contact help@wordpress.com and share your logs.'
