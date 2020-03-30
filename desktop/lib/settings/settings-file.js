@@ -62,7 +62,7 @@ module.exports = {
 			data = JSON.parse( data );
 			data[group] = groupData;
 
-			log.info( `Updating settings: '${ group }': ${ typeof groupData === 'object' ? '%o' : '%s' }`, groupData );
+			log.info( `Updating settings: '${ group }': `, groupData );
 			fs.writeFileSync( settingsFile, JSON.stringify( data ) );
 		} catch ( error ) {
 			log.error( 'Failed to read settings file', error );

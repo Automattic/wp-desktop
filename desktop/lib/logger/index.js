@@ -15,6 +15,7 @@
 /**
  * External dependencies
  */
+const util = require( 'util' );
 const { createLogger, format, transports } = require( 'winston' );
 
 /**
@@ -32,24 +33,27 @@ const maxsize = 15000000;
 module.exports = ( namespace, options ) => {
 	if ( !options || typeof options !== 'object' ) options = {}
 
-	const formatMeta = ( args ) => {
-		const isObject = typeof args === 'object';
-		if ( isObject ) {
-			return `${ Object.keys( args ).length ? JSON.stringify( args ) : '' }`;
+	const formatMessageWithMeta = ( info, opts ) => {
+		const args = info[Symbol.for( 'splat' )];
+		if ( args ) {
+			if ( args instanceof Array && args[0] === undefined ) {
+				return info;
+			}
+			info.message = util.format( info.message, ...args );
 		}
-		return args;
+		return info;
 	}
 
 	const baseformat = format.combine(
 		format.timestamp( {
 			format: 'YYYY-MM-DD HH:mm:ss.SSS'
 		} ),
-		format.splat(),
 		format.errors( { stack: true } ),
+		format( ( info, opts ) => formatMessageWithMeta( info, opts ) )(),
 		format.printf( ( info ) => {
-			const { timestamp, level, message, ...args } = info;
-			let meta = info.stack ? `\n${ info.stack }` : formatMeta( args );
-			return `[${ timestamp }] [${ namespace }] [${ level }] ${ message }` + meta;
+			const { timestamp, level, message } = info;
+			const stack = info.stack ? `\n${ info.stack }` : ''
+			return `[${timestamp}] [${namespace}] [${level}] ${message}` + stack;
 		} ) );
 
 	const baseOptions = {
