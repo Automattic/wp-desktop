@@ -15,6 +15,7 @@
 /**
  * External dependencies
  */
+const path = require( 'path' );
 const { createLogger, format, transports } = require( 'winston' );
 
 /**
@@ -56,7 +57,8 @@ module.exports = ( namespace, options ) => {
 		level: process.env.LOG_LEVEL || 'silly',
 		transports: [
 			new transports.File( {
-				filename: state.getLogPath(),
+				dirname: path.dirname( state.getLogPath() ),
+				filename: path.basename( state.getLogPath() ),
 				maxFiles,
 				maxsize,
 				format: baseformat
