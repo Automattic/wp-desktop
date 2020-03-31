@@ -36,10 +36,10 @@ module.exports = ( namespace, options ) => {
 	const formatMessageWithMeta = ( info, opts ) => {
 		const args = info[Symbol.for( 'splat' )];
 		if ( args ) {
-			if ( args instanceof Array && args[0] === undefined ) {
+			if ( args instanceof Array && args.length && ! args[0] ) {
 				return info;
 			}
-			info.message = util.format( info.message, ...args );
+			info.message = util.format( info.message, JSON.stringify( ...args ) );
 		}
 		return info;
 	}
