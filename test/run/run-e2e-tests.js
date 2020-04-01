@@ -10,8 +10,9 @@ const { execSync, spawn } = require( 'child_process' );
 const PROJECT_DIR = path.join( __dirname, '../../' );
 const BUILT_APP_DIR = path.join( PROJECT_DIR, 'release', 'mac', 'WordPress.com.app', 'Contents', 'MacOS' );
 
-function spawnDetached( cwd, command, args, output ) {
-	const app = spawn( command, args, { stdio: [ 'ignore', output, output ], detached: true, cwd } );
+function spawnDetached( cwd, command, args, output, env ) {
+	const stdio = output ? [ 'ignore', output, output ] : null;
+	const app = spawn( command, args, { stdio, detached: true, env, cwd } );
 	app.on( 'error', err => {
 		throw `failed to initialize command "${ command }": "${ err }"`;
 	} );
@@ -72,7 +73,7 @@ async function run() {
 			'--disable-http-cache',
 			'--start-maximized',
 			'--remote-debugging-port=9222',
-		], appLog );
+		], appLog, { WP_AUTO_UPDATE_DISABLE: true } );
 		await delay( 5000 );
 
 		driver = spawnDetached( PROJECT_DIR, 'npx', [
