@@ -209,10 +209,10 @@ docker-build:
 # !! Ensure this file is removed regardless of success/failure !!
 # Note: Ideally we could use a build argument for this, but Docker CE on Windows
 # has trouble consuming the SSH key contents when passed as a build arg.
-	function cleanUp {
+	function cleanup {
 		rm "$(THIS_DIR)/id_rsa"
 	}
-	trap cleanUp EXIT
+	trap cleanup EXIT
 
 	cp "$(SSH_PRIVATE_KEY_FILE)" "$(THIS_DIR)/id_rsa"
 
@@ -220,7 +220,7 @@ docker-build:
 
 .PHONY:
 docker-run:
-	$(info Initializing docker container for wpdesktop', type 'exit' to quit)
+	$(info Initializing docker container for 'wpdesktop', type 'exit' to quit)
 
 	docker run -it --rm -v "$(THIS_DIR)"://usr/src/wp-desktop -p 3000:3000 -e SHELL='//bin/bash' wpdesktop bash
 
