@@ -1,43 +1,43 @@
 'use strict';
 
 /**
- * External Dependencies
+ * Internal dependencies
  */
-const debug = require( 'debug' )( 'desktop:ipc' );
+const log = require( 'lib/logger' )( 'desktop:ipc' );
 
 module.exports = {
 	showMySites: function( mainWindow ) {
-		debug( 'showMySites triggered' );
+		log.info( 'showMySites triggered' );
 		mainWindow.webContents.send( 'page-my-sites' );
 	},
 
 	showReader: function( mainWindow ) {
-		debug( 'showReader triggered' );
+		log.info( 'showReader triggered' );
 		mainWindow.webContents.send( 'page-reader' );
 	},
 
 	showProfile: function( mainWindow ) {
-		debug( 'showProfile triggered' );
+		log.info( 'showProfile triggered' );
 		mainWindow.webContents.send( 'page-profile' );
 	},
 
 	newPost: function( mainWindow ) {
-		debug( 'newPost triggered' );
+		log.info( 'newPost triggered' );
 		mainWindow.webContents.send( 'new-post' );
 	},
 
 	toggleNotifications: function( mainWindow ) {
-		debug( 'toggleNotifications triggered' );
+		log.info( 'toggleNotifications triggered' );
 		mainWindow.webContents.send( 'toggle-notification-bar' );
 	},
 
 	showHelp: function( mainWindow ) {
-		debug( 'showHelp triggered' );
+		log.info( 'showHelp triggered' );
 		mainWindow.webContents.send( 'page-help' );
 	},
 
 	signOut: function( mainWindow ) {
-		debug( 'signOut triggered' );
+		log.info( 'signOut triggered' );
 		mainWindow.webContents.send( 'signout' );
 	}
 };

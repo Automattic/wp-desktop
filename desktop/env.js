@@ -45,29 +45,27 @@ if ( Settings.isDebug() ) {
  * These setup things for Calypso. We have to do them inside the app as we can't set any env variables in the packaged release
  * This has to come after the DEBUG_* variables
  */
-const debug = require( 'debug' )( 'desktop:boot' );
-debug( '========================================================================================================' );
-debug( config.name + ' v' + config.version );
-debug( 'Path:', app.getAppPath() );
-debug( 'Server: ' + config.server_url + ':' + config.server_port );
-debug( 'Settings:', Settings._getAll() );
+const log = require( 'lib/logger' )( 'desktop:boot' );
+log.info( `Booting ${ config.appPathName + ' v' + config.version }` );
+log.info( `App Path: ${ app.getAppPath() }` );
+log.info( `App Data: ${ app.getPath( 'userData' ) }` );
+log.info( 'Server: ' + config.server_url + ':' + config.server_port );
+log.info( 'Settings:', Settings._getAll() );
 
 if ( Settings.getSetting( 'proxy-type' ) === '' ) {
-	debug( 'Proxy: none' );
+	log.info( 'Proxy: none' );
 	app.commandLine.appendSwitch( 'no-proxy-server' );
 } else if ( Settings.getSetting( 'proxy-type' ) === 'custom' ) {
-	debug( 'Proxy: ' + Settings.getSetting( 'proxy-url' ) + ':' + Settings.getSetting( 'proxy-port' ) );
+	log.info( 'Proxy: ' + Settings.getSetting( 'proxy-url' ) + ':' + Settings.getSetting( 'proxy-port' ) );
 	app.commandLine.appendSwitch( 'proxy-server', Settings.getSetting( 'proxy-url' ) + ':' + Settings.getSetting( 'proxy-port' ) );
 
 	if ( Settings.getSetting( 'proxy-pac' ) !== '' ) {
-		debug( 'Proxy PAC: ' + Settings.getSetting( 'proxy-pac' ) );
+		log.info( 'Proxy PAC: ' + Settings.getSetting( 'proxy-pac' ) );
 
 		// todo: this doesnt seem to work yet
 		app.commandLine.appendSwitch( 'proxy-pac-url', Settings.getSetting( 'proxy-pac' ) );
 	}
 }
-
-debug( '========================================================================================================' );
 
 // Define a global 'desktop' variable that can be used in browser windows to access config and settings
 global.desktop = {

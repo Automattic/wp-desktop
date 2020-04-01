@@ -4,7 +4,6 @@
  * External Dependencies
  */
 const { app } = require( 'electron' );
-const debug = require( 'debug' )( 'desktop:updater' );
 
 /**
  * Internal dependencies
@@ -14,22 +13,23 @@ const Config = require( 'lib/config' );
 const settings = require( 'lib/settings' );
 const AutoUpdater = require( './auto-updater' );
 const ManualUpdater = require( './manual-updater' );
+const log = require( 'lib/logger' )( 'desktop:updater' );
 
 let updater = false;
 
 module.exports = function() {
-	debug( 'Updater config is', Config.updater )
+	log.info( 'Updater config: ', Config.updater )
 	if ( Config.updater ) {
 		app.on( 'will-finish-launching', function() {
 			const beta = settings.getSetting( 'release-channel' ) === 'beta';
-			debug( 'Update channel', settings.getSetting( 'release-channel' ) )
+			log.info( `Update channel: '${settings.getSetting( 'release-channel' )}'` );
 			if ( platform.isOSX() || platform.isWindows() || process.env.APPIMAGE ) {
-				debug( 'Auto Update' )
+				log.info( 'Auto Update' )
 				updater = new AutoUpdater( {
 					beta,
 				} );
 			} else {
-				debug( 'Manual Update' )
+				log.info( 'Manual Update' )
 				updater = new ManualUpdater( {
 					downloadUrl: Config.updater.downloadUrl,
 					apiUrl: Config.updater.apiUrl,
@@ -47,6 +47,6 @@ module.exports = function() {
 			setInterval( updater.ping.bind( updater ), Config.updater.interval );
 		} );
 	} else {
-		debug( 'Skipping Update – no configuration' )
+		log.info( 'Skipping Update – no configuration' )
 	}
 };

@@ -6,7 +6,6 @@
 
 const Platform = require( 'lib/platform' );
 const exec = require( 'child_process' ).execSync;
-const debug = require( 'debug' )( 'desktop:system' );
 const os = require( 'os' );
 
 /**
@@ -15,6 +14,7 @@ const os = require( 'os' );
 const config = require( 'lib/config' );
 const SettingsFile = require( 'lib/settings/settings-file' );
 const APPS_DIRECTORY = '/Applications';
+const log = require( 'lib/logger' )( 'desktop:system' );
 
 function isPinned() {
 	if ( Platform.isOSX() ) {
@@ -52,7 +52,7 @@ module.exports = {
 			firstRun: isFirstRun()
 		}
 
-		debug( 'System details: ', details );
+		log.info( 'System details: ', details );
 		return details;
 	},
 	getVersionData: function() {

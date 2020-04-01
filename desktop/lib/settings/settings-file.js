@@ -6,12 +6,12 @@
 const app = require( 'electron' ).app;
 const path = require( 'path' );
 const fs = require( 'fs' );
-const debug = require( 'debug' )( 'desktop:settings' );
 
 /**
  * Internal dependencies
  */
 const Config = require( '../config' );
+const log = require( 'lib/logger' )( 'desktop:settings' );
 
 let firstRun = false;
 
@@ -32,7 +32,7 @@ module.exports = {
 			try {
 				return JSON.parse( fs.readFileSync( settingsFile ) );
 			} catch ( e ) {
-				debug( 'Error reading settings file' );
+				log.error( 'Failed to read settings file' );
 			}
 		}
 
@@ -40,7 +40,7 @@ module.exports = {
 		try {
 			createSettingsFile( getSettingsFile() );
 		} catch ( e ) {
-			debug( 'Error creating settings file' );
+			log.error( 'Failed to create settings file' );
 		}
 		return {};
 	},
@@ -57,15 +57,15 @@ module.exports = {
 			// Read the existing settings
 			data = fs.readFileSync( settingsFile );
 
-			debug( 'Read settings from ' + settingsFile, data.toString( 'utf-8' ) );
+			log.info( `Read settings from '${ settingsFile }': ${ data.toString( 'utf-8' ) }` );
 
 			data = JSON.parse( data );
 			data[group] = groupData;
 
-			debug( 'Updating settings: ' + group, groupData );
+			log.info( `Updating settings: '${ group }': `, groupData );
 			fs.writeFileSync( settingsFile, JSON.stringify( data ) );
 		} catch ( error ) {
-			debug( 'Failed to read settings file', error );
+			log.error( 'Failed to read settings file', error );
 		}
 
 		return data;

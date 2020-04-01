@@ -5,13 +5,15 @@
  */
 const shell = require( 'electron' ).shell;
 const ipc = require( 'lib/calypso-commands' );
+const zipLogs = require( '../../window-handlers/get-logs' );
 
 /**
  * Internal dependencies
  */
+const state = require( 'lib/state' );
 const platform = require( 'lib/platform' );
 const WindowManager = require( 'lib/window-manager' );
-const state = require( 'lib/state' );
+const log = require( 'lib/logger' )( 'desktop:menu:help' );
 
 let menuItems = [];
 
@@ -52,5 +54,15 @@ module.exports = function( mainWindow ) {
 				shell.openExternal( 'https://automattic.com/privacy/' );
 			}
 		},
+		{
+			type: 'separator',
+		},
+		{
+			label: 'Get Application Logs',
+			click: function() {
+				log.info( 'User selected \'Get Application Logs\'...' );
+				zipLogs( mainWindow );
+			}
+		}
 	] );
 }

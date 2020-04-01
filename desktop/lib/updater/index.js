@@ -3,13 +3,13 @@
  */
 const { app, dialog } = require( 'electron' );
 const { EventEmitter } = require( 'events' );
-const debug = require( 'debug' )( 'desktop:updater' );
 
 /**
  * Internal dependencies
  */
 const platform = require( 'lib/platform' );
 const config = require( 'lib/config' );
+const log = require( 'lib/logger' )( 'desktop:updater' );
 
 class Updater extends EventEmitter {
 	constructor( options ) {
@@ -30,19 +30,19 @@ class Updater extends EventEmitter {
 	ping() {}
 
 	onDownloaded( info ) {
-		debug( 'Update downloaded', info );
+		log.info( 'Update downloaded', info );
 	}
 
 	onAvailable( info ) {
-		debug( 'Update is available', info );
+		log.info( 'Update is available', info );
 	}
 
 	onNotAvailable( info ) {
-		debug( 'Update is not available', info );
+		log.info( 'Update is not available', info );
 	}
 
 	onError( event ) {
-		debug( 'Update error', event );
+		log.error( 'Update failed: ', event );
 	}
 
 	onConfirm() {}
@@ -51,7 +51,7 @@ class Updater extends EventEmitter {
 
 	notify() {
 		const updateDialogOptions = {
-			buttons: [this.sanitizeButtonLabel( this.confirmLabel ), 'Cancel'],
+			buttons: [ this.sanitizeButtonLabel( this.confirmLabel ), 'Cancel' ],
 			title: 'Update Available',
 			message: this.expandMacros( this.dialogTitle ),
 			detail: this.expandMacros( this.dialogMessage ),
