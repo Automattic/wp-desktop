@@ -15,7 +15,6 @@
 /**
  * External dependencies
  */
-const util = require( 'util' );
 const { createLogger, format, transports } = require( 'winston' );
 
 /**
@@ -39,7 +38,7 @@ module.exports = ( namespace, options ) => {
 			if ( args instanceof Array && args.length && ! args[0] ) {
 				return info;
 			}
-			info.message = util.format( info.message, JSON.stringify( ...args ) );
+			info.message = info.message + JSON.stringify( ...args );
 		}
 		return info;
 	}
