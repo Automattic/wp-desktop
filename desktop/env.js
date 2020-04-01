@@ -5,7 +5,6 @@
  */
 const path = require( 'path' );
 const app = require( 'electron' ).app;
-const { existsSync, mkdirSync } = require( 'fs' );
 
 /**
  * Initialize core components
@@ -15,16 +14,8 @@ const state = require( './lib/state' );
 const config = require( './lib/config' );
 const appData = path.join( app.getPath( 'appData' ), config.appPathName );
 
-// Initialize log directory prior to requiring any modules that log
+// Initialize log path prior to requiring any modules that log
 const logPath = process.env.WP_DEBUG_LOG ? process.env.WP_DEBUG_LOG : path.join( appData, 'logs', 'wp-desktop.log' );
-if ( ! existsSync( path.dirname( logPath ) ) ) {
-	mkdirSync( path.dirname( logPath ), { recursive: true }, ( err ) => {
-		if ( err ) {
-			err.message = 'Failed to initialize log directory: ' + err.message;
-			throw err;
-		}
-	} );
-}
 state.setLogPath( logPath );
 
 // Initialize settings

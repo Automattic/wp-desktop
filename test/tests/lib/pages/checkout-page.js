@@ -15,7 +15,8 @@ class CheckoutPage extends AsyncBaseContainer {
 		try {
 			await driverHelper.waitTillPresentAndDisplayed(
 				this.driver,
-				By.css( '.composite-checkout' )
+				By.css( '.composite-checkout' ),
+				this.explicitWaitMS * 2
 			);
 			// await driverHelper.waitTillPresentAndDisplayed(
 			// 	this.driver,

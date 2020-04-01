@@ -51,6 +51,10 @@ class AutoUpdater extends Updater {
 	}
 
 	ping() {
+		if ( process.env.WP_AUTO_UPDATE_DISABLE ) {
+			dialogDebug( 'WP_AUTO_UPDATE_DISABLE is set: skipping auto-update check' );
+			return;
+		}
 		dialogDebug( 'Checking for update' );
 		autoUpdater.checkForUpdates();
 	}

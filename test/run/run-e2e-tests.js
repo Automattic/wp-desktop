@@ -79,7 +79,8 @@ async function run() {
 			'--disable-http-cache',
 			'--start-maximized',
 			'--remote-debugging-port=9222',
-		], null, { WP_DEBUG_LOG: appLog.path } );
+		], null, { WP_DEBUG_LOG: appLog.path, WP_AUTO_UPDATE_DISABLE: true } );
+
 		await delay( 5000 );
 
 		driver = spawnDetached( PROJECT_DIR, 'npx', [

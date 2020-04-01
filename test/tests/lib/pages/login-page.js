@@ -30,8 +30,9 @@ class LoginPage extends AsyncBaseContainer {
 	async hideGdprBanner() {
 		const gdprBannerButton = By.css( '.gdpr-banner__acknowledge-button' );
 		try {
-			await driverHelper.waitTillPresentAndDisplayed( this.driver, gdprBannerButton, 5000 );
-			return await driverHelper.clickWhenClickable( this.driver, gdprBannerButton );
+			await driverHelper.waitTillPresentAndDisplayed( this.driver, gdprBannerButton, 3000 );
+			await driverHelper.clickWhenClickable( this.driver, gdprBannerButton );
+			return await driverHelper.waitTillNotPresent( this.driver, gdprBannerButton, 3000 );
 		} catch ( e ) {
 			console.log( 'GDPR button is not present.' );
 			return true;
@@ -40,6 +41,7 @@ class LoginPage extends AsyncBaseContainer {
 
 	async openCreateAccountPage() {
 		const element = By.css( '.auth__links a' );
+		await driverHelper.isEventuallyPresentAndDisplayed( this.driver, element );
 		return await driverHelper.clickWhenClickable( this.driver, element );
 	}
 }
