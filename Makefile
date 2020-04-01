@@ -1,4 +1,4 @@
-SHELL = /bin/bash
+export SHELL = /bin/bash
 
 ifeq ($(OS),Windows_NT)
 	FILE_PATH_SEP := $(strip \)
@@ -66,7 +66,7 @@ dev-server: checks
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
 	"$(MAKE) calypso-dev NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV)" \
-	"wait-on http://localhost:3000 && $(MAKE) build-desktop NODE_ENV=$(NODE_ENV)" \
+	"wait-on http://localhost:3000 && $(MAKE) build-desktop-source NODE_ENV=$(NODE_ENV)" \
 
 # Start app in dev mode
 dev: NODE_ENV = development
@@ -103,7 +103,7 @@ calypso-dev:
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
 
 # Build desktop bundle
-build-desktop: rebuild-deps
+build-desktop-source:
 	$(info Building Desktop... )
 ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
@@ -113,11 +113,15 @@ endif
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
+# Build desktop bundle
+build-desktop: rebuild-deps build-desktop-source
+
 # Package App
+package: ELECTRON_BUILDER_ARGS =
 package:
 	$(info Packaging app... )
 
-	@npx electron-builder build
+	@npx electron-builder $(ELECTRON_BUILDER_ARGS) build
 
 	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
 
@@ -194,3 +198,34 @@ clean:
 .PHONY:
 e2e:
 	@npm run e2e
+
+.ONESHELL:
+.PHONY:
+docker-build: $(SSH_PRIVATE_KEY_FILE)
+docker-build: NODE_VERSION = $(CALYPSO_NODE_VERSION)
+docker-build:
+	$(info Building docker image 'wpdesktop'... )
+
+# !! Ensure this file is removed regardless of success/failure !!
+# Note: Ideally we could use a build argument for this, but Docker CE on Windows
+# has trouble consuming the SSH key contents when passed as a build arg.
+	function cleanUp {
+		rm "$(THIS_DIR)/id_rsa"
+	}
+	trap cleanUp EXIT
+
+	cp "$(SSH_PRIVATE_KEY_FILE)" "$(THIS_DIR)/id_rsa"
+
+	@docker build --build-arg NODE_VERSION --tag wpdesktop .
+
+.PHONY:
+docker-run:
+	$(info Initializing docker container for wpdesktop', type 'exit' to quit)
+
+	docker run -it --rm -v "$(THIS_DIR)"://usr/src/wp-desktop -p 3000:3000 -e SHELL='//bin/bash' wpdesktop bash
+
+.PHONY:
+docker-clean:
+	$(info Removing docker image 'wpdesktop'...)
+
+	docker image rm wpdesktop

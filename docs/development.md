@@ -121,3 +121,25 @@ Debug from Calypso will appear inside the renderer. To enable, open Chrome dev t
 ```js
 localStorage.setItem( 'debug', '*' );
 ```
+
+## Building and Debugging on Windows
+
+Building Calypso on Windows is not supported, and therefore a virtual Linux environment is required to build the application source. Application binaries, however, should be built natively on Windows prior to packaging the app.
+
+- For convenience, a Docker configuration is included [here](../Dockerfile). The image can be built and ran via the Makefile.
+
+- An alternative to using Docker on Windows is the Windows Subsystem for Linux ("WSL"), which will have to be manually configured.
+
+### Recommended Windows Environment and Tooling
+
+- [MSYS2](https://www.msys2.org/) is recommended to maximize compatibility of the Makefile across platforms. This can be installed explicitly and added to your `PATH`, or implicitly by installing [Git Bash](https://gitforwindows.org/) for Windows.
+
+  - IMPORTANT: Historically, developers expect the "bash" executable to refer to Git/MSYS2 bash. To avoid collisions with Windows Subsystem for Linux ("WSL"), you can rename the WSL bash executable in PowerShell:
+
+  ```
+  takeown /F "$env:SystemRoot\System32\bash.exe"
+  icacls "$env:SystemRoot\System32\bash.exe" /grant administrators:F
+  ren "$env:SystemRoot\System32\bash.exe" wsl-bash.exe
+  ```
+
+- Install the npm package `windows-build-tools` to allow compilation of native node modules.
