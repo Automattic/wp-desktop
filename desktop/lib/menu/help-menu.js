@@ -31,7 +31,7 @@ if ( platform.isWindows() || platform.isLinux() ) {
 module.exports = function( mainWindow ) {
 	return menuItems.concat( [
 		{
-			label: 'How can we help?',
+			label: 'How Can We Help?',
 			click: function() {
 				// on login page - user logged out
 				if ( state.isLoggedIn() ) {
