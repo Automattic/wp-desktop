@@ -16,7 +16,7 @@ const config = require( './lib/config' );
 const appData = path.join( app.getPath( 'appData' ), config.appPathName );
 
 // Initialize log path prior to requiring any modules that log
-const logPath = process.env.WP_DEBUG_LOG ? process.env.WP_DEBUG_LOG : path.join( appData, 'logs', 'wp-desktop.log' );
+const logPath = process.env.WP_DEBUG_LOG ? process.env.WP_DEBUG_LOG : path.join( appData, 'logs', 'wpdesktop-main.log' );
 makeDir.sync( path.dirname( logPath ) );
 state.setLogPath( logPath );
 
