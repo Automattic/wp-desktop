@@ -5,6 +5,7 @@
  */
 const path = require( 'path' );
 const app = require( 'electron' ).app;
+const makeDir = require( 'make-dir' );
 
 /**
  * Initialize core components
@@ -16,6 +17,7 @@ const appData = path.join( app.getPath( 'appData' ), config.appPathName );
 
 // Initialize log path prior to requiring any modules that log
 const logPath = process.env.WP_DEBUG_LOG ? process.env.WP_DEBUG_LOG : path.join( appData, 'logs', 'wp-desktop.log' );
+makeDir.sync( path.dirname( logPath ) );
 state.setLogPath( logPath );
 
 // Initialize settings
