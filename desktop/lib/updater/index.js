@@ -30,7 +30,7 @@ class Updater extends EventEmitter {
 	ping() {}
 
 	onDownloaded( info ) {
-		log.info( 'Update downloaded', info );
+		log.info( 'Update downloaded: ', info );
 	}
 
 	onAvailable( info ) {
