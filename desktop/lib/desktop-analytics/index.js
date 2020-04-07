@@ -19,7 +19,7 @@ function buildQuerystring( group, name ) {
 
 export async function bumpStat( group, name ) {
 	if ( 'object' === typeof group ) {
-		log.info( 'Bumping stats %o', group );
+		log.info( 'Bumping stats ', group );
 	} else {
 		log.info( 'Bumping stat,' + `${ group ? ' group: ' + group : ''}` + `${ name ? ' name: ' + name : '' }` );
 	}

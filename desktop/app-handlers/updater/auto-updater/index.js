@@ -60,7 +60,7 @@ class AutoUpdater extends Updater {
 	}
 
 	onAvailable( info ) {
-		log.info( 'New update is available', info.version )
+		log.info( 'New update is available: ', info.version )
 		bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-needs-update` );
 	}
 
@@ -70,7 +70,7 @@ class AutoUpdater extends Updater {
 	}
 
 	onDownloaded( info ) {
-		log.info( 'Update downloaded', info.version );
+		log.info( 'Update downloaded: ', info.version );
 
 		this.setVersion( info.version );
 		this.notify();
