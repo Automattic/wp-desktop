@@ -118,7 +118,8 @@
       "hardenedRuntime": true,
       "extendInfo": {
         "LSFileQuarantineEnabled": true
-      }
+      },
+      "artifactName": "wordpress.com-macOS-app-${version}.${ext}"
     },
     "dmg": {
       "title": "WordPress.com Installer",
@@ -135,7 +136,8 @@
           "y": 179,
           "type": "file"
         }
-      ]
+      ],
+      "artifactName": "wordpress.com-macOS-dmg-${version}.${ext}"
     },
     "win": {
       "target": {
@@ -147,7 +149,8 @@
       }
     },
     "nsis": {
-      "oneClick": false
+      "oneClick": false,
+      "artifactName": "wordpress.com-win32-setup-${version}.${ext}"
     },
     "linux": {
       "target": [
@@ -160,7 +163,8 @@
       "category": "Development",
       "desktop": {
         "StartupNotify": true
-      }
+      },
+      "artifactName": "wordpress.com-linux-x64-${version}.${ext}"
     },
     "deb": {
       "fpm": [
@@ -172,7 +176,8 @@
         "libnotify4",
         "libxtst6",
         "libnss3"
-      ]
+      ],
+      "artifactName": "wordpress.com-linux-deb-${version}.${ext}"
     },
     "afterSign": "./after_sign_hook.js"
   }
