@@ -7,7 +7,6 @@ const electron = require( 'electron' );
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const url = require( 'url' );
-const debug = require( 'debug' )( 'desktop:runapp' );
 const path = require( 'path' );
 
 /**
@@ -21,6 +20,7 @@ const cookieAuth = require( 'lib/cookie-auth' );
 const appInstance = require( 'lib/app-instance' );
 const platform = require( 'lib/platform' );
 const System = require( 'lib/system' );
+const log = require( 'lib/logger' )( 'desktop:runapp' );
 
 /**
  * Module variables
@@ -36,7 +36,7 @@ function showAppWindow() {
 		appUrl += lastLocation;
 	}
 
-	debug( 'Loading app (' + appUrl + ') in mainWindow' );
+	log.info( 'Loading app (' + appUrl + ') in mainWindow' );
 
 	let config = Settings.getSettingGroup( Config.mainWindow, 'window', [ 'x', 'y', 'width', 'height' ] );
 	config.webPreferences.preload = preloadFile;
@@ -53,13 +53,12 @@ function showAppWindow() {
 		const ipc = electron.ipcMain;
 		ipc.on( 'mce-contextmenu', function( ev ) {
 			mainWindow.send( 'mce-contextmenu', ev );
-		});
-
+		} );
 	} );
 
 	mainWindow.webContents.session.webRequest.onBeforeRequest( function( details, callback ) {
 		if ( details.resourceType === 'script' && details.url.startsWith( 'http://' ) && ! details.url.startsWith( Config.server_url + ':' + Config.server_port + '/' ) ) {
-			debug( 'Redirecting http request ' + details.url + ' to ' + details.url.replace( 'http', 'https' ) );
+			log.info( 'Redirecting http request ' + details.url + ' to ' + details.url.replace( 'http', 'https' ) );
 			callback( { redirectURL: details.url.replace( 'http', 'https' ) } );
 		} else {
 			callback( {} );
@@ -70,7 +69,7 @@ function showAppWindow() {
 		// always allow previews to be loaded in iframes
 		if ( details.resourceType === 'subFrame' ) {
 			const headers = Object.assign( {}, details.responseHeaders );
-			Object.keys( headers ).forEach( function ( name ) {
+			Object.keys( headers ).forEach( function( name ) {
 				if ( name.toLowerCase() === 'x-frame-options' ) {
 					delete headers[ name ];
 				}
@@ -85,7 +84,7 @@ function showAppWindow() {
 	} );
 
 	mainWindow.loadURL( appUrl );
-	//mainWindow.openDevTools();
+	// mainWindow.openDevTools();
 
 	mainWindow.on( 'close', function() {
 		let currentURL = mainWindow.webContents.getURL();
@@ -96,7 +95,7 @@ function showAppWindow() {
 	} );
 
 	mainWindow.on( 'closed', function() {
-		debug( 'Window closed' );
+		log.info( 'Window closed' );
 		mainWindow = null;
 	} );
 
@@ -106,7 +105,7 @@ function showAppWindow() {
 }
 
 function startServer( started_cb ) {
-	debug( 'App is ready, starting server' );
+	log.info( 'App is ready, starting server' );
 
 	server.start( app, function() {
 		started_cb( showAppWindow() );
@@ -133,19 +132,19 @@ function isValidLastLocation( loc ) {
 }
 
 module.exports = function( started_cb ) {
-	debug( 'Checking for other instances' );
+	log.info( 'Checking for other instances' );
 	let boot;
 
 	if ( appInstance.isSingleInstance() ) {
 		if ( 'development' === process.env.NODE_ENV ) {
-			debug( 'Skipping server initialization in dev mode' );
+			log.debug( 'Dev mode: skipping server initialization' );
 
 			boot = () => started_cb( showAppWindow() );
 		} else {
 			boot = () => startServer( started_cb );
 		}
 
-		debug( 'No other instances, waiting for app ready' );
+		log.info( 'No other instances, waiting for app ready' );
 
 		// Start the app window
 		if ( app.isReady() ) {

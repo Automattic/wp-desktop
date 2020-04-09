@@ -6,17 +6,17 @@
 const electron = require( 'electron' );
 const app = electron.app;
 const crashReporter = electron.crashReporter;
-const debug = require( 'debug' )( 'desktop:crash-reporting' );
 
 /**
  * Internal dependencies
  */
 const Config = require( 'lib/config' );
+const log = require( 'lib/logger' )( 'desktop:crash-reporting' );
 
 module.exports = function() {
 	if ( Config.crash_reporter.electron ) {
 		app.on( 'will-finish-launching', function() {
-			debug( 'Crash reporter started' );
+			log.info( 'Crash reporter started' );
 
 			crashReporter.start( {
 				productName: Config.description,

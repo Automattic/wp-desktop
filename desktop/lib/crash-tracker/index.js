@@ -7,19 +7,19 @@ const electron = require( 'electron' );
 const app = electron.app;
 const request = require( 'superagent' );
 const path = require( 'path' );
-const debug = require( 'debug' )( 'desktop:crash-tracker' );
 
 /**
  * Internal dependencies
  */
 const config = require( 'lib/config' );
 const system = require( 'lib/system' );
+const log = require( 'lib/logger' )( 'desktop:crash-tracker' );
 
 function finished( error, response, cb ) {
 	if ( error ) {
-		debug( 'Failed to upload crash report', error );
+		log.error( 'Failed to upload crash report', error );
 	} else {
-		debug( 'Uploaded crash report' );
+		log.info( 'Uploaded crash report' );
 	}
 
 	if ( typeof cb !== 'undefined' ) {
@@ -44,7 +44,7 @@ module.exports = {
 	track: function( errorType, errorData, cb ) {
 		if ( config.crash_reporter.tracker ) {
 			// Send to crash tracker
-			debug( 'Sending crash report to ' + config.crash_reporter.url );
+			log.info( 'Sending crash report to ' + config.crash_reporter.url );
 
 			request
 				.post( config.crash_reporter.url )
@@ -58,7 +58,7 @@ module.exports = {
 	trackLog: function( cb ) {
 		const logFile = path.join( app.getPath( 'userData' ), config.debug.log_file );
 
-		debug( 'Uploading log file: ' + logFile );
+		log.info( 'Uploading log file: ' + logFile );
 
 		request
 			.post( config.crash_reporter.url )

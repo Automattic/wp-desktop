@@ -6,13 +6,9 @@ let startApp = function() {
 };
 
 let booted = false;
-let debug;
+let log;
 
 function startDesktopApp() {
-	if ( electron.isDebug() ) {
-		electron.enableDebug();
-	}
-
 	function showWarning( message ) {
 		var container = document.querySelector( '#wpcom' );
 		var warning = container.querySelector( '.warning' );
@@ -78,13 +74,14 @@ function startDesktopApp() {
 		}
 	}
 
-	debug = electron.debug( 'desktop:browser' );
+	// Uses the logger object instantiated by preload.js
+	log = logger( 'desktop:renderer:browser' ); // eslint-disable-line no-undef
 
 	// Everything is ready, start Calypso
-	debug( 'Received app configuration, starting in browser' );
+	log.info( 'Received app configuration, starting in browser' );
 
 	function startCalypso() {
-		debug( 'Calypso loaded, starting' );
+		log.info( 'Calypso loaded, starting' );
 		booted = true;
 		window.AppBoot();
 
@@ -131,10 +128,10 @@ function startDesktopApp() {
 // Wrap this in an exception handler. If it fails then it means Electron is not present, and we are in a browser
 // This will then cause the browser to redirect to hey.html
 try {
-	electron.ipcRenderer.on('is-calypso', function () {
-		electron.ipcRenderer.send('is-calypso-response', document.getElementById('wpcom') !== null);
-	});
-	
+	electron.ipcRenderer.on( 'is-calypso', function() {
+		electron.ipcRenderer.send( 'is-calypso-response', document.getElementById( 'wpcom' ) !== null );
+	} );
+
 	electron.ipcRenderer.on( 'app-config', function( event, config, debug, details ) {
 		// if this is the first run, and on the login page, show Windows and Mac users a pin app reminder
 		if ( details.firstRun && document.querySelectorAll( '.logged-out-auth' ).length > 0 ) {

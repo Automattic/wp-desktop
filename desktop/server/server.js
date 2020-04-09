@@ -4,7 +4,7 @@
  * External Dependencies
  */
 const portscanner = require( 'portscanner' );
-const debug = require( 'debug' )( 'desktop:server' );
+const log = require( 'lib/logger' )( 'desktop:server' );
 
 /**
  * Internal dependencies
@@ -30,29 +30,29 @@ function startServer( running_cb ) {
 	var http = require( 'http' );
 	var server = http.createServer( boot() );
 
-	debug( 'Server created, binding to ' + Config.server_port );
+	log.info( 'Server created, binding to ' + Config.server_port );
 
 	server.listen( {
 		port: Config.server_port,
 		host: Config.server_host
 	}, function() {
-		debug( 'Server started, passing back to app' );
+		log.info( 'Server started, passing back to app' );
 		running_cb();
 	} );
 }
 
 module.exports = {
 	start: function( app, running_cb ) {
-		debug( 'Checking server port: ' + Config.server_port + ' on host ' + Config.server_host );
+		log.info( 'Checking server port: ' + Config.server_port + ' on host ' + Config.server_host );
 
 		portscanner.checkPortStatus( Config.server_port, Config.server_host, function( error, status ) {
 			if ( error || status === 'open' ) {
-				debug( 'Port check failed - ' + status, error );
+				log.info( 'Port check failed - ' + status, error );
 				showFailure( app );
 				return;
 			}
 
-			debug( 'Starting server' );
+			log.info( 'Starting server' );
 			startServer( running_cb );
 		} );
 	}

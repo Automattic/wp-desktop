@@ -334,7 +334,7 @@ jobs:
                 Import-PfxCertificate -FilePath $env:CSC_LINK -CertStoreLocation Cert:\LocalMachine\Root -Password (ConvertTo-SecureString -String $env:WIN_CSC_KEY_PASSWORD -AsPlainText -Force)
 
                 # $env:CSC_KEY_PASSWORD=$env:WIN_CSC_KEY_PASSWORD
-                make package
+                make package ELECTRON_BUILDER_ARGS='-c.win.certificateSubjectName="Automattic, Inc."'
       - run:
           name: Archive win-unpacked directories
           command: |
