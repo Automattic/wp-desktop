@@ -53,6 +53,7 @@ class SignupStepsPage extends AsyncBaseContainer {
 	}
 
 	async selectFreeAddress() {
+		await driverHelper.scrollIntoView( this.driver, By.css( '.domain-suggestion' ) );
 		return await driverHelper.selectElementByText(
 			this.driver,
 			By.css( '.domain-product-price__price' ),
@@ -60,13 +61,20 @@ class SignupStepsPage extends AsyncBaseContainer {
 		);
 	}
 
-	async selectFreePlan() {
+	async selectPlan( plan ) {
+		// plan should be 'free', 'personal', 'premium', 'business' or 'ecommerce'
+		let planButton;
 		const plansPage = By.css( '.is-plans' );
-		const freePlanButton = By.css( '.is-free-plan' );
+
+		if ( plan === 'free' ) {
+			planButton = By.css( `.is-${ plan }-plan` );
+		} else {
+			planButton = By.css( `.plan-features__actions-button.is-${ plan }-plan` );
+		}
 
 		await driverHelper.waitTillPresentAndDisplayed( this.driver, plansPage );
-		await driverHelper.waitTillPresentAndDisplayed( this.driver, freePlanButton );
-		return await driverHelper.clickWhenClickable( this.driver, freePlanButton );
+		await driverHelper.waitTillPresentAndDisplayed( this.driver, planButton );
+		return await driverHelper.clickWhenClickable( this.driver, planButton );
 	}
 
 	async enterAccountDetailsAndSubmit( email, username, password ) {

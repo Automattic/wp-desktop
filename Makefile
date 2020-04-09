@@ -27,11 +27,10 @@ CALYPSO_DIR := $(THIS_DIR)/calypso
 CHECKMARK = OK
 
 # Environment Variables
-CONFIG_ENV =
+CONFIG_ENV = 
 CALYPSO_ENV = desktop
 NODE_ENV = production
-BUILD_PLATFORM =
-DEBUG =
+DEBUG = 
 TEST_PRODUCTION_BINARY = false
 MINIFY_JS = true
 NODE_ARGS = --max_old_space_size=8192
@@ -72,7 +71,7 @@ dev-server: checks
 # Start app in dev mode
 dev: NODE_ENV = development
 dev: DEBUG = desktop:*
-dev:
+dev: 
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
 BASE_CONFIG := $(THIS_DIR)/desktop-config/config-base.json
@@ -86,11 +85,11 @@ else
 	$(eval EXTENDED = true)
 endif
 	@node -e "const base = require('$(BASE_CONFIG)'); let env; try { env = require('$(TARGET_CONFIG)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
-
+	
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
-build-calypso:
+build-calypso: 
 	$(info Building calypso... )
 
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
@@ -98,7 +97,7 @@ build-calypso:
 	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
 # Run Calypso server
-calypso-dev:
+calypso-dev: 
 	@echo "$(CYAN)Starting Calypso...$(RESET)"
 
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
@@ -118,11 +117,11 @@ endif
 package:
 	$(info Packaging app... )
 
-	@npx electron-builder build -$(BUILD_PLATFORM)
+	@npx electron-builder build
 
 	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
 
-# Combined steps for building app
+# Combined steps for building app 
 build: build-source package
 
 # Perform checks
@@ -137,13 +136,13 @@ ifneq (43452,$(shell node -p "require('$(SECRETS)').desktop_oauth_client_id"))
 	$(error "desktop_oauth_client_id" must be "43452" in $(SECRETS))
 endif
 endif
-else
+else 
 	$(error $(SECRETS) does not exist)
 endif
 
 # Sed to strip leading v to ensure 'v1.2.3' and '1.2.3' can match.
 # The .nvmrc file may contain either, `node --version` prints with 'v' prefix.
-CALYPSO_NODE_VERSION := $(shell cat calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1/p')
+CALYPSO_NODE_VERSION := $(shell cat $(THIS_DIR)/calypso/.nvmrc | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 
 .PHONY: check-version-parity
@@ -153,18 +152,18 @@ check-version-parity: check-node-version-parity check-electron-version-parity
 check-node-version-parity:
 ifneq ("$(CALYPSO_NODE_VERSION)", "$(CURRENT_NODE_VERSION)")
 	$(error Please ensure that wp-desktop is using NodeJS $(CALYPSO_NODE_VERSION) to match wp-calypso before continuing. 	Current NodeJS version: $(CURRENT_NODE_VERSION))
-else
+else 
 	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
 endif
 
 # Check that the electron version specified in .npmrc and package.json are consistent.
 # This is to ensure that when native dependencies have an auto-build postinstall script,
-# node-gyp will compile against Electron and not the host environment's node version
-# required by Calypso.
+# node-gyp will compile against Electron and not the host environment's node version 
+# required by Calypso. 
 check-electron-version-parity:
 ifneq ("$(NPMRC_ELECTRON_VERSION)", "$(PACKAGE_ELECTRON_VERSION)")
 	$(error Please ensure that the Electron version in package.json (set to $(PACKAGE_ELECTRON_VERSION)) is consistent with .npmrc (set to $(NPMRC_ELECTRON_VERSION)))
-else
+else 
 	@echo $(GREEN)$(CHECKMARK) Electron version in package.json matches .npmrc  \($(PACKAGE_ELECTRON_VERSION)\) $(RESET)
 endif
 
@@ -177,7 +176,7 @@ test: rebuild-deps
 	@echo "$(CYAN)Building test...$(RESET)"
 
 	@$(MAKE) desktop/config.json CONFIG_ENV=$(CONFIG_ENV)
-
+	
 	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --mode production --config .$/webpack.config.test.js
 	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
 
@@ -191,3 +190,7 @@ clean:
 	@rm -rf .$/build
 
 .PHONY: test build-source
+
+.PHONY:
+e2e:
+	@npm run e2e
