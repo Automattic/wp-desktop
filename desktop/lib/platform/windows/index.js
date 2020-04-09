@@ -4,6 +4,7 @@
  * External Dependencies
  */
 const { Tray, Menu, app } = require( 'electron' );
+const debug = require( 'debug' )( 'platform:windows' );
 
 /**
  * Internal dependencies
@@ -35,7 +36,7 @@ function WindowsPlatform( mainWindow ) {
 	mainWindow.on( 'close', this.onClosed.bind( this ) );
 
 	app.on( 'before-quit', function( event ) {
-		log.info( 'Responding to app event \'before-quit\', destroying tray' );
+		debug( 'Responding to app event \'before-quit\', destroying tray' );
 		this.tray.destroy();
 	} )
 }
@@ -52,7 +53,7 @@ WindowsPlatform.prototype.onClosed = function( ev ) {
 		return;
 	}
 
-	log.info( 'Quitting application...' );
+	debug( 'Quitting application...' );
 	app.quit();
 };
 
