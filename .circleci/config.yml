@@ -292,7 +292,7 @@ jobs:
           root: ~/wp-desktop
           paths:
             - release
-
+  
   windows:
     executor:
       name: win/default
@@ -430,8 +430,6 @@ workflows:
     jobs:
       - build:
           filters:
-            branches:
-              ignore: /tests\/.*/
             tags:
               only: /.*/
       - windows:

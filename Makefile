@@ -27,7 +27,7 @@ CALYPSO_DIR := $(THIS_DIR)/calypso
 CHECKMARK = OK
 
 # Environment Variables
-CONFIG_ENV = 
+CONFIG_ENV =
 CALYPSO_ENV = desktop
 NODE_ENV = production
 DEBUG = 
@@ -71,7 +71,7 @@ dev-server: checks
 # Start app in dev mode
 dev: NODE_ENV = development
 dev: DEBUG = desktop:*
-dev: 
+dev:
 	$(MAKE) start NODE_ENV=$(NODE_ENV) DEBUG=$(DEBUG)
 
 BASE_CONFIG := $(THIS_DIR)/desktop-config/config-base.json
@@ -97,7 +97,7 @@ build-calypso:
 	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
 # Run Calypso server
-calypso-dev: 
+calypso-dev:
 	@echo "$(CYAN)Starting Calypso...$(RESET)"
 
 	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
@@ -121,7 +121,7 @@ package:
 
 	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
 
-# Combined steps for building app 
+# Combined steps for building app
 build: build-source package
 
 # Perform checks
