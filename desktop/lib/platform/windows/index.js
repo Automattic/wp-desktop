@@ -3,9 +3,7 @@
 /**
  * External Dependencies
  */
-const electron = require( 'electron' );
-const Tray = electron.Tray;
-const Menu = electron.Menu;
+const { Tray, Menu, app } = require( 'electron' );
 const debug = require( 'debug' )( 'platform:windows' );
 
 /**
@@ -35,6 +33,11 @@ function WindowsPlatform( mainWindow ) {
 	this.tray.on( 'click', this.restore.bind( this ) );
 
 	mainWindow.on( 'close', this.onClosed.bind( this ) );
+
+	app.on( 'before-quit', function( event ) {
+		debug( 'Responding to app event \'before-quit\', destroying tray' );
+		this.tray.destroy();
+	} )
 }
 
 WindowsPlatform.prototype.onClosed = function( ev ) {
@@ -45,7 +48,12 @@ WindowsPlatform.prototype.onClosed = function( ev ) {
 
 		this.window.hide();
 		this.showBackgroundBubble();
+
+		return;
 	}
+
+	debug( 'Quitting application...' );
+	app.quit();
 };
 
 WindowsPlatform.prototype.showBackgroundBubble = function() {

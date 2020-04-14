@@ -9,7 +9,7 @@ const NavBarComponent = require( './lib/components/nav-bar-component' );
 const ProfilePage = require( './lib/pages/profile-page' );
 const ReaderPage = require( './lib/pages/reader-page' );
 const ViewPostPage = require( './lib/pages/view-post-page' );
-const ChecklistPage = require( './lib/pages/checklist-page' );
+const CheckoutPage = require( './lib/pages/checkout-page' );
 
 const dataHelper = require( './lib/data-helper' );
 let options = new chrome.Options();
@@ -117,10 +117,9 @@ describe( 'Can Log Out', function() {
 } );
 
 describe( 'Can Sign up', function() {
-	this.timeout( 30000 );
+	this.timeout( 90000 );
 	const blogName = dataHelper.getNewBlogName();
-	const expectedBlogAddresses = dataHelper.getExpectedFreeAddresses( blogName );
-	const emailAddress = blogName + process.env.E2E_MAILOSAUR_INBOX;
+	const emailAddress = blogName + '@e2edesktop.test';
 
 	step( 'Clear local storage', async function() {
 		await driver.executeScript( 'window.localStorage.clear();' );
@@ -130,8 +129,7 @@ describe( 'Can Sign up', function() {
 	step( 'Can navigate to Create account', async function() {
 		let loginPage = await LoginPage.Expect( driver );
 		await loginPage.hideGdprBanner();
-		await loginPage.openCreateAccountPage();
-		return await SignupStepsPage.Expect( driver );
+		return await loginPage.openCreateAccountPage();
 	} );
 
 	step( 'Can see the "Site Topic" page, and enter the site topic', async function() {
@@ -152,9 +150,9 @@ describe( 'Can Sign up', function() {
 		}
 	);
 
-	step( 'Can see the plans page and pick the free plan', async function() {
+	step( 'Can see the plans page and pick Business plan', async function() {
 		const signupStepsPage = await SignupStepsPage.Expect( driver );
-		return await signupStepsPage.selectFreePlan();
+		return await signupStepsPage.selectPlan( 'business' );
 	} );
 
 	step( 'Can see the account page, enter account details and submit', async function() {
@@ -166,9 +164,9 @@ describe( 'Can Sign up', function() {
 		);
 	} );
 
-	step( 'Can then see the onboarding checklist', async function() {
-		const checklistPage = await ChecklistPage.Expect( driver );
-		return await checklistPage.isChecklistPresent();
+	step( 'Can see checkout page', async function() {
+		const checkoutPage = await CheckoutPage.Expect( driver );
+		await checkoutPage.isShoppingCartPresent();
 	} );
 } );
 
