@@ -420,9 +420,56 @@ jobs:
     steps:
       - attach_workspace:
           at: /wp-desktop
+      - run:
+          name: Cleaning Up
+          command: |
+            find release -type f -name "._*" -delete
+            rm -rf release/.icon-set
+      - persist_to_workspace:
+          root: /wp-desktop
+          paths:
+            - release
       - store_artifacts:
           path: release
 
+  publish:
+    docker:
+      - image: circleci/golang:1.12
+    environment:
+      VERSION: << pipeline.git.tag >>
+    steps:
+      - when:
+          condition: << pipeline.git.tag >>
+          steps:
+            - attach_workspace:
+                at: .
+            - run:
+                name: Install Dependencies
+                command: go get github.com/tcnksm/ghr
+            - run:
+                name: Publish Github Release
+                command: |
+                  echo "Publishing draft release for $VERSION..."
+
+                  NAME=${VERSION#?}
+
+                  ghr \
+                    --token $GH_TOKEN \
+                    --username $CIRCLE_PROJECT_USERNAME \
+                    --repository $CIRCLE_PROJECT_REPONAME \
+                    --commitish $CIRCLE_SHA1 \
+                    --name $NAME \
+                    --delete \
+                    --draft \
+                    $VERSION release/
+
+                  echo "Publish complete"
+      - unless:
+          condition: << pipeline.git.tag >>
+          steps:
+            - run:
+                name: Skip Publish
+                command: echo "Not on a tag, skipping publish"
 
 workflows:
   version: 2
@@ -463,6 +510,14 @@ workflows:
             - windows
             - linux
             - mac
+          filters:
+            branches:
+              ignore: /tests\/.*/
+            tags:
+              only: /.*/
+      - publish:
+          requires:
+            - artifacts
           filters:
             branches:
               ignore: /tests\/.*/
