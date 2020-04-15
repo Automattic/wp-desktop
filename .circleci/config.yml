@@ -461,6 +461,7 @@ jobs:
                     --name $NAME \
                     --delete \
                     --draft \
+                    --prerelease \
                     $VERSION release/
 
                   echo "Publish complete"
