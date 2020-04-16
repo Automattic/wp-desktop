@@ -12,10 +12,11 @@ WordPress.com for Desktop is an [Electron](https://github.com/atom/electron) wra
 - `git submodule init`
 - `git submodule update`
 
-1. Create a `calypso/config/secrets.json` file and fill it with [secrets](docs/secrets.md)
-1. `npm install` will download all the required packages
-1. `make build` to create the builds
-1. Find the built apps in the `release` folder
+1. Inside `./calypso`, run `yarn` to install all required packages
+1. Inside `./calypso`, create a `./config/secrets.json` file and fill it with [secrets](docs/secrets.md)
+1. In the project root, `npm install` will download all the required packages
+1. In the project root, `make build` to create the builds
+1. Find the built apps in the `release` folder in the project root
 
 Need more detailed instructions? [We have them.](docs/install.md)
 

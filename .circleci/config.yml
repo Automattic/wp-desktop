@@ -64,13 +64,13 @@ references:
     restore_cache:
       name: Restore npm cache
       keys:
-        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/package-lock.json" }}
+        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/yarn.lock" }}
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
   npm_save_cache: &npm_save_cache
     save_cache:
       name: Save npm cache
-      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/package-lock.json" }}
+      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/yarn.lock" }}
       paths:
         - ~/.npm
   npm_install: &npm_install
@@ -81,7 +81,7 @@ references:
               nvm use
               npm ci
               cd calypso
-              npm ci
+              yarn install --frozen-lockfile
   install_linux_dependencies: &install_linux_dependencies
     run:
       name: Install linux dev dependencies
@@ -98,7 +98,7 @@ references:
     - calypso/config
     - calypso/package.json
     - calypso/packages
-    - calypso/package-lock.json
+    - calypso/yarn.lock
     - calypso/.nvmrc
   setup_calypso: &setup_calypso
     run:
