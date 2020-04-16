@@ -435,14 +435,16 @@ jobs:
   publish:
     docker:
       - image: circleci/golang:1.12
+    working_directory: /home/circleci/wp-desktop
     environment:
       VERSION: << pipeline.git.tag >>
     steps:
       - when:
           condition: << pipeline.git.tag >>
           steps:
+            - checkout
             - attach_workspace:
-                at: .
+                at: /home/circleci/wp-desktop
             - run:
                 name: Install Dependencies
                 command: go get github.com/tcnksm/ghr
@@ -453,12 +455,16 @@ jobs:
 
                   NAME=${VERSION#?}
 
+                  chmod +x make-changelog.sh
+                  ./make-changelog.sh > CHANGELOG.md
+
                   ghr \
                     --token $GH_TOKEN \
                     --username $CIRCLE_PROJECT_USERNAME \
                     --repository $CIRCLE_PROJECT_REPONAME \
                     --commitish $CIRCLE_SHA1 \
                     --name $NAME \
+                    --body "$(cat CHANGELOG.md)" \
                     --delete \
                     --draft \
                     $VERSION release/
