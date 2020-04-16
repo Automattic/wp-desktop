@@ -121,7 +121,7 @@ package: ELECTRON_BUILDER_ARGS =
 package:
 	$(info Packaging app... )
 
-	@npx electron-builder $(ELECTRON_BUILDER_ARGS) build
+	@npx electron-builder $(ELECTRON_BUILDER_ARGS) build --publish never
 
 	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
 
