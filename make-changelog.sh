@@ -6,7 +6,10 @@ tags=$(git tag --sort=-v:refname | awk '{if(NR>1)print}')
 
 # get tag for previous stable release from the sorted list
 # (first match without `-`, e.g. v1.2.3, not v1.2.3-alpha1)
-last_stable_tag=$(for tag in $tags; do if [[ ! "$tag" == *"-"* ]]; then echo "$tag"; break; fi; done)
+last_stable_tag=$(for tag in $tags; do if [[ ! "$tag" == *"-"* ]]; then
+  echo "$tag"
+  break
+fi; done)
 
 # get the current tag, fall back to HEAD
 current_tag=$VERSION
@@ -30,20 +33,20 @@ commit_filter="^($git_log_incl_types)(\([a-z]+\))?:\s.+"
 echo "## What's Changed"
 
 # Fill and sort changelog
-git_log=$(git log --oneline --pretty=format:"$git_log_format" $last_stable_tag...$current_tag \
-    | grep -E "$commit_filter" \
-    | sort -k 1 )
+git_log=$(git log --oneline --pretty=format:"$git_log_format" $last_stable_tag...$current_tag |
+  grep -E "$commit_filter" |
+  sort -k 1)
 
 # Map of each type to its human-readable heading
-type_heading_map=(	"feat:New Features"
-				"fix:Fixes"
-				"improvement:Improvements"
-				"refactor:Refactors"
-				"perf:Performance Improvements"
-				"test:testing"
-				"build:Build"
-				"ci:Continous Integration"
-				"revert:Reverts" )
+type_heading_map=("feat:New Features"
+  "fix:Fixes"
+  "improvement:Improvements"
+  "refactor:Refactors"
+  "perf:Performance Improvements"
+  "test:testing"
+  "build:Build"
+  "ci:Continous Integration"
+  "revert:Reverts")
 
 # Returns the human-readable heading for a type
 function get_type_heading() {
@@ -77,16 +80,16 @@ last_type=""
 last_scope=""
 echo "$git_log" | while IFS=$'\r' read change; do
 
-	type=$(echo "$change" | egrep -o '^[^:(]+' )
+  type=$(echo "$change" | egrep -o '^[^:(]+')
   if [ "$last_type" != "$type" ]; then
     last_type=$type
     last_scope=""
     echo ""
-		echo "### $(get_type_heading $type)"
-  fi;
+    echo "### $(get_type_heading $type)"
+  fi
 
-  scope=$( echo "$change" | grep -o "\(([^)]*)\):" | tr -d '():' )
-  description=$( echo "$change" | sed 's/.*://' )
+  scope=$(echo "$change" | grep -o "\(([^)]*)\):" | tr -d '():')
+  description=$(echo "$change" | sed 's/.*://')
 
   if [ "$scope" != "$last_scope" ]; then
     last_scope=$scope
@@ -95,11 +98,11 @@ echo "$git_log" | while IFS=$'\r' read change; do
       echo "#### General"
     else
       echo ""
-      echo "#### $( make_title_case "$scope" )"
-    fi;
-  fi;
+      echo "#### $(make_title_case "$scope")"
+    fi
+  fi
 
   print_prefix='{print "- " $0}'
-	echo $( make_first_letter_upper "$description" ) | awk "$print_prefix"
+  echo $(make_first_letter_upper "$description") | awk "$print_prefix"
 
 done
