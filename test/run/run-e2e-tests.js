@@ -79,7 +79,7 @@ async function run() {
 			'--disable-http-cache',
 			'--start-maximized',
 			'--remote-debugging-port=9222',
-		], null, { WP_DEBUG_LOG: appLog.path, WP_AUTO_UPDATE_DISABLE: true } );
+		], null, { WP_DEBUG_LOG: appLog.path, DEBUG: true } );
 
 		await delay( 5000 );
 
