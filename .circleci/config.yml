@@ -62,7 +62,7 @@ references:
               openssl aes-256-cbc -md md5 -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
   restore_node_module_cache: &restore_node_module_cache
     restore_cache:
-      name: Restore node module cache
+      name: Restore Node Module Cache
       keys:
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}-{{ checksum "calypso/yarn.lock" }}
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}
@@ -75,7 +75,7 @@ references:
         - $HOME/.config/yarn/global
   install_node_modules: &install_node_modules
     run:
-      name: Install node modules
+      name: Install Node Modules
       command: |
               source $HOME/.nvm/nvm.sh
               nvm use
@@ -268,7 +268,7 @@ jobs:
       - *restore_node_module_cache
       - *install_linux_dependencies
       - run:
-          name: Install node modules
+          name: Install Node Modules
           command: |
             source $HOME/.nvm/nvm.sh
             nvm use
@@ -308,14 +308,14 @@ jobs:
           name: Install make
           command: cinst make
       - run:
-          name: Install node version
+          name: Install Node Version
           command: |
                   $NODE_VERSION = Get-Content .\calypso\.nvmrc
                   nvm install $NODE_VERSION
                   nvm use $NODE_VERSION
                   npm install -g yarn
       - run:
-          name: Install node modules
+          name: Install Node Modules
           command: |
                 # The release of nodejs currently being used by Calypso includes a buggy version
                 # of node-gyp for Windows. This workaround unblocks Windows builds until Calypso node
@@ -367,7 +367,7 @@ jobs:
       - *save_nvm
       - *restore_node_module_cache
       - run:
-          name: Install node modules
+          name: Install Node Modules
           command: |
             source $HOME/.nvm/nvm.sh
             nvm use
