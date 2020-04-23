@@ -75,7 +75,7 @@ references:
         - $HOME/.config/yarn/global
   install_node_modules: &install_node_modules
     run:
-      name: Npm install
+      name: Install node modules
       command: |
               source $HOME/.nvm/nvm.sh
               nvm use
