@@ -70,7 +70,7 @@ references:
   npm_save_cache: &npm_save_cache
     save_cache:
       name: Save npm cache
-      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock }}-{{ checksum "calypso/yarn.lock" }}
+      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}-{{ checksum "calypso/yarn.lock" }}
       paths:
         - ~/.npm
   npm_install: &npm_install
