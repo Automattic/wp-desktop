@@ -313,7 +313,9 @@ jobs:
                   $NODE_VERSION = Get-Content .\calypso\.nvmrc
                   nvm install $NODE_VERSION
                   nvm use $NODE_VERSION
-                  npm install -g yarn
+      - run:
+          name: Install Yarn
+          command: npm install -g yarn
       - run:
           name: Install Node Modules
           command: |
