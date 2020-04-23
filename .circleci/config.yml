@@ -69,7 +69,7 @@ references:
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
   save_node_module_cache: &save_node_module_cache
     save_cache:
-      name: Save npm cache
+      name: Save node module cache
       key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}-{{ checksum "calypso/yarn.lock" }}
       paths:
         - ~/.npm
@@ -268,11 +268,11 @@ jobs:
       - *restore_node_module_cache
       - *install_linux_dependencies
       - run:
-          name: Npm install
+          name: Install node modules
           command: |
             source $HOME/.nvm/nvm.sh
             nvm use
-            npm ci
+            yarn install --frozen-lockfile
       - *save_node_module_cache
       - run:
           name: Build Linux
@@ -314,7 +314,7 @@ jobs:
                   nvm install $NODE_VERSION
                   nvm use $NODE_VERSION
       - run:
-          name: Npm install
+          name: Install node modules
           command: |
                 # The release of nodejs currently being used by Calypso includes a buggy version
                 # of node-gyp for Windows. This workaround unblocks Windows builds until Calypso node
@@ -322,7 +322,7 @@ jobs:
                 # devDependencies can be reverted.
                 # Ref: https://github.com/nodejs/node-gyp/issues/1933
                 npm config set node_gyp "$(Get-Location)\node_modules\node-gyp\bin\node-gyp.js"
-                npm ci
+                yarn install --frozen-lockfile
       - run:
           name: Build windows
           command: |
@@ -366,11 +366,11 @@ jobs:
       - *save_nvm
       - *restore_node_module_cache
       - run:
-          name: Npm install
+          name: Install node modules
           command: |
             source $HOME/.nvm/nvm.sh
             nvm use
-            npm ci
+            yarn install --frozen-lockfile
       - *save_node_module_cache
       - run:
           name: Build Mac
