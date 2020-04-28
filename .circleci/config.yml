@@ -358,7 +358,8 @@ jobs:
                   tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
                   tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
                 } else {
-                  echo "Project configuration or dependencies are unchanged: skipping tar archive..."
+                  echo "Project configuration and dependencies are unchanged: only some of the project's artifacts have been built."
+                  echo "Skipping tar archive..."
                 }
       - run:
           name: Release cleanup
