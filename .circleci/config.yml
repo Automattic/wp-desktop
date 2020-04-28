@@ -283,7 +283,7 @@ jobs:
                   nvm use
 
                   # Build all artifacts only when project config changes.
-                  # Otherwise build application bundle only for end-to-end testing.
+                  # Otherwise only build application executable required for end-to-end testing.
                   ! git diff --name-only origin/develop...HEAD | grep -E -q 'package.json|yarn.lock' && ELECTRON_BUILDER_ARGS='-c.linux.target=dir'
 
                   make package ELECTRON_BUILDER_ARGS=$ELECTRON_BUILDER_ARGS
@@ -344,7 +344,7 @@ jobs:
                 # $env:CSC_KEY_PASSWORD=$env:WIN_CSC_KEY_PASSWORD
 
                 # Build all artifacts only when project config changes.
-                # Otherwise build application bundle only for end-to-end testing.
+                # Otherwise only build application executable required for end-to-end testing.
                 $env:ARG1='-c.win.certificateSubjectName=""Automattic, Inc.""'
                 If ( -Not $(git diff --name-only origin/develop...HEAD | Select-String -Pattern package.json,yarn.lock) ) { $env:ARG2='-c.win.target=dir' }
 
@@ -352,11 +352,13 @@ jobs:
       - run:
           name: Archive win-unpacked directories
           command: |
+                # Archive only when both `-unpacked` targets have been built
+                # (as triggered by project config or dependency update).
                 If ( $(Test-Path -Path release\win-unpacked) -AND $(Test-Path -Path release\win-ia32-unpacked) ) {
                   tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
                   tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
                 } else {
-                  echo "No win-unpacked directories: skipping tar..."
+                  echo "Project configuration or dependencies are unchanged: skipping tar archive..."
                 }
       - run:
           name: Release cleanup
@@ -402,7 +404,7 @@ jobs:
                   nvm use
 
                   # Build all artifacts only when project config changes.
-                  # Otherwise build application bundle only for end-to-end testing.
+                  # Otherwise only build application executable required for end-to-end testing.
                   ! git diff --name-only origin/develop...HEAD | grep -E -q 'package.json|yarn.lock' && ELECTRON_BUILDER_ARGS='-c.mac.target=dir'
 
                   make package ELECTRON_BUILDER_ARGS=$ELECTRON_BUILDER_ARGS
