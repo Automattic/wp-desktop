@@ -353,7 +353,7 @@ jobs:
           name: Archive win-unpacked directories
           command: |
                 # Archive only when both `-unpacked` targets have been built
-                # (as triggered by project config or dependency update).
+                # (as triggered by project config change or dependency update).
                 If ( $(Test-Path -Path release\win-unpacked) -AND $(Test-Path -Path release\win-ia32-unpacked) ) {
                   tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
                   tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
