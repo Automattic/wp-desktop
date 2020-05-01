@@ -563,7 +563,7 @@ workflows:
           filters:
             branches:
               only: /tests\/.*/
-	  - mac:
+      - mac:
           requires:
             - build
           filters:
