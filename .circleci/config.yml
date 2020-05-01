@@ -248,7 +248,6 @@ jobs:
       - *test
       - *calypso_finalize_cache
       - *calypso_save_cache
-      - *webhook_notify_success
       - *webhook_notify_failed
       - persist_to_workspace:
           root: ~/wp-desktop
@@ -430,6 +429,8 @@ jobs:
                   set +e
                   rm -rf release/github
                   rm -rf release/mac
+      - *webhook_notify_success
+      - *webhook_notify_failed
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
           paths:
@@ -559,6 +560,12 @@ workflows:
     when: << pipeline.parameters.isCalypsoCanaryRun >>
     jobs:
       - build:
+          filters:
+            branches:
+              only: /tests\/.*/
+	  - mac:
+          requires:
+            - build
           filters:
             branches:
               only: /tests\/.*/
