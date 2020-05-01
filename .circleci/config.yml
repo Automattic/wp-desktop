@@ -281,7 +281,12 @@ jobs:
           command: |
                   source $HOME/.nvm/nvm.sh
                   nvm use
-                  make package
+
+                  # Build all artifacts only when project config changes.
+                  # Otherwise only build application executable required for end-to-end testing.
+                  ! git diff --name-only origin/develop...HEAD | grep -E -q 'package.json|yarn.lock' && ELECTRON_BUILDER_ARGS='-c.linux.target=dir'
+
+                  make package ELECTRON_BUILDER_ARGS=$ELECTRON_BUILDER_ARGS
       - run:
           name: Release cleanup
           command: |
@@ -337,12 +342,25 @@ jobs:
                 Import-PfxCertificate -FilePath $env:CSC_LINK -CertStoreLocation Cert:\LocalMachine\Root -Password (ConvertTo-SecureString -String $env:WIN_CSC_KEY_PASSWORD -AsPlainText -Force)
 
                 # $env:CSC_KEY_PASSWORD=$env:WIN_CSC_KEY_PASSWORD
-                make package ELECTRON_BUILDER_ARGS='-c.win.certificateSubjectName="Automattic, Inc."'
+
+                # Build all artifacts only when project config changes.
+                # Otherwise only build application executable required for end-to-end testing.
+                $env:ARG1='-c.win.certificateSubjectName=""Automattic, Inc.""'
+                If ( -Not $(git diff --name-only origin/develop...HEAD | Select-String -Pattern package.json,yarn.lock) ) { $env:ARG2='-c.win.target=dir' }
+
+                make package ELECTRON_BUILDER_ARGS=$($env:ARG1,$env:ARG2 -join " ")
       - run:
           name: Archive win-unpacked directories
           command: |
-                tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
-                tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
+                # Archive only when both `-unpacked` targets have been built
+                # (as triggered by project config change or dependency update).
+                If ( $(Test-Path -Path release\win-unpacked) -AND $(Test-Path -Path release\win-ia32-unpacked) ) {
+                  tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
+                  tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
+                } else {
+                  echo "Project configuration and dependencies are unchanged: only some of the project's artifacts have been built."
+                  echo "Skipping tar archive..."
+                }
       - run:
           name: Release cleanup
           command: |
@@ -385,7 +403,12 @@ jobs:
                   set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
-                  make package
+
+                  # Build all artifacts only when project config changes.
+                  # Otherwise only build application executable required for end-to-end testing.
+                  ! git diff --name-only origin/develop...HEAD | grep -E -q 'package.json|yarn.lock' && ELECTRON_BUILDER_ARGS='-c.mac.target=dir'
+
+                  make package ELECTRON_BUILDER_ARGS=$ELECTRON_BUILDER_ARGS
       # Temporarily disable the test
       # TODO: Fixme – seems to be an issue with `portscanner`
       # - run:
