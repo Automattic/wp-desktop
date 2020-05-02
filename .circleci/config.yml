@@ -360,13 +360,13 @@ jobs:
           command: |
                 # If this isn't a full artifact build, ensure to persist the built application for inspection
 
-                If $(Test-Path -Path release\win-unpacked) {
+                If ( $(Test-Path -Path release\win-unpacked) ) {
                   tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
                 } else {
                   echo "'release\win-unpacked' not built, skipping tar archive..."
                 }
 
-                If $(Test-Path -Path release\win-ia32-unpacked) {
+                If ( $(Test-Path -Path release\win-ia32-unpacked) ) {
                   tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
                 } else {
                   echo "'release\win-ia32-unpacked' not built, skipping tar archive..."
