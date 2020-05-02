@@ -291,7 +291,7 @@ jobs:
       - run:
           name: Persist Linux Executable
           command: |
-                  # If this isn't a full build, ensure to persist the built application for inspection
+                  # If this isn't a full artifact build, ensure to persist the built application for inspection
                   test -f release/*.tar.gz || tar -zcf release/linux-unpacked-x64.tar.gz release/linux-unpacked
       - run:
           name: Release cleanup
@@ -358,7 +358,7 @@ jobs:
       - run:
           name: Archive win-unpacked directories
           command: |
-                # If this isn't a full build, ensure to persist the built application for inspection
+                # If this isn't a full artifact build, ensure to persist the built application for inspection
 
                 If ( $(Test-Path -Path release\win-unpacked) {
                   tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
@@ -440,7 +440,7 @@ jobs:
       - run:
           name: Persist Mac Executable
           command: |
-                  # If this isn't a full build, ensure to persist the built application for inspection
+                  # If this isn't a full artifact build, ensure to persist the built application for inspection
                   test -f release/*.zip || ditto ditto -ck --rsrc --sequesterRsrc release/mac/WordPress.com.app release/mac.zip
       - run:
           name: Release cleanup
