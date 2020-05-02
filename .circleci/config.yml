@@ -358,14 +358,9 @@ jobs:
       - run:
           name: Archive win-unpacked directories
           command: |
-                # If this isn't a full artifact build, ensure to persist the built application for inspection
+                tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
 
-                If ( $(Test-Path -Path release\win-unpacked) ) {
-                  tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
-                } else {
-                  echo "'release\win-unpacked' not built, skipping tar archive..."
-                }
-
+                # If this isn't a full artifact build, the win-ia32-unpacked executable will not be generated
                 If ( $(Test-Path -Path release\win-ia32-unpacked) ) {
                   tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
                 } else {
