@@ -29,6 +29,12 @@ The app is split between Electron code and Calypso code, and so the [development
 1. Set the environment variables `E2EUSERNAME` and `E2EPASSWORD`.
 2. Use `npm run e2e` or `make e2e` to invoke the test suite.
 
+To manually start each platform's _pre-packaged_ executable used for end-to-end testing:
+
+- Mac: Double-click `WordPress.com.app`
+- Windows: Double-click WordPress.com.exe in `win-unpacked` directory
+- Linux: `npx electron /path/to/linux-unpacked/resources/app`
+
 # MacOS Notarization
 
 Per the current [Electron docs](https://www.electron.build/configuration/dmg), DMG signing is disabled by default as it will "lead to unwanted errors in combination with notarization requirements." Only the app bundle is zipped and submitted to Apple for notarization.
