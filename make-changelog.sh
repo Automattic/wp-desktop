@@ -2,7 +2,7 @@
 
 # fetch all tags in descending lexicographical order
 # (exclude current tag with `awk`)
-tags=$(git tag --sort=-v:refname | awk '{if(NR>1)print}')
+tags=$(git tag | tr - \~ | sort -V -r | tr \~ - | awk '{if(NR>1)print}')
 
 # get tag for previous stable release from the sorted list
 # (first match without `-`, e.g. v1.2.3, not v1.2.3-alpha1)
