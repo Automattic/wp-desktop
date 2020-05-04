@@ -198,24 +198,24 @@ references:
       when: on_fail
       command: |
         set +o errexit
-        if [[ $BRANCHNAME != "tests/"* ]]; then
+        if [[ $CIRCLE_BRANCH != "tests/"* ]]; then
           exit
         fi
         curl -X POST "https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook" \
         -H 'Cache-Control: no-cache'	\
         -H 'Content-Type: application/json'	\
         -d '{
-          "payload": {
-            "outcome": "'"failed"'",
-            "status": "'"failed"'",
-            "branch": "'"$BRANCHNAME"'",
-            "build_url": "'"$CIRCLE_BUILD_URL"'",
-            "build_parameters": {
-              "build_num": '"$CIRCLE_BUILD_NUM"',
-              "sha": "'"$sha"'",
-              "calypsoProject": "'"$calypsoProject"'"
+            "payload": {
+              "outcome": "'"failed"'",
+              "status": "'"failed"'",
+              "branch": "'"$BRANCHNAME"'",
+              "build_url": "'"$CIRCLE_BUILD_URL"'",
+              "build_parameters": {
+                "build_num": '"$CIRCLE_BUILD_NUM"',
+                "sha": "'"$sha"'",
+                "calypsoProject": "'"$calypsoProject"'"
+              }
             }
-          }
         }'
 
 jobs:
