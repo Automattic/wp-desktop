@@ -248,6 +248,10 @@ jobs:
       - *test
       - *calypso_finalize_cache
       - *calypso_save_cache
+      - run:
+          name: Install Node Modules
+          command: |
+            exit 1
       - *webhook_notify_failed
       - persist_to_workspace:
           root: ~/wp-desktop
