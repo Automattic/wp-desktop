@@ -183,7 +183,7 @@ references:
               "payload": {
                 "outcome": "'"success"'",
                 "status": "'"success"'",
-                "branch": "'"$BRANCHNAME"'",
+                "branch": "'"$CIRCLE_BRANCH"'",
                 "build_url": "'"$CIRCLE_BUILD_URL"'",
                 "build_parameters": {
                   "build_num": '"$CIRCLE_BUILD_NUM"',
@@ -208,7 +208,7 @@ references:
             "payload": {
               "outcome": "'"failed"'",
               "status": "'"failed"'",
-              "branch": "'"$BRANCHNAME"'",
+              "branch": "'"$CIRCLE_BRANCH"'",
               "build_url": "'"$CIRCLE_BUILD_URL"'",
               "build_parameters": {
                 "build_num": '"$CIRCLE_BUILD_NUM"',
@@ -227,7 +227,6 @@ jobs:
       CONFIG_ENV: release
       MINIFY_JS: true
       NODE_ARGS: --max_old_space_size=3072
-      BRANCHNAME: << pipeline.git.branch >>
       CALYPSO_HASH: << pipeline.parameters.CALYPSO_HASH >>
       sha: << pipeline.parameters.sha >>
       calypsoProject: << pipeline.parameters.calypsoProject >>
@@ -378,7 +377,6 @@ jobs:
     shell: /bin/bash --login
     working_directory: /Users/distiller/wp-desktop
     environment:
-      BRANCHNAME: << pipeline.git.branch >>
       sha: << pipeline.parameters.sha >>
       calypsoProject: << pipeline.parameters.calypsoProject >>
     steps:
