@@ -7,12 +7,12 @@ const { app, shell } = require( 'electron' );
 const fetch = require( 'electron-fetch' ).default;
 const yaml = require( 'js-yaml' );
 const semver = require( 'semver' );
-const debug = require( 'debug' )( 'desktop:updater:manual' );
 
 /**
  * Internal dependencies
  */
 const Updater = require( 'lib/updater' );
+const log = require( 'lib/logger' )( 'desktop:updater:manual' );
 const { bumpStat, sanitizeVersion, getPlatform } = require( 'lib/desktop-analytics' );
 
 const statsPlatform = getPlatform( process.platform )
@@ -39,8 +39,8 @@ class ManualUpdater extends Updater {
 	async ping() {
 		try {
 			const url = this.apiUrl;
-			debug( 'Checking for update. Fetching:', url );
-			debug( 'Checking for beta release:', this.beta )
+			log.info( 'Checking for update. Fetching: ', url );
+			log.info( 'Checking for beta release:', this.beta )
 
 			const releaseResp = await fetch( url, requestOptions );
 
@@ -54,7 +54,7 @@ class ManualUpdater extends Updater {
 			const latestBetaRelease = releases.find( ( d ) => d.prerelease );
 
 			if ( ( !latestStableRelease && !this.beta ) ) {
-				debug( 'No stable release found' );
+				log.info( 'No stable release found' );
 				return;
 			};
 
@@ -76,7 +76,7 @@ class ManualUpdater extends Updater {
 					semver.lt( latestBetaReleaseVersion, latestStableReleaseVersion ) ) {
 					latestReleaseVersion = latestStableReleaseVersion;
 
-					debug( 'Latest stable version is newer than latest latest beta. Switching to stable channel:', latestReleaseVersion );
+					log.info( 'Latest stable version is newer than latest latest beta. Switching to stable channel:', latestReleaseVersion );
 				} else if ( semver.valid( latestBetaReleaseVersion ) ) {
 					latestReleaseVersion = latestBetaReleaseVersion;
 
@@ -87,25 +87,25 @@ class ManualUpdater extends Updater {
 			}
 
 			if ( !latestReleaseVersion ) {
-				debug( 'No release found' );
+				log.info( 'No release found' );
 
 				return;
 			}
 
 			if ( semver.lt( app.getVersion(), latestReleaseVersion ) ) {
-				debug( 'New update is available, prompting user to update to', latestReleaseVersion );
+				log.info( 'New update is available, prompting user to update to', latestReleaseVersion );
 				bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-needs-update` );
 
 				this.setVersion( latestReleaseVersion );
 				this.notify();
 			} else {
-				debug( 'Update is not available' );
+				log.info( 'Update is not available' );
 				bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-no-update` );
 
 				return;
 			}
 		} catch ( err ) {
-			console.log( err );
+			log.error( `Update check failed with error: ${ err.message }` );
 			bumpStat( 'wpcom-desktop-update-check', `${getStatsString( this.beta )}-check-failed` );
 		}
 	}
@@ -144,7 +144,7 @@ class ManualUpdater extends Updater {
 
 			return config.version || null;
 		} catch ( err ) {
-			console.log( err );
+			log.error( `Failed to get release version: ${ err.message }` );
 		}
 	}
 }

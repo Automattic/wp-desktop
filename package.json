@@ -1,6 +1,6 @@
 {
   "name": "WordPressDesktop",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
@@ -58,8 +58,7 @@
     "fs-extra": "7.0.1",
     "ignore-loader": "0.1.2",
     "json-loader": "0.5.7",
-    "minimist": "1.2.2",
-    "mkdirp": "0.5.1",
+    "minimist": "1.2.5",
     "mocha-steps": "1.3.0",
     "mv": "2.1.1",
     "node-gyp": "6.0.1",
@@ -74,7 +73,7 @@
   "dependencies": {
     "@automattic/calypso-polyfills": "1.0.0",
     "acorn": "6.4.1",
-    "debug": "2.6.8",
+    "archiver": "3.1.1",
     "electron-fetch": "1.2.1",
     "electron-spellchecker": "2.2.1",
     "electron-updater": "4.2.5",
@@ -82,11 +81,13 @@
     "js-yaml": "3.12.0",
     "lodash.clonedeep": "4.5.0",
     "lodash.debounce": "4.0.8",
+    "make-dir": "3.0.2",
     "nan": "2.11.1",
     "portscanner": "1.2.0",
     "rxjs": "5.0.1",
     "semver": "5.6.0",
-    "superagent": "1.8.5"
+    "superagent": "1.8.5",
+    "winston": "3.2.1"
   },
   "build": {
     "productName": "WordPress.com",
@@ -117,7 +118,8 @@
       "hardenedRuntime": true,
       "extendInfo": {
         "LSFileQuarantineEnabled": true
-      }
+      },
+      "artifactName": "wordpress.com-macOS-app-${version}.${ext}"
     },
     "dmg": {
       "title": "WordPress.com Installer",
@@ -134,7 +136,8 @@
           "y": 179,
           "type": "file"
         }
-      ]
+      ],
+      "artifactName": "wordpress.com-macOS-dmg-${version}.${ext}"
     },
     "win": {
       "target": {
@@ -143,11 +146,11 @@
           "x64",
           "ia32"
         ]
-      },
-      "certificateSubjectName": "Automattic, Inc."
+      }
     },
     "nsis": {
-      "oneClick": false
+      "oneClick": false,
+      "artifactName": "wordpress.com-win32-setup-${version}.${ext}"
     },
     "linux": {
       "target": [
@@ -160,7 +163,8 @@
       "category": "Development",
       "desktop": {
         "StartupNotify": true
-      }
+      },
+      "artifactName": "wordpress.com-linux-x64-${version}.${ext}"
     },
     "deb": {
       "fpm": [
@@ -172,7 +176,8 @@
         "libnotify4",
         "libxtst6",
         "libnss3"
-      ]
+      ],
+      "artifactName": "wordpress.com-linux-deb-${version}.${ext}"
     },
     "afterSign": "./after_sign_hook.js"
   }

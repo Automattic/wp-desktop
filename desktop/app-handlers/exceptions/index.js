@@ -12,6 +12,7 @@ const dialog = electron.dialog;
  */
 const crashTracker = require( 'lib/crash-tracker' );
 const system = require( 'lib/system' );
+const log = require( 'lib/logger' )( 'desktop:exceptions', { handleExceptions: true } );
 
 /**
  * Module variables
@@ -66,7 +67,7 @@ function exceptionHandler( error ) {
 		return;
 	}
 
-	console.log( 'uncaughtException (fatal)', error, error.stack, typeof error );
+	log.error( error );
 
 	if ( crashTracker.isEnabled() ) {
 		crashTracker.track( 'exception', { name: error.name, message: error.message, stack: error.stack }, function() {

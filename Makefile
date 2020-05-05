@@ -1,4 +1,4 @@
-SHELL = /bin/bash
+export SHELL = /bin/bash
 
 ifeq ($(OS),Windows_NT)
 	FILE_PATH_SEP := $(strip \)
@@ -30,7 +30,7 @@ CHECKMARK = OK
 CONFIG_ENV =
 CALYPSO_ENV = desktop
 NODE_ENV = production
-DEBUG = 
+DEBUG =
 TEST_PRODUCTION_BINARY = false
 MINIFY_JS = true
 NODE_ARGS = --max_old_space_size=8192
@@ -66,7 +66,7 @@ dev-server: checks
 	@npx concurrently -k \
 	-n "Calypso,Desktop" \
 	"$(MAKE) calypso-dev NODE_ENV=$(NODE_ENV) CALYPSO_ENV=$(CALYPSO_ENV)" \
-	"wait-on http://localhost:3000 && $(MAKE) build-desktop NODE_ENV=$(NODE_ENV)" \
+	"wait-on http://localhost:3000 && $(MAKE) build-desktop-source NODE_ENV=$(NODE_ENV)" \
 
 # Start app in dev mode
 dev: NODE_ENV = development
@@ -85,14 +85,14 @@ else
 	$(eval EXTENDED = true)
 endif
 	@node -e "const base = require('$(BASE_CONFIG)'); let env; try { env = require('$(TARGET_CONFIG)'); } catch(err) {} console.log( JSON.stringify( Object.assign( base, env ), null, 2 ) )" > $@
-	
+
 	@echo "$(GREEN)$(CHECKMARK) Config built $(if $(EXTENDED),(extended: config-$(CONFIG_ENV).json),)$(RESET)"
 
 # Build calypso bundle
-build-calypso: 
+build-calypso:
 	$(info Building calypso... )
 
-	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) npm run -s build
+	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) MINIFY_JS=$(MINIFY_JS) NODE_ARGS=$(NODE_ARGS) yarn run --silent build
 
 	@echo "$(CYAN)$(CHECKMARK) Calypso built$(RESET)"
 
@@ -100,10 +100,10 @@ build-calypso:
 calypso-dev:
 	@echo "$(CYAN)Starting Calypso...$(RESET)"
 
-	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) npm run -s start
+	@cd $(CALYPSO_DIR) && CALYPSO_ENV=$(CALYPSO_ENV) yarn run --silent start
 
 # Build desktop bundle
-build-desktop: rebuild-deps
+build-desktop-source:
 	$(info Building Desktop... )
 ifeq ($(NODE_ENV),development)
 	@echo "$(CYAN)$(CHECKMARK) Starting Desktop Server...$(RESET)"
@@ -113,11 +113,15 @@ endif
 
 	@echo "$(CYAN)$(CHECKMARK) Desktop built$(RESET)"
 
+# Build desktop bundle
+build-desktop: rebuild-deps build-desktop-source
+
 # Package App
+package: ELECTRON_BUILDER_ARGS =
 package:
 	$(info Packaging app... )
 
-	@npx electron-builder build
+	@npx electron-builder $(ELECTRON_BUILDER_ARGS) build --publish never
 
 	@echo "$(CYAN)$(CHECKMARK) App built$(RESET)"
 
@@ -136,7 +140,7 @@ ifneq (43452,$(shell node -p "require('$(SECRETS)').desktop_oauth_client_id"))
 	$(error "desktop_oauth_client_id" must be "43452" in $(SECRETS))
 endif
 endif
-else 
+else
 	$(error $(SECRETS) does not exist)
 endif
 
@@ -152,18 +156,18 @@ check-version-parity: check-node-version-parity check-electron-version-parity
 check-node-version-parity:
 ifneq ("$(CALYPSO_NODE_VERSION)", "$(CURRENT_NODE_VERSION)")
 	$(error Please ensure that wp-desktop is using NodeJS $(CALYPSO_NODE_VERSION) to match wp-calypso before continuing. 	Current NodeJS version: $(CURRENT_NODE_VERSION))
-else 
+else
 	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
 endif
 
 # Check that the electron version specified in .npmrc and package.json are consistent.
 # This is to ensure that when native dependencies have an auto-build postinstall script,
-# node-gyp will compile against Electron and not the host environment's node version 
-# required by Calypso. 
+# node-gyp will compile against Electron and not the host environment's node version
+# required by Calypso.
 check-electron-version-parity:
 ifneq ("$(NPMRC_ELECTRON_VERSION)", "$(PACKAGE_ELECTRON_VERSION)")
 	$(error Please ensure that the Electron version in package.json (set to $(PACKAGE_ELECTRON_VERSION)) is consistent with .npmrc (set to $(NPMRC_ELECTRON_VERSION)))
-else 
+else
 	@echo $(GREEN)$(CHECKMARK) Electron version in package.json matches .npmrc  \($(PACKAGE_ELECTRON_VERSION)\) $(RESET)
 endif
 
@@ -176,7 +180,7 @@ test: rebuild-deps
 	@echo "$(CYAN)Building test...$(RESET)"
 
 	@$(MAKE) desktop/config.json CONFIG_ENV=$(CONFIG_ENV)
-	
+
 	@NODE_PATH=calypso$/server$(ENV_PATH_SEP)calypso$/client npx webpack --mode production --config .$/webpack.config.test.js
 	@CALYPSO_PATH=`pwd` npx electron-mocha --inline-diffs --timeout 15000 .$/build$/desktop-test.js
 
@@ -194,3 +198,34 @@ clean:
 .PHONY:
 e2e:
 	@npm run e2e
+
+.ONESHELL:
+.PHONY:
+docker-build: $(SSH_PRIVATE_KEY_FILE)
+docker-build: NODE_VERSION = $(CALYPSO_NODE_VERSION)
+docker-build:
+	$(info Building docker image 'wpdesktop'... )
+
+# !! Ensure this file is removed regardless of success/failure !!
+# Note: Ideally we could use a build argument for this, but Docker CE on Windows
+# has trouble consuming the SSH key contents when passed as a build arg.
+	function cleanup {
+		rm "$(THIS_DIR)/id_rsa"
+	}
+	trap cleanup EXIT
+
+	cp "$(SSH_PRIVATE_KEY_FILE)" "$(THIS_DIR)/id_rsa"
+
+	@docker build --build-arg NODE_VERSION --tag wpdesktop .
+
+.PHONY:
+docker-run:
+	$(info Initializing docker container for 'wpdesktop', type 'exit' to quit)
+
+	docker run -it --rm -v "$(THIS_DIR)"://usr/src/wp-desktop -p 3000:3000 -e SHELL='//bin/bash' wpdesktop bash
+
+.PHONY:
+docker-clean:
+	$(info Removing docker image 'wpdesktop'...)
+
+	docker image rm wpdesktop

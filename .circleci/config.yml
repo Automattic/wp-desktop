@@ -64,13 +64,13 @@ references:
     restore_cache:
       name: Restore npm cache
       keys:
-        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/package-lock.json" }}
+        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/yarn.lock" }}
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
   npm_save_cache: &npm_save_cache
     save_cache:
       name: Save npm cache
-      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/package-lock.json" }}
+      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/yarn.lock" }}
       paths:
         - ~/.npm
   npm_install: &npm_install
@@ -81,7 +81,7 @@ references:
               nvm use
               npm ci
               cd calypso
-              npm ci
+              yarn install --frozen-lockfile
   install_linux_dependencies: &install_linux_dependencies
     run:
       name: Install linux dev dependencies
@@ -98,7 +98,7 @@ references:
     - calypso/config
     - calypso/package.json
     - calypso/packages
-    - calypso/package-lock.json
+    - calypso/yarn.lock
     - calypso/.nvmrc
   setup_calypso: &setup_calypso
     run:
@@ -292,7 +292,7 @@ jobs:
           root: ~/wp-desktop
           paths:
             - release
-  
+
   windows:
     executor:
       name: win/default
@@ -334,7 +334,7 @@ jobs:
                 Import-PfxCertificate -FilePath $env:CSC_LINK -CertStoreLocation Cert:\LocalMachine\Root -Password (ConvertTo-SecureString -String $env:WIN_CSC_KEY_PASSWORD -AsPlainText -Force)
 
                 # $env:CSC_KEY_PASSWORD=$env:WIN_CSC_KEY_PASSWORD
-                make package
+                make package ELECTRON_BUILDER_ARGS='-c.win.certificateSubjectName="Automattic, Inc."'
       - run:
           name: Archive win-unpacked directories
           command: |
@@ -420,9 +420,62 @@ jobs:
     steps:
       - attach_workspace:
           at: /wp-desktop
+      - run:
+          name: Cleaning Up
+          command: |
+            find release -type f -name "._*" -delete
+            rm -rf release/.icon-set
+      - persist_to_workspace:
+          root: /wp-desktop
+          paths:
+            - release
       - store_artifacts:
           path: release
 
+  publish:
+    docker:
+      - image: circleci/golang:1.12
+    working_directory: /home/circleci/wp-desktop
+    environment:
+      VERSION: << pipeline.git.tag >>
+    steps:
+      - when:
+          condition: << pipeline.git.tag >>
+          steps:
+            - checkout
+            - attach_workspace:
+                at: /home/circleci/wp-desktop
+            - run:
+                name: Install Dependencies
+                command: go get github.com/tcnksm/ghr
+            - run:
+                name: Publish Github Release
+                command: |
+                  echo "Publishing draft release for $VERSION..."
+
+                  NAME=${VERSION#?}
+
+                  chmod +x make-changelog.sh
+                  ./make-changelog.sh > CHANGELOG.md
+
+                  ghr \
+                    --token $GH_TOKEN \
+                    --username $CIRCLE_PROJECT_USERNAME \
+                    --repository $CIRCLE_PROJECT_REPONAME \
+                    --commitish $CIRCLE_SHA1 \
+                    --name $NAME \
+                    --body "$(cat CHANGELOG.md)" \
+                    --delete \
+                    --draft \
+                    $VERSION release/
+
+                  echo "Publish complete"
+      - unless:
+          condition: << pipeline.git.tag >>
+          steps:
+            - run:
+                name: Skip Publish
+                command: echo "Not on a tag, skipping publish"
 
 workflows:
   version: 2
@@ -430,6 +483,8 @@ workflows:
     jobs:
       - build:
           filters:
+            branches:
+              ignore: /tests\/.*/
             tags:
               only: /.*/
       - windows:
@@ -461,6 +516,14 @@ workflows:
             - windows
             - linux
             - mac
+          filters:
+            branches:
+              ignore: /tests\/.*/
+            tags:
+              only: /.*/
+      - publish:
+          requires:
+            - artifacts
           filters:
             branches:
               ignore: /tests\/.*/

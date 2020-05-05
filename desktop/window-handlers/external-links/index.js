@@ -4,13 +4,13 @@
  * External Dependencies
  */
 const shell = require( 'electron' ).shell;
-const debug = require( 'debug' )( 'desktop:external-links' );
 const { URL, format } = require( 'url' );
 
 /**
  * Internal dependencies
  */
 const Config = require( 'lib/config' );
+const log = require( 'lib/logger' )( 'desktop:external-links' );
 
 /**
  * Module variables
@@ -55,7 +55,7 @@ function openInBrowser( event, url ) {
 
 function replaceInternalCalypsoUrl( url ) {
 	if ( url.hostname === Config.server_host ) {
-		debug( 'Replacing internal url with public url', url.hostname, Config.wordpress_url );
+		log.info( 'Replacing internal url with public url', url.hostname, Config.wordpress_url );
 
 		url.hostname = Config.wordpress_host;
 		url.port = '';
@@ -76,7 +76,7 @@ module.exports = function( webContents ) {
 			}
 		}
 
-		debug( 'External link for ' + url );
+		log.info( `Using system default handler for URL: '${ url }'` );
 		openInBrowser( event, url );
 	} );
 
@@ -87,7 +87,7 @@ module.exports = function( webContents ) {
 			const dontOpenUrl = new URL( DONT_OPEN_IN_BROWSER[ x ] );
 
 			if ( domainAndPathSame( parsedUrl, dontOpenUrl ) ) {
-				debug( 'Open in new window for ' + url );
+				log.info( 'Open in new window for ' + url );
 
 				// When we do open another Electron window make it a bit smaller so we know it's there
 				// Having it exactly the same size means we just think the main window has changed page
@@ -103,7 +103,7 @@ module.exports = function( webContents ) {
 
 		const openUrl = format( parsedUrl );
 
-		debug( 'Open in new browser for ' + openUrl );
+		log.info( `Using system default handler for URL: ${ openUrl }` );
 		openInBrowser( event, openUrl );
 	} );
 };
