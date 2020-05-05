@@ -60,26 +60,26 @@ references:
               openssl aes-256-cbc -md md5 -d -in resource/calypso/secrets.json.enc -out calypso/config/secrets.json -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
               openssl aes-256-cbc -md md5 -d -in resource/certificates/mac.p12.enc -out resource/certificates/mac.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
               openssl aes-256-cbc -md md5 -d -in resource/certificates/win.p12.enc -out resource/certificates/win.p12 -k "${CALYPSO_SECRETS_ENCRYPTION_KEY}"
-  npm_restore_cache: &npm_restore_cache
+  restore_node_module_cache: &restore_node_module_cache
     restore_cache:
-      name: Restore npm cache
+      name: Restore Node Module Cache
       keys:
-        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/yarn.lock" }}
-        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}
+        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}-{{ checksum "calypso/yarn.lock" }}
+        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}
         - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
-  npm_save_cache: &npm_save_cache
+  save_node_module_cache: &save_node_module_cache
     save_cache:
-      name: Save npm cache
-      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "package-lock.json" }}-{{ checksum "calypso/yarn.lock" }}
+      name: Save node module cache
+      key: v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}-{{ checksum "calypso/yarn.lock" }}
       paths:
-        - ~/.npm
-  npm_install: &npm_install
+        - $HOME/.config/yarn/global
+  install_node_modules: &install_node_modules
     run:
-      name: Npm install
+      name: Install Node Modules
       command: |
               source $HOME/.nvm/nvm.sh
               nvm use
-              npm ci
+              yarn install --frozen-lockfile
               cd calypso
               yarn install --frozen-lockfile
   install_linux_dependencies: &install_linux_dependencies
@@ -221,7 +221,7 @@ references:
 jobs:
   build:
     docker:
-      - image: circleci/node:12.16.1-browsers
+      - image: circleci/node:12.16.2-browsers
     working_directory: ~/wp-desktop
     environment:
       CONFIG_ENV: release
@@ -241,9 +241,9 @@ jobs:
       - *setup_nvm
       - *save_nvm
       - *decrypt_assets
-      - *npm_restore_cache
-      - *npm_install
-      - *npm_save_cache
+      - *restore_node_module_cache
+      - *install_node_modules
+      - *save_node_module_cache
       - *build_sources
       - *test
       - *calypso_finalize_cache
@@ -256,7 +256,7 @@ jobs:
 
   linux:
     docker:
-      - image: circleci/node:12.16.1-browsers
+      - image: circleci/node:12.16.2-browsers
     working_directory: ~/wp-desktop
     steps:
       - checkout
@@ -265,15 +265,15 @@ jobs:
       - *restore_nvm
       - *setup_nvm
       - *save_nvm
-      - *npm_restore_cache
+      - *restore_node_module_cache
       - *install_linux_dependencies
       - run:
-          name: Npm install
+          name: Install Node Modules
           command: |
             source $HOME/.nvm/nvm.sh
             nvm use
-            npm ci
-      - *npm_save_cache
+            yarn install --frozen-lockfile
+      - *save_node_module_cache
       - run:
           name: Build Linux
           environment:
@@ -281,7 +281,12 @@ jobs:
           command: |
                   source $HOME/.nvm/nvm.sh
                   nvm use
-                  make package
+
+                  # Build all artifacts only when project config changes.
+                  # Otherwise only build application executable required for end-to-end testing.
+                  ! git diff --name-only origin/develop...HEAD | grep -E -q 'package.json|yarn.lock' && ELECTRON_BUILDER_ARGS='-c.linux.target=dir'
+
+                  make package ELECTRON_BUILDER_ARGS=$ELECTRON_BUILDER_ARGS
       - run:
           name: Release cleanup
           command: |
@@ -308,21 +313,24 @@ jobs:
           name: Install make
           command: cinst make
       - run:
-          name: Install node version
+          name: Install Node Version
           command: |
                   $NODE_VERSION = Get-Content .\calypso\.nvmrc
                   nvm install $NODE_VERSION
                   nvm use $NODE_VERSION
       - run:
-          name: Npm install
+          name: Install Yarn
+          command: npm install -g yarn
+      - run:
+          name: Install Node Modules
           command: |
                 # The release of nodejs currently being used by Calypso includes a buggy version
                 # of node-gyp for Windows. This workaround unblocks Windows builds until Calypso node
                 # includes node-gyp >= 6.0.1, at which point this snippet and node-gyp in wp-desktop
                 # devDependencies can be reverted.
                 # Ref: https://github.com/nodejs/node-gyp/issues/1933
-                npm config set node_gyp "$(Get-Location)\node_modules\node-gyp\bin\node-gyp.js"
-                npm ci
+                yarn config set node_gyp "$(Get-Location)\node_modules\node-gyp\bin\node-gyp.js"
+                yarn install --frozen-lockfile
       - run:
           name: Build windows
           command: |
@@ -334,12 +342,25 @@ jobs:
                 Import-PfxCertificate -FilePath $env:CSC_LINK -CertStoreLocation Cert:\LocalMachine\Root -Password (ConvertTo-SecureString -String $env:WIN_CSC_KEY_PASSWORD -AsPlainText -Force)
 
                 # $env:CSC_KEY_PASSWORD=$env:WIN_CSC_KEY_PASSWORD
-                make package ELECTRON_BUILDER_ARGS='-c.win.certificateSubjectName="Automattic, Inc."'
+
+                # Build all artifacts only when project config changes.
+                # Otherwise only build application executable required for end-to-end testing.
+                $env:ARG1='-c.win.certificateSubjectName=""Automattic, Inc.""'
+                If ( -Not $(git diff --name-only origin/develop...HEAD | Select-String -Pattern package.json,yarn.lock) ) { $env:ARG2='-c.win.target=dir' }
+
+                make package ELECTRON_BUILDER_ARGS=$($env:ARG1,$env:ARG2 -join " ")
       - run:
           name: Archive win-unpacked directories
           command: |
-                tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
-                tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
+                # Archive only when both `-unpacked` targets have been built
+                # (as triggered by project config change or dependency update).
+                If ( $(Test-Path -Path release\win-unpacked) -AND $(Test-Path -Path release\win-ia32-unpacked) ) {
+                  tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
+                  tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
+                } else {
+                  echo "Project configuration and dependencies are unchanged: only some of the project's artifacts have been built."
+                  echo "Skipping tar archive..."
+                }
       - run:
           name: Release cleanup
           command: |
@@ -364,14 +385,14 @@ jobs:
       - *restore_nvm
       - *setup_nvm
       - *save_nvm
-      - *npm_restore_cache
+      - *restore_node_module_cache
       - run:
-          name: Npm install
+          name: Install Node Modules
           command: |
             source $HOME/.nvm/nvm.sh
             nvm use
-            npm ci
-      - *npm_save_cache
+            yarn install --frozen-lockfile
+      - *save_node_module_cache
       - run:
           name: Build Mac
           no_output_timeout: 30m
@@ -382,7 +403,12 @@ jobs:
                   set +e
                   source $HOME/.nvm/nvm.sh
                   nvm use
-                  make package
+
+                  # Build all artifacts only when project config changes.
+                  # Otherwise only build application executable required for end-to-end testing.
+                  ! git diff --name-only origin/develop...HEAD | grep -E -q 'package.json|yarn.lock' && ELECTRON_BUILDER_ARGS='-c.mac.target=dir'
+
+                  make package ELECTRON_BUILDER_ARGS=$ELECTRON_BUILDER_ARGS
       # Temporarily disable the test
       # TODO: Fixme – seems to be an issue with `portscanner`
       # - run:
