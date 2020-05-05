@@ -2,14 +2,15 @@ titleOnly: true
 types:
     - feat
     - fix
-    - improvement
+    - enhancement
     - docs
     - style
     - refactor
     - perf
-    - test
+    - tests
     - build
     - ci
     - chore
     - revert
-    - merge
+    - calypso
+
