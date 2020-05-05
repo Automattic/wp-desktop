@@ -183,7 +183,7 @@ references:
               "payload": {
                 "outcome": "'"success"'",
                 "status": "'"success"'",
-                "branch": "'"$BRANCHNAME"'",
+                "branch": "'"$CIRCLE_BRANCH"'",
                 "build_url": "'"$CIRCLE_BUILD_URL"'",
                 "build_parameters": {
                   "build_num": '"$CIRCLE_BUILD_NUM"',
@@ -198,24 +198,24 @@ references:
       when: on_fail
       command: |
         set +o errexit
-        if [[ $BRANCHNAME != "tests/"* ]]; then
+        if [[ $CIRCLE_BRANCH != "tests/"* ]]; then
           exit
         fi
         curl -X POST "https://a8c-gh-desktop-bridge.go-vip.co/circleciwebhook" \
         -H 'Cache-Control: no-cache'	\
         -H 'Content-Type: application/json'	\
         -d '{
-          "payload": {
-            "outcome": "'"failed"'",
-            "status": "'"failed"'",
-            "branch": "'"$BRANCHNAME"'",
-            "build_url": "'"$CIRCLE_BUILD_URL"'",
-            "build_parameters": {
-              "build_num": '"$CIRCLE_BUILD_NUM"',
-              "sha": "'"$sha"'",
-              "calypsoProject": "'"$calypsoProject"'"
+            "payload": {
+              "outcome": "'"failed"'",
+              "status": "'"failed"'",
+              "branch": "'"$CIRCLE_BRANCH"'",
+              "build_url": "'"$CIRCLE_BUILD_URL"'",
+              "build_parameters": {
+                "build_num": '"$CIRCLE_BUILD_NUM"',
+                "sha": "'"$sha"'",
+                "calypsoProject": "'"$calypsoProject"'"
+              }
             }
-          }
         }'
 
 jobs:
@@ -227,7 +227,6 @@ jobs:
       CONFIG_ENV: release
       MINIFY_JS: true
       NODE_ARGS: --max_old_space_size=3072
-      BRANCHNAME: << pipeline.git.branch >>
       CALYPSO_HASH: << pipeline.parameters.CALYPSO_HASH >>
       sha: << pipeline.parameters.sha >>
       calypsoProject: << pipeline.parameters.calypsoProject >>
@@ -248,7 +247,6 @@ jobs:
       - *test
       - *calypso_finalize_cache
       - *calypso_save_cache
-      - *webhook_notify_success
       - *webhook_notify_failed
       - persist_to_workspace:
           root: ~/wp-desktop
@@ -378,6 +376,9 @@ jobs:
       xcode: "10.1.0"
     shell: /bin/bash --login
     working_directory: /Users/distiller/wp-desktop
+    environment:
+      sha: << pipeline.parameters.sha >>
+      calypsoProject: << pipeline.parameters.calypsoProject >>
     steps:
       - checkout
       - attach_workspace:
@@ -430,6 +431,8 @@ jobs:
                   set +e
                   rm -rf release/github
                   rm -rf release/mac
+      - *webhook_notify_success
+      - *webhook_notify_failed
       - persist_to_workspace:
           root: /Users/distiller/wp-desktop
           paths:
@@ -559,6 +562,12 @@ workflows:
     when: << pipeline.parameters.isCalypsoCanaryRun >>
     jobs:
       - build:
+          filters:
+            branches:
+              only: /tests\/.*/
+      - mac:
+          requires:
+            - build
           filters:
             branches:
               only: /tests\/.*/
