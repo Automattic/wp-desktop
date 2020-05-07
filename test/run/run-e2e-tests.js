@@ -3,12 +3,39 @@
 /* eslint-disable no-process-exit*/
 
 const path = require( 'path' );
+const electron = require( 'electron' );
 const { promisify } = require( 'util' );
 const { openSync, mkdirSync } = require( 'fs' );
 const { execSync, spawn } = require( 'child_process' );
 
 const PROJECT_DIR = path.join( __dirname, '../../' );
-const BUILT_APP_DIR = path.join( PROJECT_DIR, 'release', 'mac', 'WordPress.com.app', 'Contents', 'MacOS' );
+
+let APP_ARGS = [
+	'--disable-renderer-backgrounding',
+	'--disable-http-cache',
+	'--start-maximized',
+	'--remote-debugging-port=9222'
+]
+
+let BUILT_APP_DIR;
+let SPAWN_CMD;
+let CWD;
+
+switch ( process.platform ) {
+	case 'darwin':
+		BUILT_APP_DIR = path.join( PROJECT_DIR, 'release', 'mac', 'WordPress.com.app', 'Contents', 'MacOS' );
+		CWD = BUILT_APP_DIR;
+		SPAWN_CMD = './WordPress.com';
+		break;
+	case 'linux':
+		BUILT_APP_DIR = path.join( PROJECT_DIR, 'release', 'linux-unpacked', 'resources', 'app' );
+		APP_ARGS.unshift( BUILT_APP_DIR );
+		CWD = path.dirname( electron );
+		SPAWN_CMD = './electron';
+		break;
+	default:
+		throw 'unsupported platform!'
+}
 
 function spawnDetached( cwd, command, args, output, env ) {
 	const stdio = output ? [ 'ignore', output, output ] : null;
@@ -74,12 +101,8 @@ async function run() {
 		const timestamp = ( new Date() ).toJSON().replace( /:/g, '-' );
 		const { appLog, driverLog } = initLogs( timestamp );
 
-		app = spawnDetached( BUILT_APP_DIR, './WordPress.com', [
-			'--disable-renderer-backgrounding',
-			'--disable-http-cache',
-			'--start-maximized',
-			'--remote-debugging-port=9222',
-		], null, { WP_DEBUG_LOG: appLog.path, DEBUG: true } );
+		const parentEnv = process.env;
+		app = spawnDetached( CWD, SPAWN_CMD, APP_ARGS, null, { WP_DEBUG_LOG: appLog.path, DEBUG: true, ...parentEnv } );
 
 		await delay( 5000 );
 

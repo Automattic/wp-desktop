@@ -286,6 +286,9 @@ jobs:
 
                   make package ELECTRON_BUILDER_ARGS=$ELECTRON_BUILDER_ARGS
       - run:
+          name: e2e Tests
+          command: make e2e
+      - run:
           name: Release cleanup
           command: |
                   set +e
