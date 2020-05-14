@@ -25,8 +25,8 @@ references:
     restore_cache:
       name: Restoring NVM cache
       keys:
-        - v1-nvm-0-33-11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
-        - v1-nvm-0-33-11-{{ arch }}
+        - v1-nvm-0-33-11-{{ .Environment.CACHE_VERSION }}-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
+        - v1-nvm-0-33-11-{{ .Environment.CACHE_VERSION }}-{{ arch }}
   setup_nvm: &setup_nvm
     run:
       name: Install nvm and calypso node version
@@ -50,7 +50,7 @@ references:
   save_nvm: &save_nvm
     save_cache:
       name: Saving NVM cache
-      key: v1-nvm-0-33-11-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
+      key: v1-nvm-0-33-11-{{ .Environment.CACHE_VERSION }}-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
       paths:
         - ~/.nvm
   decrypt_assets: &decrypt_assets
@@ -64,9 +64,9 @@ references:
     restore_cache:
       name: Restore Node Module Cache
       keys:
-        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}-{{ checksum "calypso/yarn.lock" }}
-        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}
-        - v2-npm-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
+        - v2-npm-{{ .Environment.CACHE_VERSION }}-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}-{{ checksum "calypso/yarn.lock" }}
+        - v2-npm-{{ .Environment.CACHE_VERSION }}-{{ arch }}-{{ checksum "calypso/.nvmrc" }}-{{ checksum "yarn.lock" }}
+        - v2-npm-{{ .Environment.CACHE_VERSION }}-{{ arch }}-{{ checksum "calypso/.nvmrc" }}
   save_node_module_cache: &save_node_module_cache
     save_cache:
       name: Save node module cache
@@ -126,7 +126,7 @@ references:
     restore_cache:
       name: Restore calypso cache
       keys:
-        - v6-calypso-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "calypso-current-hash" }}
+        - v6-calypso-{{ .Environment.CACHE_VERSION }}-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "calypso-current-hash" }}
   calypso_finalize_cache: &calypso_finalize_cache
     run:
       name: Finalize calypso cache
@@ -137,7 +137,7 @@ references:
   calypso_save_cache: &calypso_save_cache
     save_cache:
       name: Save calypso cache
-      key: v6-calypso-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "calypso-current-hash" }}
+      key: v6-calypso-{{ .Environment.CACHE_VERSION }}-{{ .Environment.CIRCLE_JOB }}-{{ arch }}-{{ checksum "calypso-current-hash" }}
       paths: *app_cache_paths
   build_sources: &build_sources
     run:
