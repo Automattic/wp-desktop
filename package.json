@@ -116,9 +116,6 @@
       "entitlements": "./resource/macos/entitlements.mac.plist",
       "entitlementsInherit": "./resource/macos/entitlements.mac.inherit.plist",
       "hardenedRuntime": true,
-      "extendInfo": {
-        "LSFileQuarantineEnabled": true
-      },
       "artifactName": "wordpress.com-macOS-app-${version}.${ext}"
     },
     "dmg": {
