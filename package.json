@@ -1,6 +1,6 @@
 {
   "name": "WordPressDesktop",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
@@ -116,9 +116,6 @@
       "entitlements": "./resource/macos/entitlements.mac.plist",
       "entitlementsInherit": "./resource/macos/entitlements.mac.inherit.plist",
       "hardenedRuntime": true,
-      "extendInfo": {
-        "LSFileQuarantineEnabled": true
-      },
       "artifactName": "wordpress.com-macOS-app-${version}.${ext}"
     },
     "dmg": {
