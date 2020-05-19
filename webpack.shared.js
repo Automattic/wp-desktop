@@ -56,7 +56,6 @@ module.exports = {
 						outputPath: 'images',
 						publicPath: '/calypso/images/',
 						emitFile: false,
-						esModules: true,
 					},
 				},
 			},
