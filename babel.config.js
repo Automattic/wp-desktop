@@ -4,7 +4,7 @@ module.exports = {
 	presets: [
 		[
 			'@babel/env',
-			{ targets: { electron: electronVersion }, useBuiltIns: 'entry', corejs: '3.6', modules: false },
+			{ targets: { electron: electronVersion }, useBuiltIns: 'entry', corejs: '3.6' },
 		],
 		'@babel/react',
 		'@babel/preset-typescript',
