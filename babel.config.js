@@ -4,7 +4,12 @@ module.exports = {
 	presets: [
 		[
 			'@babel/env',
-			{ targets: { electron: electronVersion }, useBuiltIns: 'entry', corejs: '3.6' },
+			{
+				targets: { electron: electronVersion },
+				modules: 'commonjs',
+				useBuiltIns: 'entry',
+				corejs: '3.6',
+			},
 		],
 		'@babel/react',
 		'@babel/preset-typescript',
@@ -14,6 +19,5 @@ module.exports = {
 		'@babel/plugin-proposal-nullish-coalescing-operator',
 		'@babel/plugin-proposal-optional-chaining',
 		'@babel/plugin-syntax-dynamic-import',
-		'babel-plugin-transform-es2015-modules-commonjs',
 	],
 };
