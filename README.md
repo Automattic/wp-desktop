@@ -31,7 +31,7 @@ The app is split between Electron code and Calypso code, and so the [development
 
 To manually start each platform's _pre-packaged_ executable used for end-to-end testing:
 
-- Mac: Double-click `WordPress.com.app`
+- Mac: Double-click `WordPress.com.app` (extract with [`ditto`](##Extracting-Published-ZIP-Archive-in-MacOS-10.15-(Catalina)))
 - Windows: Double-click WordPress.com.exe in `win-unpacked` directory
 - Linux: `npx electron /path/to/linux-unpacked/resources/app`
 
