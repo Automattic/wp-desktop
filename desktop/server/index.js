@@ -13,7 +13,7 @@ const path = require( 'path' );
  * Internal dependencies
  */
 const Config = require( 'lib/config' );
-const server = require( './server' );
+const { start } = require( './server' );
 const Settings = require( 'lib/settings' );
 const settingConstants = require( 'lib/settings/constants' );
 const cookieAuth = require( 'lib/cookie-auth' );
@@ -107,7 +107,7 @@ function showAppWindow() {
 function startServer( started_cb ) {
 	log.info( 'App is ready, starting server' );
 
-	server.start( app, function() {
+	start( app, function() {
 		started_cb( showAppWindow() );
 	} );
 }
