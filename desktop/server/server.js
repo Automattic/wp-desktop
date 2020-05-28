@@ -4,12 +4,12 @@
 import { dialog } from 'electron';
 import http from 'http';
 import portscanner from 'portscanner';
-import logFactory from 'lib/logger';
 
 /**
  * Internal dependencies
  */
 import Config from 'lib/config';
+import logFactory from 'lib/logger';
 import boot from 'server/boot';
 
 const log = logFactory( 'desktop:server' );
