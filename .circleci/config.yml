@@ -436,7 +436,7 @@ jobs:
           name: Persist Mac Executable
           command: |
                   # If this isn't a full artifact build, ensure to persist the built application for inspection
-                  test -f release/*.zip || ditto -ck --rsrc --sequesterRsrc release/mac/WordPress.com.app release/mac.app.zip
+                  test -f release/*.zip || ditto -ck --rsrc --sequesterRsrc release/mac release/mac.app.zip
       - run:
           name: Release cleanup
           command: |
