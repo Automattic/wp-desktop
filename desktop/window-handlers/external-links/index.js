@@ -3,13 +3,15 @@
 /**
  * External Dependencies
  */
-const shell = require( 'electron' ).shell;
+const { ipcMain: ipc } = require( 'electron' );
 const { URL, format } = require( 'url' );
 
 /**
  * Internal dependencies
  */
 const Config = require( 'lib/config' );
+const { handleJetpackEnableSSO, handleUndefined } = require( './editor' );
+const openInBrowser = require( './open-in-browser' );
 const log = require( 'lib/logger' )( 'desktop:external-links' );
 
 /**
@@ -35,24 +37,6 @@ const DONT_OPEN_IN_BROWSER = [
 
 const domainAndPathSame = ( first, second ) => first.hostname === second.hostname && ( first.pathname === second.pathname || second.pathname === '/*' );
 
-function isValidBrowserUrl( url ) {
-	const parsedUrl = new URL( url );
-
-	if ( parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:' ) {
-		return url;
-	}
-
-	return false;
-}
-
-function openInBrowser( event, url ) {
-	if ( isValidBrowserUrl( url ) ) {
-		shell.openExternal( url );
-	}
-
-	event.preventDefault();
-}
-
 function replaceInternalCalypsoUrl( url ) {
 	if ( url.hostname === Config.server_host ) {
 		log.info( 'Replacing internal url with public url', url.hostname, Config.wordpress_url );
@@ -64,7 +48,9 @@ function replaceInternalCalypsoUrl( url ) {
 	return url;
 }
 
-module.exports = function( webContents ) {
+module.exports = function( mainWindow ) {
+	const webContents = mainWindow.webContents;
+
 	webContents.on( 'will-navigate', function( event, url ) {
 		const parsedUrl = new URL( url );
 
@@ -76,7 +62,6 @@ module.exports = function( webContents ) {
 			}
 		}
 
-		log.info( `Using system default handler for URL: '${ url }'` );
 		openInBrowser( event, url );
 	} );
 
@@ -103,7 +88,18 @@ module.exports = function( webContents ) {
 
 		const openUrl = format( parsedUrl );
 
-		log.info( `Using system default handler for URL: ${ openUrl }` );
 		openInBrowser( event, openUrl );
+	} );
+
+	ipc.on( 'cannot-use-editor', ( _, info ) => {
+		log.info( 'Cannot open editor for site: ', info )
+		const { reason } = info;
+		switch ( reason ) {
+			case 'REASON_BLOCK_EDITOR_JETPACK_REQUIRES_SSO':
+				handleJetpackEnableSSO( mainWindow, info );
+				break;
+			default:
+				handleUndefined( mainWindow, info );
+		}
 	} );
 };
