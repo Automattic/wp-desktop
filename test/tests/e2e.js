@@ -98,6 +98,7 @@ describe( 'Publish a New Post', function() {
 	} );
 } );
 
+// FIXME: flakey, should fix
 describe.skip( 'Can Log Out', function() {
 	this.timeout( 30000 );
 
@@ -116,6 +117,7 @@ describe.skip( 'Can Log Out', function() {
 	} );
 } );
 
+// FIXME: flakey, should fix
 describe.skip( 'Can Sign up', function() {
 	this.timeout( 90000 );
 	const blogName = dataHelper.getNewBlogName();
