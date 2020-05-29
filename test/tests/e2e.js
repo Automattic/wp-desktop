@@ -98,7 +98,7 @@ describe( 'Publish a New Post', function() {
 	} );
 } );
 
-describe( 'Can Log Out', function() {
+describe.skip( 'Can Log Out', function() {
 	this.timeout( 30000 );
 
 	step( 'Can view profile to log out', async function() {
