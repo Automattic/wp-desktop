@@ -27,7 +27,7 @@ module.exports = function( finished_cb ) {
 		require( './window-handlers/failed-to-load' )( mainWindow );
 		require( './window-handlers/login-status' )( mainWindow );
 		require( './window-handlers/notifications' )( mainWindow );
-		require( './window-handlers/external-links' )( mainWindow.webContents );
+		require( './window-handlers/external-links' )( mainWindow );
 		require( './window-handlers/window-saver' )( mainWindow );
 		require( './window-handlers/debug-tools' )( mainWindow );
 

@@ -24,7 +24,7 @@ git_log_format="%s"
 
 # ignore types: chore, docs, style, merge
 # this can be amended based on what types should be included/excluded from the release notes
-git_log_incl_types="feat|fix|improvement|refactor|perf|test|build|ci|revert"
+git_log_incl_types="feat|fix|enhancement|refactor|perf|tests|build|ci|revert|calypso"
 
 # Filter commits that satisfy conventional commit format
 # See: https://www.conventionalcommits.org/
@@ -32,20 +32,21 @@ commit_filter="^($git_log_incl_types)(\([a-z]+\))?:\s.+"
 
 echo "## What's Changed"
 
-# Fill and sort changelog
+# Fill and sort changelog (final sort in commit-date order, then by type)
 git_log=$(git log --oneline --pretty=format:"$git_log_format" $last_stable_tag...$current_tag |
   grep -E "$commit_filter" |
-  sort -k 1)
+  sort -s -k 1,1)
 
 # Map of each type to its human-readable heading
 type_heading_map=("feat:New Features"
   "fix:Fixes"
-  "improvement:Improvements"
+  "enhancement:Enhancements"
   "refactor:Refactors"
   "perf:Performance Improvements"
-  "test:testing"
+  "tests:Testing"
   "build:Build"
   "ci:Continous Integration"
+  "calypso:Calypso"
   "revert:Reverts")
 
 # Returns the human-readable heading for a type
@@ -78,9 +79,19 @@ function make_first_letter_upper() {
 
 last_type=""
 last_scope=""
+logged_calypso=0
 echo "$git_log" | while IFS=$'\r' read change; do
 
   type=$(echo "$change" | egrep -o '^[^:(]+')
+  # Changes are sorted in descending commit date order.
+  # Keep only the latest calypso update.
+  if [ "$type" == "calypso" ]; then
+    if [ $logged_calypso == 1 ]; then
+      continue;
+    fi
+    logged_calypso=1;
+  fi
+
   if [ "$last_type" != "$type" ]; then
     last_type=$type
     last_scope=""

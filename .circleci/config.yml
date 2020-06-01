@@ -286,6 +286,14 @@ jobs:
 
                   make package ELECTRON_BUILDER_ARGS=$ELECTRON_BUILDER_ARGS
       - run:
+          name: e2e Tests
+          command: make e2e
+      - run:
+          name: Persist Linux Executable
+          command: |
+                  # If this isn't a full artifact build, ensure to persist the built application for inspection
+                  test -f release/*.tar.gz || tar -zcf release/linux-unpacked.tar.gz release/linux-unpacked
+      - run:
           name: Release cleanup
           command: |
                   set +e
@@ -350,14 +358,13 @@ jobs:
       - run:
           name: Archive win-unpacked directories
           command: |
-                # Archive only when both `-unpacked` targets have been built
-                # (as triggered by project config change or dependency update).
-                If ( $(Test-Path -Path release\win-unpacked) -AND $(Test-Path -Path release\win-ia32-unpacked) ) {
-                  tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
+                tar -zcf release/win-unpacked-x64.tar.gz release/win-unpacked
+
+                # If this isn't a full artifact build, the win-ia32-unpacked executable will not be generated
+                If ( $(Test-Path -Path release\win-ia32-unpacked) ) {
                   tar -zcf release/win-unpacked-ia32.tar.gz release/win-ia32-unpacked
                 } else {
-                  echo "Project configuration and dependencies are unchanged: only some of the project's artifacts have been built."
-                  echo "Skipping tar archive..."
+                  echo "'release\win-ia32-unpacked' not built, skipping tar archive..."
                 }
       - run:
           name: Release cleanup
@@ -425,6 +432,11 @@ jobs:
                   killall UserNotificationCenter
 
                   make e2e
+      - run:
+          name: Persist Mac Executable
+          command: |
+                  # If this isn't a full artifact build, ensure to persist the built application for inspection
+                  test -f release/*.zip || ditto -ck --rsrc --sequesterRsrc release/mac/WordPress.com.app release/mac.app.zip
       - run:
           name: Release cleanup
           command: |
