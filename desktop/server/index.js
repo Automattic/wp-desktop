@@ -39,6 +39,7 @@ function showAppWindow() {
 	log.info( 'Loading app (' + appUrl + ') in mainWindow' );
 
 	let config = Settings.getSettingGroup( Config.mainWindow, 'window', [ 'x', 'y', 'width', 'height' ] );
+	config.webPreferences.spellcheck = Settings.getSetting( 'spellcheck-enabled' );
 	config.webPreferences.preload = preloadFile;
 
 	mainWindow = new BrowserWindow( config );
