@@ -150,7 +150,7 @@ CALYPSO_NODE_VERSION := $(shell cat $(THIS_DIR)/calypso/.nvmrc | sed -n 's/v\{0,
 CURRENT_NODE_VERSION := $(shell node --version | sed -n 's/v\{0,1\}\(.*\)/\1/p')
 
 .PHONY: check-version-parity
-check-version-parity: check-node-version-parity check-electron-version-parity
+check-version-parity: check-node-version-parity
 
 # Check that the current node & npm versions are the versions Calypso expects to ensure it is built safely.
 check-node-version-parity:
@@ -158,17 +158,6 @@ ifneq ("$(CALYPSO_NODE_VERSION)", "$(CURRENT_NODE_VERSION)")
 	$(error Please ensure that wp-desktop is using NodeJS $(CALYPSO_NODE_VERSION) to match wp-calypso before continuing. 	Current NodeJS version: $(CURRENT_NODE_VERSION))
 else
 	@echo $(GREEN)$(CHECKMARK) Current NodeJS version is on par with Calypso \($(CALYPSO_NODE_VERSION)\) $(RESET)
-endif
-
-# Check that the electron version specified in .npmrc and package.json are consistent.
-# This is to ensure that when native dependencies have an auto-build postinstall script,
-# node-gyp will compile against Electron and not the host environment's node version
-# required by Calypso.
-check-electron-version-parity:
-ifneq ("$(NPMRC_ELECTRON_VERSION)", "$(PACKAGE_ELECTRON_VERSION)")
-	$(error Please ensure that the Electron version in package.json (set to $(PACKAGE_ELECTRON_VERSION)) is consistent with .npmrc (set to $(NPMRC_ELECTRON_VERSION)))
-else
-	@echo $(GREEN)$(CHECKMARK) Electron version in package.json matches .npmrc  \($(PACKAGE_ELECTRON_VERSION)\) $(RESET)
 endif
 
 .PHONY: rebuild-deps

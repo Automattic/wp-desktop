@@ -330,12 +330,6 @@ jobs:
       - run:
           name: Install Node Modules
           command: |
-                # The release of nodejs currently being used by Calypso includes a buggy version
-                # of node-gyp for Windows. This workaround unblocks Windows builds until Calypso node
-                # includes node-gyp >= 6.0.1, at which point this snippet and node-gyp in wp-desktop
-                # devDependencies can be reverted.
-                # Ref: https://github.com/nodejs/node-gyp/issues/1933
-                yarn config set node_gyp "$(Get-Location)\node_modules\node-gyp\bin\node-gyp.js"
                 yarn install --frozen-lockfile
       - run:
           name: Build windows
