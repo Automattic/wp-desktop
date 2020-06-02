@@ -32,26 +32,22 @@ const windows = {
 	about: {
 		file: 'about.html',
 		config: 'aboutWindow',
-		preload: path.resolve( __dirname, '..', '..', '..', 'public_desktop', 'preload.js' ),
 		handle: null
 	},
 	preferences: {
 		file: 'preferences.html',
 		config: 'preferencesWindow',
-		preload: path.resolve( __dirname, '..', '..', '..', 'public_desktop', 'preload.js' ),
 		handle: null
 	},
 	secret: {
 		file: 'secret.html',
 		config: 'secretWindow',
-		preload: null,
 		handle: null
 	},
 	wapuu: {
 		file: 'wapuu.html',
 		config: 'secretWindow',
 		full: true,
-		preload: null,
 		handle: null
 	}
 };
