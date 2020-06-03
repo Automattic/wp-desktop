@@ -5986,10 +5986,10 @@ prepend-http@^2.0.0:
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=
 
-"prettier@npm:wp-prettier@1.18.2":
-  version "1.18.2"
-  resolved "https://registry.yarnpkg.com/wp-prettier/-/wp-prettier-1.18.2.tgz#d925869062173a217f4921d9a3d2ed59a78e2d9d"
-  integrity sha512-OvmJZJ6j6KF+CqnNGPLRupSLt6zlFG8/D9dJL21eVJwad1HHEq5cGgeXqboloxE7DjtglkKd/6CEvO1dvqfQdA==
+"prettier@npm:wp-prettier@1.19.1":
+  version "1.19.1"
+  resolved "https://registry.yarnpkg.com/wp-prettier/-/wp-prettier-1.19.1.tgz#d1c20172c1783ae882df1c26e534cde1cd340366"
+  integrity sha512-mqAC2r1NDmRjG+z3KCJ/i61tycKlmADIjxnDhQab+KBxSAGbF/W7/zwB2guy/ypIeKrrftNsIYkNZZQKf3vJcg==
 
 pretty-bytes@^1.0.2:
   version "1.0.4"
