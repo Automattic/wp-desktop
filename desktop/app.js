@@ -30,6 +30,7 @@ module.exports = function( finished_cb ) {
 		require( './window-handlers/external-links' )( mainWindow );
 		require( './window-handlers/window-saver' )( mainWindow );
 		require( './window-handlers/debug-tools' )( mainWindow );
+		require( './window-handlers/spellcheck' )( mainWindow );
 
 		if ( typeof finished_cb !== 'undefined' ) {
 			finished_cb( mainWindow );

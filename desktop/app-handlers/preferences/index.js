@@ -15,7 +15,7 @@ const Settings = require( 'lib/settings' );
 function promptForRestart( title, message ) {
 	// Warn user they need to restart the app
 	dialog.showMessageBox( {
-		buttons: [ 'Ok' ],
+		buttons: [ 'OK' ],
 		title: title,
 		message: message,
 		detail: 'The app needs to be restarted for this to take effect.'

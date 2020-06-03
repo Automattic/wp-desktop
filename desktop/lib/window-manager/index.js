@@ -6,6 +6,7 @@
 const electron = require( 'electron' );
 const BrowserWindow = electron.BrowserWindow;
 const app = electron.app;
+const path = require( 'path' );
 
 // HACK(sendhilp, 9/6/2016): The reason for this strange importing is there seems to be a
 // bug post Electron 1.1.1 in which attempting to access electron.screen
@@ -63,18 +64,27 @@ function setDimensions( config ) {
 	return config;
 }
 
-function openWindow( windowName ) {
+async function openWindow( windowName ) {
 	if ( windows[windowName] ) {
 		let settings = windows[windowName];
 
 		if ( settings.handle === null ) {
-			Config[settings.config] = setDimensions( Config[settings.config] );
+			let config = Config[settings.config];
+			config = setDimensions( config );
 
-			windows[windowName].handle = new BrowserWindow( Config[settings.config] );
-			windows[windowName].handle.setMenuBarVisibility( false );
-			windows[windowName].handle.webContents.session.setProxy( { proxyRules: 'direct://' }, function() {
-				windows[windowName].handle.loadURL( Config.server_url + ':' + Config.server_port + '/desktop/' + settings.file );
+			// nodeIntegration is necessary to support usage of `require` in preload and HTML scripts.
+			// FIXME: Refactor preload to use contextBridge instead (contextIsolation: true, nodeIntegration: false).
+			const webPreferences = Object.assign( {}, config.webPreferences, {
+				contextIsolation: false,
+				nodeIntegration: true,
+				preload: path.resolve( __dirname, '..', '..', '..', 'public_desktop', 'preload.js' ),
 			} );
+			config.webPreferences = webPreferences;
+
+			windows[windowName].handle = new BrowserWindow( config );
+			windows[windowName].handle.setMenuBarVisibility( false );
+			await windows[windowName].handle.webContents.session.setProxy( { proxyRules: 'direct://' } );
+			windows[windowName].handle.loadURL( Config.server_url + ':' + Config.server_port + '/desktop/' + settings.file );
 
 			windows[windowName].handle.on( 'closed', function() {
 				windows[windowName].handle = null;
@@ -82,7 +92,7 @@ function openWindow( windowName ) {
 
 			// TODO: add a check to disable navigation events only for drag & drop
 			// https://github.com/Automattic/wp-desktop/pull/464#discussion_r198071749
-			if ( Config[settings.config].wpDragAndDropDisabled ) {
+			if ( config.wpDragAndDropDisabled ) {
 				windows[windowName].handle.webContents.on( 'will-navigate', function( event ) {
 					event.preventDefault();
 					return false;
