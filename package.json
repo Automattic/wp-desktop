@@ -41,7 +41,7 @@
     "babel-eslint": "10.1.0",
     "babel-loader": "8.1.0",
     "chai": "3.5.0",
-    "chalk": "2.3.1",
+    "chalk": "2.4.2",
     "check-node-version": "3.2.0",
     "concurrently": "3.5.1",
     "electron": "8.3.0",
