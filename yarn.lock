@@ -2895,10 +2895,10 @@ electron-download@^4.1.1:
     semver "^5.4.1"
     sumchecker "^2.0.2"
 
-electron-fetch@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/electron-fetch/-/electron-fetch-1.2.1.tgz#08a033a23cc47febf05457f3e0e0a26598d02b95"
-  integrity sha512-pQy0el/vxu30sL9JjXss8yZL+ztRnmioffPQsLL4UYnfSUFTuGBlgCPCxxKYJV7y52WfaIEZQ9tlbac1YHrH0w==
+electron-fetch@1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/electron-fetch/-/electron-fetch-1.4.0.tgz#a830d400f8ad358acba9b3c591e6ed477916bac5"
+  integrity sha512-rednYIpMbuzekTroNndQOFl95c4I/wMEbH9jxGoDEoKrM07b7FWydy6I3pbiAbCxDcYpmHtzMY6ykyLagR7JHw==
   dependencies:
     encoding "^0.1.12"
 
