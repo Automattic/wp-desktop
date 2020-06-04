@@ -437,6 +437,72 @@ jobs:
                   set +e
                   rm -rf release/github
                   rm -rf release/mac
+      - persist_to_workspace:
+          root: /Users/distiller/wp-desktop
+          paths:
+            - release
+      - store_artifacts:
+          path: screenshots/
+      - store_artifacts:
+          path: test/logs/
+
+  mac-canary:
+    macos:
+      xcode: "10.1.0"
+    shell: /bin/bash --login
+    working_directory: /Users/distiller/wp-desktop
+    environment:
+      sha: << pipeline.parameters.sha >>
+      calypsoProject: << pipeline.parameters.calypsoProject >>
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /Users/distiller/wp-desktop
+      - *restore_nvm
+      - *setup_nvm
+      - *save_nvm
+      - *restore_node_module_cache
+      - run:
+          name: Install Node Modules
+          command: |
+            source $HOME/.nvm/nvm.sh
+            nvm use
+            yarn install --frozen-lockfile
+      - *save_node_module_cache
+      - run:
+          name: Build Mac
+          no_output_timeout: 30m
+          environment:
+            CSC_LINK: resource/certificates/mac.p12
+            CSC_FOR_PULL_REQUEST: true # don't do this in production
+          command: |
+                  set +e
+                  source $HOME/.nvm/nvm.sh
+                  nvm use
+
+                  # Build all artifacts only when project config changes.
+                  # Otherwise only build application executable required for end-to-end testing.
+                  ! git diff --name-only origin/develop...HEAD | grep -E -q 'package.json|yarn.lock' && ELECTRON_BUILDER_ARGS='-c.mac.target=dir'
+
+                  make package ELECTRON_BUILDER_ARGS=$ELECTRON_BUILDER_ARGS
+      - run:
+          name: e2e Tests
+          command: |
+                  killall touristd
+                  killall UserNotificationCenter
+
+                  make e2e
+      - run:
+          name: Persist Mac Executable
+          command: |
+                  # If this isn't a full artifact build, ensure to persist the built application for inspection
+                  test -f release/*.zip || ditto -ck --rsrc --sequesterRsrc release/mac release/mac.app.zip
+      - run:
+          name: Release cleanup
+          command: |
+                  set +e
+                  rm -rf release/github
+                  rm -rf release/mac
       - *webhook_notify_success
       - *webhook_notify_failed
       - persist_to_workspace:
@@ -515,6 +581,7 @@ jobs:
 workflows:
   version: 2
   wp-desktop:
+    unless: << pipeline.parameters.isCalypsoCanaryRun >>
     jobs:
       - build:
           filters:
@@ -571,9 +638,15 @@ workflows:
           filters:
             branches:
               only: /tests\/.*/
-      - mac:
+      - mac-canary:
           requires:
             - build
           filters:
             branches:
               only: /tests\/.*/
+      - artifacts:
+          requires:
+            - mac-canary
+          filters:
+            branches:
+              ignore: /tests\/.*/
