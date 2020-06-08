@@ -249,9 +249,6 @@ jobs:
       - *install_linux_dependencies
       - *setup_calypso
       - *get_calypso_pr_author
-      - run:
-          name: Print Calypso PR Author
-          command: echo "$CALYPSO_PR_AUTHOR"
       - *calypso_prepare_cache
       - *calypso_restore_cache
       - *restore_nvm
