@@ -262,7 +262,8 @@ jobs:
           paths: *app_cache_paths
       - slack/status:
           fail_only: true
-          failure_message: ':red_circle: wp-desktop tests for $CIRCLE_BRANCH have failed. PR author: @$pullRequestUserName\n\nPR: https://www.github.com/Automattic/wp-calypso/pull/$pullRequestNum'
+          mentions: '$pullRequestUserName'
+          failure_message: ':red_circle: wp-desktop tests for $CIRCLE_BRANCH have failed.\n\nPR: https://www.github.com/Automattic/wp-calypso/pull/$pullRequestNum'
 
   linux:
     docker:
@@ -529,7 +530,8 @@ jobs:
           path: test/logs/
       - slack/status:
           fail_only: true
-          failure_message: ':red_circle: wp-desktop tests for $CIRCLE_BRANCH have failed. PR author: @$pullRequestUserName\n\nPR: https://www.github.com/Automattic/wp-calypso/pull/$pullRequestNum'
+          mentions: '$pullRequestUserName'
+          failure_message: ':red_circle: wp-desktop tests for $CIRCLE_BRANCH have failed.\n\nPR: https://www.github.com/Automattic/wp-calypso/pull/$pullRequestNum'
 
   artifacts:
     docker:
