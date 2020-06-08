@@ -224,6 +224,10 @@ references:
               }
             }
         }'
+  get_calypso_pr_author: &get_calypso_pr_author
+    run:
+      name: Get Calypso PR Author
+      command: echo 'export CALYPSO_PR_AUTHOR="$(git show -s --format='%an' HEAD)"' >> $BASH_ENV
 
 jobs:
   build:
@@ -243,6 +247,7 @@ jobs:
       - checkout
       - *install_linux_dependencies
       - *setup_calypso
+      - *get_calypso_pr_author
       - *calypso_prepare_cache
       - *calypso_restore_cache
       - *restore_nvm
@@ -260,10 +265,13 @@ jobs:
       - persist_to_workspace:
           root: ~/wp-desktop
           paths: *app_cache_paths
-      - slack/status:
-          fail_only: true
-          mentions: '$pullRequestUserName'
-          failure_message: ':red_circle: wp-desktop tests for $CIRCLE_BRANCH have failed.\n\nCalypso PR: https://www.github.com/Automattic/wp-calypso/pull/$pullRequestNum'
+      - when:
+          when: << pipeline.parameters.isCalypsoCanaryRun >>
+          steps:
+            - slack/status:
+                fail_only: true
+                mentions: '$pullRequestUserName'
+                failure_message: ':red_circle: wp-desktop tests for $CIRCLE_BRANCH have failed.\n\nCalypso PR: https://www.github.com/Automattic/wp-calypso/pull/$pullRequestNum\n\nPR Author: $CALYPSO_PR_AUTHOR'
 
   linux:
     docker:
@@ -473,6 +481,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: /Users/distiller/wp-desktop
+      - *get_calypso_pr_author
       - *restore_nvm
       - *setup_nvm
       - *save_nvm
@@ -531,7 +540,7 @@ jobs:
       - slack/status:
           fail_only: true
           mentions: '$pullRequestUserName'
-          failure_message: ':red_circle: wp-desktop tests for $CIRCLE_BRANCH have failed.\n\nCalypso PR: https://www.github.com/Automattic/wp-calypso/pull/$pullRequestNum'
+          failure_message: ':red_circle: wp-desktop tests for $CIRCLE_BRANCH have failed.\n\nCalypso PR: https://www.github.com/Automattic/wp-calypso/pull/$pullRequestNum\n\nPR Author: $CALYPSO_PR_AUTHOR'
 
   artifacts:
     docker:
