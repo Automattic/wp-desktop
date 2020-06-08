@@ -16,6 +16,12 @@ parameters:
   isCalypsoCanaryRun:
     type: boolean
     default: false
+  pullRequestUserName:
+    type: string
+    default: ""
+  pullRequestNum:
+    type: string
+    default: ""
 
 orbs:
   win: circleci/windows@2.2.0
@@ -454,6 +460,8 @@ jobs:
     environment:
       sha: << pipeline.parameters.sha >>
       calypsoProject: << pipeline.parameters.calypsoProject >>
+      pullRequestUserName: << pipeline.parameters.pullRequestUserName >>
+      pullRequestNum: << pipeline.parameters.pullRequestNum >>
     steps:
       - checkout
       - attach_workspace:
