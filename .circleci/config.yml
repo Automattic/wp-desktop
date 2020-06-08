@@ -228,9 +228,7 @@ references:
     run:
       name: Get Calypso PR Author
       command: |
-        cd calypso;
-        git show -s --format='%an' HEAD;
-        echo 'export CALYPSO_PR_AUTHOR="$(git show -s --format='%an' HEAD)"' >> $BASH_ENV;
+        echo 'export CALYPSO_PR_AUTHOR="$(cd calypso && git show -s --format='%an' HEAD)"' >> $BASH_ENV;
 
 jobs:
   build:
