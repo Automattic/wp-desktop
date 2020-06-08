@@ -457,6 +457,7 @@ jobs:
     environment:
       sha: << pipeline.parameters.sha >>
       calypsoProject: << pipeline.parameters.calypsoProject >>
+      pullRequestUserName: << pipeline.parameters.pullRequestUserName >>
     steps:
       - checkout
       - attach_workspace:
