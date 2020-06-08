@@ -16,6 +16,9 @@ parameters:
   isCalypsoCanaryRun:
     type: boolean
     default: false
+  pullRequestUserName:
+    type: string
+    default: ""
 
 orbs:
   win: circleci/windows@2.2.0
