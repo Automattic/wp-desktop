@@ -38,12 +38,7 @@ before( async function() {
 	return await driver.sleep( 2000 );
 } );
 
-describe.skip( 'Test Slack Notification', function() {
-	const fail = true;
-	return assert.isFalse( fail );
-} );
-
-describe.skip( 'User Can log in', function() {
+describe( 'User Can log in', function() {
 	this.timeout( 30000 );
 
 	step( 'Clear local storage', async function() {
@@ -62,7 +57,7 @@ describe.skip( 'User Can log in', function() {
 	} );
 } );
 
-describe.skip( 'Publish a New Post', function() {
+describe( 'Publish a New Post', function() {
 	this.timeout( 30000 );
 	const blogPostTitle = dataHelper.randomPhrase();
 	const blogPostQuote =
