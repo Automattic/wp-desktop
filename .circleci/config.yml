@@ -195,7 +195,9 @@ references:
                 "build_parameters": {
                   "build_num": '"$CIRCLE_BUILD_NUM"',
                   "sha": "'"$sha"'",
-                  "calypsoProject": "'"$calypsoProject"'"
+                  "calypsoProject": "'"$calypsoProject"'",
+                  "pullRequestNum": "'"$pullRequestNum"'",
+                  "pullRequestUserName": "'"$pullRequestUserName"'"
                 }
               }
           }'
@@ -220,7 +222,9 @@ references:
               "build_parameters": {
                 "build_num": '"$CIRCLE_BUILD_NUM"',
                 "sha": "'"$sha"'",
-                "calypsoProject": "'"$calypsoProject"'"
+                "calypsoProject": "'"$calypsoProject"'",
+                "pullRequestNum": "'"$pullRequestNum"'",
+                "pullRequestUserName": "'"$pullRequestUserName"'"
               }
             }
         }'
