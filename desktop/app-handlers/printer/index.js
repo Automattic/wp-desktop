@@ -3,9 +3,7 @@
 /**
  * External Dependencies
  */
-const electron = require( 'electron' );
-const ipc = electron.ipcMain;
-const BrowserWindow = electron.BrowserWindow;
+const { BrowserWindow, ipcMain: ipc } = require( 'electron' );
 
 /**
  * Internal dependencies
@@ -18,11 +16,17 @@ module.exports = function() {
 
 		log.debug( 'Printing HTML' );
 
-		printer.loadURL( 'data:text/html,' + encodeURIComponent( html ) );
+		const file = 'data:text/html;charset=UTF-8,' + encodeURIComponent( html );
+		printer.loadURL( file );
 
 		printer.webContents.on( 'dom-ready', function() {
+			const options = { silent: false }; // ask the user for print settings
 			setTimeout( function() {
-				printer.webContents.print();
+				printer.webContents.print( options, ( success, error ) => {
+					if ( ! success ) {
+						log.error( 'Failed to print: ', error );
+					}
+				} );
 			}, 500 );
 		} );
 
