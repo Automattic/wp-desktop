@@ -661,6 +661,7 @@ workflows:
           filters:
             branches:
               only: /tests\/.*/
+              ignore: import/wp-desktop
       - mac-canary:
           requires:
             - build
