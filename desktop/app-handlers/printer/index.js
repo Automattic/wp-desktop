@@ -11,12 +11,12 @@ const { BrowserWindow, ipcMain: ipc } = require( 'electron' );
 const log = require( 'lib/logger' )( 'desktop:printer' );
 
 module.exports = function() {
-	ipc.on( 'print', function( event, title, html ) {
+	ipc.on( 'print', function( event, title, contents ) {
 		let printer = new BrowserWindow( { width: 350, height: 300, title: title } );
 
-		log.debug( 'Printing HTML' );
+		log.info( `Printing contents '${ title }'...` );
 
-		const file = 'data:text/html;charset=UTF-8,' + encodeURIComponent( html );
+		const file = 'data:text/html;charset=UTF-8,' + encodeURIComponent( contents );
 		printer.loadURL( file );
 
 		printer.webContents.on( 'dom-ready', function() {
