@@ -3,9 +3,7 @@
 /**
  * External Dependencies
  */
-const electron = require( 'electron' );
-const ipc = electron.ipcMain;
-const BrowserWindow = electron.BrowserWindow;
+const { BrowserWindow, ipcMain: ipc } = require( 'electron' );
 
 /**
  * Internal dependencies
@@ -13,16 +11,22 @@ const BrowserWindow = electron.BrowserWindow;
 const log = require( 'lib/logger' )( 'desktop:printer' );
 
 module.exports = function() {
-	ipc.on( 'print', function( event, title, html ) {
+	ipc.on( 'print', function( event, title, contents ) {
 		let printer = new BrowserWindow( { width: 350, height: 300, title: title } );
 
-		log.debug( 'Printing HTML' );
+		log.info( `Printing contents '${ title }'...` );
 
-		printer.loadURL( 'data:text/html,' + encodeURIComponent( html ) );
+		const file = 'data:text/html;charset=UTF-8,' + encodeURIComponent( contents );
+		printer.loadURL( file );
 
 		printer.webContents.on( 'dom-ready', function() {
+			const options = { silent: false }; // ask the user for print settings
 			setTimeout( function() {
-				printer.webContents.print();
+				printer.webContents.print( options, ( success, error ) => {
+					if ( ! success ) {
+						log.error( 'Failed to print: ', error );
+					}
+				} );
 			}, 500 );
 		} );
 
