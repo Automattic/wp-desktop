@@ -25,7 +25,6 @@ parameters:
 
 orbs:
   win: circleci/windows@2.2.0
-  slack: circleci/slack@3.4.2
 
 references:
   restore_nvm: &restore_nvm
@@ -264,10 +263,6 @@ jobs:
       - persist_to_workspace:
           root: ~/wp-desktop
           paths: *app_cache_paths
-      - slack/status:
-          fail_only: true
-          mentions: '$pullRequestUserName'
-          failure_message: ':red_circle: wp-desktop tests for $CIRCLE_BRANCH have failed.\n\nCalypso PR: https://www.github.com/Automattic/wp-calypso/pull/$pullRequestNum'
 
   linux:
     docker:
@@ -532,10 +527,6 @@ jobs:
           path: screenshots/
       - store_artifacts:
           path: test/logs/
-      - slack/status:
-          fail_only: true
-          mentions: '$pullRequestUserName'
-          failure_message: ':red_circle: wp-desktop tests for $CIRCLE_BRANCH have failed.\n\nCalypso PR: https://www.github.com/Automattic/wp-calypso/pull/$pullRequestNum'
 
   artifacts:
     docker:
