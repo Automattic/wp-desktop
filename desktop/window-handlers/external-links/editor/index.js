@@ -157,17 +157,26 @@ async function handleJetpackEnableSSO( mainWindow, info ) {
 }
 
 function handleUndefined( mainWindow, info ) {
-	log.info( 'Cannot use editor, unhandled reason: ', info );
+	log.error( 'Cannot use editor, unhandled reason: ', info );
 
 	dialog.showMessageBox( mainWindow, {
 		type: 'info',
 		buttons: [ 'OK' ],
 		title: 'Unable to Use the Editor',
 		message: 'An unhnadled error occurred. ' +
-			+ 'Please contact help@wordpress.com for help.',
+			'Please contact help@wordpress.com for help.',
 	} );
 
-	const { origin } = info;
+	const { origin, wpAdminLoginUrl, editorUrl } = info;
+	if ( wpAdminLoginUrl ) {
+		log.info( `Falling back to opening editor in browser with admin login URL: '${ wpAdminLoginUrl }'` );
+		openInBrowser( null, wpAdminLoginUrl );
+	} else if ( editorUrl ) {
+		log.info( `Falling back to opening editor in browser with editor URL: '${ editorUrl }'` );
+		openInBrowser( null, editorUrl );
+	} else {
+		log.error( 'Failed to open editor in browser as fallback: invalid admin and editor urls' );
+	}
 	navigateToShowMySites( mainWindow, origin );
 }
 
