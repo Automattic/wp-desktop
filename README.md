@@ -1,4 +1,5 @@
 # WordPress.com for Desktop
+[BUMP]
 
 WordPress.com for Desktop is an [Electron](https://github.com/atom/electron) wrapper for [Calypso](https://github.com/Automattic/wp-calypso), the new WordPress.com front-end. It works on Mac, Windows, and Linux.
 
