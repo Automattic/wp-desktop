@@ -229,6 +229,26 @@ references:
         }'
 
 jobs:
+  validate_version:
+    docker:
+      - image: circleci/node:12.16.2-browsers
+    environment:
+      VERSION: << pipeline.git.tag >>
+    steps:
+      - when:
+          condition: << pipeline.git.tag >>
+          steps:
+            - checkout
+            - run:
+                name: Ensure package.json Version And Tag Match
+                command: node ./validate_tag.js $VERSION
+      - unless:
+          condition: << pipeline.git.tag >>
+          steps:
+            - run:
+                name: Skip Validation
+                command: echo "Not on a tag. Skipping version validation."
+
   build:
     docker:
       - image: circleci/node:12.16.2-browsers
@@ -597,7 +617,15 @@ workflows:
   wp-desktop:
     unless: << pipeline.parameters.isCalypsoCanaryRun >>
     jobs:
+      - validate_version:
+          filters:
+            branches:
+              ignore: /tests\/.*/
+            tags:
+              only: /.*/
       - build:
+          requires:
+          - validate_version
           filters:
             branches:
               ignore: /tests\/.*/
