@@ -122,7 +122,7 @@ async function handleJetpackEnableSSO( mainWindow, info ) {
 					'Please contact the site admin.'
 		}
 
-		const selected = dialog.showMessageBox( mainWindow, {
+		const selected = await dialog.showMessageBox( mainWindow, {
 			type: 'info',
 			buttons: buttons,
 			title: 'Jetpack Authorization Required',
@@ -131,7 +131,9 @@ async function handleJetpackEnableSSO( mainWindow, info ) {
 					'or you can proceed in an external browser.'
 		} );
 
-		switch ( selected ) {
+		const button = selected.response;
+
+		switch ( button ) {
 			case 0:
 				if ( canUserManageOptions ) {
 					selectedEnableSSOandContinue( mainWindow, info );
@@ -163,7 +165,7 @@ function handleUndefined( mainWindow, info ) {
 		type: 'info',
 		buttons: [ 'OK' ],
 		title: 'Unable to Use the Editor',
-		message: 'An unhnadled error occurred. ' +
+		message: 'An unhandled error occurred. ' +
 			'Please contact help@wordpress.com for help.',
 	} );
 

@@ -1,7 +1,7 @@
 /**
  * External Dependencies
  */
-const { app, dialog } = require( 'electron' );
+const { app, dialog, BrowserWindow } = require( 'electron' );
 const { EventEmitter } = require( 'events' );
 
 /**
@@ -49,7 +49,9 @@ class Updater extends EventEmitter {
 
 	onCancel() {}
 
-	notify() {
+	async notify() {
+		const mainWindow = BrowserWindow.getFocusedWindow();
+
 		const updateDialogOptions = {
 			buttons: [ this.sanitizeButtonLabel( this.confirmLabel ), 'Cancel' ],
 			title: 'Update Available',
@@ -60,8 +62,8 @@ class Updater extends EventEmitter {
 		if ( !this._hasPrompted ) {
 			this._hasPrompted = true;
 
-			dialog.showMessageBox( updateDialogOptions, button => {
-				this._hasPrompted = false;
+			const selected = await dialog.showMessageBox( mainWindow, updateDialogOptions );
+			const button = selected.response;
 
 				if ( button === 0 ) {
 					// Confirm
@@ -70,8 +72,8 @@ class Updater extends EventEmitter {
 					this.onCancel();
 				}
 
-				this.emit( 'end' );
-			} );
+			this._hasPrompted = false;
+			this.emit( 'end' );
 		}
 	}
 
