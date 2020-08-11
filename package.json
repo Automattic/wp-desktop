@@ -93,6 +93,11 @@
       "buildResources": "./resource/icons",
       "output": "./release"
     },
+    "publish": [{
+      "provider": "github",
+      "owner": "Automattic",
+      "repo": "wp-calypso"
+    }],
     "files": [
       "./build/desktop.js",
       "./public_desktop",
