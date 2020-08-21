@@ -1,6 +1,6 @@
 {
   "name": "WordPressDesktop",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/wp-desktop/"
@@ -93,6 +93,11 @@
       "buildResources": "./resource/icons",
       "output": "./release"
     },
+    "publish": [{
+      "provider": "github",
+      "owner": "Automattic",
+      "repo": "wp-calypso"
+    }],
     "files": [
       "./build/desktop.js",
       "./public_desktop",
