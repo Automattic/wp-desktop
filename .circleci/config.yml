@@ -231,7 +231,7 @@ references:
 jobs:
   validate_version:
     docker:
-      - image: circleci/node:12.16.2-browsers
+      - image: circleci/node:12.18.3-browsers
     environment:
       VERSION: << pipeline.git.tag >>
     steps:
@@ -251,7 +251,7 @@ jobs:
 
   build:
     docker:
-      - image: circleci/node:12.16.2-browsers
+      - image: circleci/node:12.18.3-browsers
     working_directory: ~/wp-desktop
     environment:
       CONFIG_ENV: release
@@ -286,7 +286,7 @@ jobs:
 
   linux:
     docker:
-      - image: circleci/node:12.16.2-browsers
+      - image: circleci/node:12.18.3-browsers
     working_directory: ~/wp-desktop
     steps:
       - checkout
