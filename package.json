@@ -44,7 +44,7 @@
     "chalk": "2.3.1",
     "check-node-version": "3.2.0",
     "concurrently": "3.5.1",
-    "electron": "8.3.0",
+    "electron": "8.5.2",
     "electron-builder": "22.4.0",
     "electron-chromedriver": "4.2.0",
     "electron-mocha": "8.0.0",
