@@ -73,7 +73,7 @@
     "acorn": "6.4.1",
     "archiver": "3.1.1",
     "electron-fetch": "1.2.1",
-    "electron-updater": "4.2.5",
+    "electron-updater": "4.3.9",
     "express": "4.15.3",
     "js-yaml": "3.12.0",
     "lodash.clonedeep": "4.5.0",
