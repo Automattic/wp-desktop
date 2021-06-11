@@ -4,5 +4,4 @@ Note: The source code for this project is now maintained at https://github.com/A
 
 ## Latest Changes
 
-No changes
-
+This is the first release of the re-written WordPress Desktop application. 🎉
