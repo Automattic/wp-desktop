@@ -1,10 +1,12 @@
-## WP-Desktop v7.0.4
+## WP-Desktop v7.0.5
 
 Note: The source code for this project is now maintained at https://github.com/Automattic/wp-calypso/tree/trunk/desktop. This repository is used for deployment and issue-reporting purposes only.
 
 ## Latest Changes
 
-* Display more descriptive message on network disconnected
-* Load Support URL manually if IPC unavailable
-* Ignore ERR_BLOCKED_BY_CSP request failures
+* Minor optimization to badge count reset
+* Update notification payload parsing
+* Add fix for preview post button in editor
+* Clean up network_failed.html
+* desktop: minor log message tweak
 
