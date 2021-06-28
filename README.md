@@ -4,6 +4,8 @@ Note: The source code for this project is now maintained at https://github.com/A
 
 ## Latest Changes
 
+* update Mac CI script
+* external-links: minor cleanup and comments
 * Minor optimization to badge count reset
 * Update notification payload parsing
 * Add fix for preview post button in editor
