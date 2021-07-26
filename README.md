@@ -1,14 +1,13 @@
-## WP-Desktop v7.0.6
+## WP-Desktop v7.1.0-beta1
 
 Note: The source code for this project is now maintained at https://github.com/Automattic/wp-calypso/tree/trunk/desktop. This repository is used for deployment and issue-reporting purposes only.
 
 ## Latest Changes
 
-This is the first release of the overhauled WordPress Desktop application. 🎉 Includes new navigation controls as well as a host of fixes and improvements.
+* desktop: update electron and key dependencies (#54175)
+* desktop(windows): fix window restoration on icon double-click (#54562)
+* chore: migrate webpack configs to import/order (#54584)
+* desktop(ci): fix macOS notarization (#54193)
+* Amend package.json
+* mac: fix notarization
 
-- New title bar with navigation controls to enable easier back, forward and home access.
-- Updated icons on Linux, Mac and Windows.
-- Refine how links are opened in the app when triggered with about:blank or window.open
-- Better handling of code=-30 ERR_BLOCKED_BY_CSP request failures
-- Some fixes for notification payload parsing
-- Add "network disconnected" error message
