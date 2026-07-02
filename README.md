@@ -1,4 +1,4 @@
-## WP-Desktop v8.2.3-beta.2
+## WP-Desktop v8.2.3
 
 Note: The source code for this project is now maintained at https://github.com/Automattic/wp-calypso/tree/trunk/desktop. This repository is used for deployment purposes only. All issues should be filed to the WP-Calypso repository, and not here.
 
